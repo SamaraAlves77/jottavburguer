@@ -106,7 +106,7 @@ function removerItem(index) {
 }
 
 // =======================================================
-// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida: Timeout aumentado)
+// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida: Timeout aumentado e texto de erro limpo)
 // =======================================================
 
 function solicitarLocalizacao() {
@@ -134,8 +134,8 @@ function solicitarLocalizacao() {
         },
         (error) => {
             coordenadasEnviadas = '';
-            // Mensagem de erro mais clara
-            localizacaoStatus.textContent = `Erro ao obter localização: ${error.message}. (Tente novamente)`;
+            // Texto de erro simplificado
+            localizacaoStatus.textContent = `Erro ao obter localização: ${error.message}.`;
             btnAnexarLocalizacao.disabled = false;
             btnAnexarLocalizacao.classList.remove('localizacao-anexada');
             btnAnexarLocalizacao.innerHTML = '<i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)';
@@ -146,7 +146,7 @@ function solicitarLocalizacao() {
 }
 
 // =======================================================
-// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida: Link formatado)
+// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida: Link formatado e condicional)
 // =======================================================
 
 function finalizarPedido() {
@@ -173,12 +173,12 @@ function finalizarPedido() {
     mensagem += `*Bairro:* ${bairro || 'Não Informado'}\n`;
     mensagem += `*Endereço:* ${endereco || 'Não Informado'}\n`;
     
-    // NOVO BLOCO GPS: Prepara o link clicável
+    // NOVO BLOCO GPS: Prepara o link clicável APENAS SE A LOCALIZAÇÃO FOI OBTIDA
     if (coordenadasEnviadas) {
         // CORREÇÃO FINAL: Usa concatenação (+) para ser robusto no WhatsApp
-        const urlGps = "https://maps.google.com/?q=LATITUDE,LONGITUDE" + coordenadasEnviadas;
+        const urlGps = "https://maps.google.com9" + coordenadasEnviadas;
         
-        // Monta a string que será adicionada à mensagem, usando Template Literal APENAS para a mensagem
+        // Monta a string que será adicionada à mensagem
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
     }
     
@@ -213,7 +213,7 @@ function finalizarPedido() {
         mensagem += `*OBSERVAÇÕES:* Nenhuma.\n`;
     }
 
-    // AQUI: Adiciona o link do GPS formatado no final da mensagem
+    // AQUI: Adiciona o link do GPS APENAS SE ELE FOI GERADO
     mensagem += linkGpsFinal;
 
     // 6. Envia para o WhatsApp
@@ -231,7 +231,7 @@ function finalizarPedido() {
 }
 
 // =======================================================
-// INICIALIZAÇÃO E EVENT LISTENERS (Função adicionada para ligar o HTML ao JS)
+// INICIALIZAÇÃO E EVENT LISTENERS (Função para ligar o HTML ao JS)
 // =======================================================
 
 function init() {
@@ -242,7 +242,7 @@ function init() {
     carrinhoTotalSpan = document.getElementById('carrinho-total');
     btnFinalizar = document.getElementById('btn-finalizar-pedido');
     
-    // Referências de Geolocalização
+    // Referências de Geolocalização (usando IDs do seu HTML)
     btnAnexarLocalizacao = document.getElementById('btn-anexar-localizacao');
     localizacaoStatus = document.getElementById('localizacao-status');
 
@@ -250,7 +250,7 @@ function init() {
     renderizarCarrinho();
     updateContadorCarrinho();
 
-    // Event Listeners (para abrir, fechar e finalizar)
+    // Event Listeners
     if (fecharModalBtn) {
         fecharModalBtn.addEventListener('click', () => mostrarModal(carrinhoModal, false));
     }
