@@ -7,6 +7,8 @@ let carrinhoModal, fecharModalBtn, carrinhoBtn, contadorCarrinho, fabCarrinho, f
 let btnAnexarLocalizacao;
 let localizacaoStatus;
 let coordenadasEnviadas = ''; 
+// Se você tiver 'coordenadasEnviadas = "LAT,LON_DO_STARBUCKS";'
+// em qualquer outro lugar no topo do seu arquivo, REMOVA!
 
 // =======================================================
 // FUNÇÕES DE UTILIDADE E UI
@@ -106,12 +108,14 @@ function removerItem(index) {
 }
 
 // =======================================================
-// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida: Timeout aumentado)
+// LÓGICA DE GEOLOCALIZAÇÃO (Onde a localização é pedida)
 // =======================================================
 
 function solicitarLocalizacao() {
     if (!localizacaoStatus || !btnAnexarLocalizacao) return;
 
+    // Limpa a variável ANTES de começar a buscar, garantindo que não use um valor antigo/errado.
+    coordenadasEnviadas = ''; 
     localizacaoStatus.textContent = 'Buscando localização...';
     btnAnexarLocalizacao.disabled = true;
 
@@ -125,7 +129,7 @@ function solicitarLocalizacao() {
         (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            // Salva APENAS as coordenadas no formato 'LAT,LON'
+            // AQUI o código pega a localização EXATA do dispositivo.
             coordenadasEnviadas = `${lat},${lon}`;
             localizacaoStatus.textContent = 'Localização Anexada com Sucesso!';
             btnAnexarLocalizacao.disabled = false;
@@ -140,13 +144,13 @@ function solicitarLocalizacao() {
             btnAnexarLocalizacao.classList.remove('localizacao-anexada');
             btnAnexarLocalizacao.innerHTML = '<i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)';
         },
-        // TIMEOUT AUMENTADO PARA 15 SEGUNDOS (15000 ms)
+        // OTIMIZAÇÃO: Timeout aumentado (15s) e maximumAge: 0 (para forçar nova leitura, sem cache)
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 } 
     );
 }
 
 // =======================================================
-// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida: Link formatado para preview de mapa)
+// LÓGICA DE CHECKOUT (WhatsApp) (Onde o link é montado)
 // =======================================================
 
 function finalizarPedido() {
@@ -173,10 +177,10 @@ function finalizarPedido() {
     mensagem += `*Bairro:* ${bairro || 'Não Informado'}\n`;
     mensagem += `*Endereço:* ${endereco || 'Não Informado'}\n`;
     
-    // NOVO BLOCO GPS: Prepara o link clicável APENAS SE A LOCALIZAÇÃO FOI OBTIDA
+    // BLOCO GPS: Se coordenadasEnviadas TEM um valor, ele monta o link
     if (coordenadasEnviadas) {
-        // CORREÇÃO FINAL: Usando o formato padrão e concatenação para ser robusto no WhatsApp
-        const urlGps = "https://www.google.com/maps/search/?api=1&query=starbucks&query_place_id=ChIJsU30zM1qkFQRbnOm1_LBoG0.\\n...\\nParâmetros\\n\\n-1" + coordenadasEnviadas;
+        // Formato robusto para forçar o preview do mapa no WhatsApp
+        const urlGps = "https://www.google.com/maps/search/?api=1&query=starbucks&query_place_id=ChIJsU30zM1qkFQRbnOm1_LBoG0.\\n...\\nParâmetros\\n\\n-3" + coordenadasEnviadas;
         
         // Monta a string que será adicionada à mensagem
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
