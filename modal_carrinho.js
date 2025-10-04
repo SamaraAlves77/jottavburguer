@@ -7,8 +7,6 @@ let carrinhoModal, fecharModalBtn, carrinhoBtn, contadorCarrinho, fabCarrinho, f
 let btnAnexarLocalizacao;
 let localizacaoStatus;
 let coordenadasEnviadas = ''; 
-// Se você tiver 'coordenadasEnviadas = "LAT,LON_DO_STARBUCKS";'
-// em qualquer outro lugar no topo do seu arquivo, REMOVA!
 
 // =======================================================
 // FUNÇÕES DE UTILIDADE E UI
@@ -21,22 +19,11 @@ function mostrarModal(modalElement, mostrar) {
 }
 
 function formatarMoeda(valor) {
-    // Garante que a formatação não falhe com valores nulos ou inválidos
     const num = parseFloat(valor) || 0;
     return num.toFixed(2).replace('.', ',');
 }
 
-function showNotification(message) {
-    if (!notificacao) return;
-    notificacao.textContent = message;
-    notificacao.classList.add('show');
-    setTimeout(() => {
-        notificacao.classList.remove('show');
-    }, 2000);
-}
-
 function updateContadorCarrinho() {
-    // Garante que o array carrinho exista, mesmo que vazio
     const totalItens = (carrinho || []).reduce((acc, item) => acc + (item.quantidade || 0), 0);
     if (contadorCarrinho) contadorCarrinho.textContent = totalItens;
     if (fabContadorCarrinho) fabContadorCarrinho.textContent = totalItens;
@@ -58,7 +45,6 @@ function renderizarCarrinho() {
     if (btnFinalizar) btnFinalizar.disabled = false;
 
     carrinho.forEach((item, index) => {
-        // Usa precoTotal se existir (para customizados), senão usa preco
         const precoUnitario = item.precoTotal || item.preco || 0; 
         const precoTotalItem = precoUnitario * item.quantidade;
         totalCarrinho += precoTotalItem;
@@ -67,7 +53,6 @@ function renderizarCarrinho() {
         itemDiv.classList.add('carrinho-item');
         itemDiv.setAttribute('data-index', index);
 
-        // Adicionais
         let adicionaisHTML = '';
         if (item.adicionais && item.adicionais.length > 0) {
             const adicionaisStr = item.adicionais.map(add => 
@@ -76,7 +61,6 @@ function renderizarCarrinho() {
             adicionaisHTML = `<p class="item-adicionais">Adicionais: ${adicionaisStr}</p>`;
         }
         
-        // NOVO HTML: Apenas o botão de lixeira no item-controles
         itemDiv.innerHTML = `
             <div class="item-info">
                 <span class="item-nome">${item.nome} (x${item.quantidade})</span>
@@ -93,28 +77,23 @@ function renderizarCarrinho() {
     carrinhoTotalSpan.textContent = formatarMoeda(totalCarrinho);
 }
 
-// A função alterarQuantidade foi removida, pois os botões foram excluídos.
-
 function removerItem(index) {
     if (!carrinho || index < 0 || index >= carrinho.length) return;
 
     carrinho.splice(index, 1);
-
-    // Atualiza o localStorage e a UI
     localStorage.setItem('carrinho', JSON.stringify(carrinho));
     renderizarCarrinho();
     updateContadorCarrinho();
-    showNotification('Item removido do carrinho!');
 }
 
 // =======================================================
-// LÓGICA DE GEOLOCALIZAÇÃO (Onde a localização é pedida)
+// LÓGICA DE GEOLOCALIZAÇÃO
 // =======================================================
 
 function solicitarLocalizacao() {
     if (!localizacaoStatus || !btnAnexarLocalizacao) return;
 
-    // Limpa a variável ANTES de começar a buscar, garantindo que não use um valor antigo/errado.
+    // Limpa a variável para garantir que não use um valor antigo (como o do Starbucks).
     coordenadasEnviadas = ''; 
     localizacaoStatus.textContent = 'Buscando localização...';
     btnAnexarLocalizacao.disabled = true;
@@ -129,7 +108,7 @@ function solicitarLocalizacao() {
         (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            // AQUI o código pega a localização EXATA do dispositivo.
+            // Salva a localização EXATA do dispositivo.
             coordenadasEnviadas = `${lat},${lon}`;
             localizacaoStatus.textContent = 'Localização Anexada com Sucesso!';
             btnAnexarLocalizacao.disabled = false;
@@ -138,23 +117,23 @@ function solicitarLocalizacao() {
         },
         (error) => {
             coordenadasEnviadas = '';
-            // Texto de erro simplificado
-            localizacaoStatus.textContent = `Erro ao obter localização: ${error.message}.`;
+            // Exibe a mensagem de erro (como 'Timeout expired' ou 'Permissão negada').
+            localizacaoStatus.textContent = `Erro ao obter localização: ${error.message}. Verifique a permissão do seu navegador.`;
             btnAnexarLocalizacao.disabled = false;
             btnAnexarLocalizacao.classList.remove('localizacao-anexada');
             btnAnexarLocalizacao.innerHTML = '<i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)';
         },
-        // OTIMIZAÇÃO: Timeout aumentado (15s) e maximumAge: 0 (para forçar nova leitura, sem cache)
+        // OTIMIZAÇÃO: Forçando nova leitura (maximumAge: 0) e 15s de espera.
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 } 
     );
 }
 
 // =======================================================
-// LÓGICA DE CHECKOUT (WhatsApp) (Onde o link é montado)
+// LÓGICA DE CHECKOUT (WhatsApp)
 // =======================================================
 
 function finalizarPedido() {
-    // 1. Coleta os dados do DOM
+    // 1. Coleta os dados
     const nomeInput = document.getElementById('nome-cliente');
     const bairroInput = document.getElementById('bairro-cliente');
     const enderecoInput = document.getElementById('endereco-cliente');
@@ -167,22 +146,20 @@ function finalizarPedido() {
     const pagamento = pagamentoSelect ? pagamentoSelect.value : '';
     const observacoes = observacoesInput ? observacoesInput.value.trim() : '';
     
-    // VARIÁVEL TEMPORÁRIA para guardar o link do GPS
     let linkGpsFinal = ''; 
 
-    // 3. Monta o cabeçalho da mensagem
+    // 3. Monta o cabeçalho
     let mensagem = `*PEDIDO JottaV BURGUER*\n`;
     mensagem += `*DADOS DO CLIENTE:*\n`;
     mensagem += `*Nome:* ${nome || 'Não Informado'}\n`;
     mensagem += `*Bairro:* ${bairro || 'Não Informado'}\n`;
     mensagem += `*Endereço:* ${endereco || 'Não Informado'}\n`;
     
-    // BLOCO GPS: Se coordenadasEnviadas TEM um valor, ele monta o link
+    // BLOCO GPS: Usa a sintaxe que você forneceu.
     if (coordenadasEnviadas) {
-        // Formato robusto para forçar o preview do mapa no WhatsApp
-        const urlGps = "https://www.google.com/maps/search/?api=1&query=starbucks&query_place_id=ChIJsU30zM1qkFQRbnOm1_LBoG0.\\n...\\nParâmetros\\n\\n-3" + coordenadasEnviadas;
+        // CORREÇÃO: Usando a URL específica para forçar o preview de mapa.
+        const urlGps = "https://www.google.com/maps/place/2%C2%B053'35.7%22S+41%C2%B042'10.9%22W/@-2.8932582,-41.7055957,17z/data=!3m1!4b1!4m4!3m3!8m2!3d-2.8932582!4d-41.7030208?hl=pt-BR&entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D" + coordenadasEnviadas;
         
-        // Monta a string que será adicionada à mensagem
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
     }
     
@@ -195,10 +172,8 @@ function finalizarPedido() {
         const totalItem = precoItem * item.quantidade;
         totalPedido += totalItem;
 
-        // Linha principal do item
         mensagem += `*${index + 1}. ${item.nome} (x${item.quantidade}) - R$ ${formatarMoeda(totalItem)}*\n`;
         
-        // Adiciona os adicionais, se houver
         if (item.adicionais && item.adicionais.length > 0) {
             const adicionaisStr = item.adicionais.map(add => 
                 `    + ${add.nome} (R$ ${formatarMoeda(add.preco)})`
@@ -221,12 +196,12 @@ function finalizarPedido() {
     mensagem += linkGpsFinal;
 
     // 6. Envia para o WhatsApp
-    const numero = '5586994253258'; // Seu número de WhatsApp (incluir o 55 e DDD)
+    const numero = '5586994253258'; 
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
     
     window.open(url, '_blank');
     
-    // 7. Limpa o carrinho após o envio
+    // 7. Limpa o carrinho
     carrinho = [];
     localStorage.removeItem('carrinho');
     renderizarCarrinho();
@@ -235,7 +210,7 @@ function finalizarPedido() {
 }
 
 // =======================================================
-// INICIALIZAÇÃO E EVENT LISTENERS (Função para ligar o HTML ao JS)
+// INICIALIZAÇÃO E EVENT LISTENERS
 // =======================================================
 
 function init() {
@@ -246,11 +221,11 @@ function init() {
     carrinhoTotalSpan = document.getElementById('carrinho-total');
     btnFinalizar = document.getElementById('btn-finalizar-pedido');
     
-    // Referências de Geolocalização (usando IDs do seu HTML)
+    // Referências de Geolocalização
     btnAnexarLocalizacao = document.getElementById('btn-anexar-localizacao');
     localizacaoStatus = document.getElementById('localizacao-status');
 
-    // Inicializa o carrinho e o contador ao carregar a página
+    // Inicializa o carrinho
     renderizarCarrinho();
     updateContadorCarrinho();
 
@@ -267,9 +242,6 @@ function init() {
     if (btnAnexarLocalizacao) {
         btnAnexarLocalizacao.addEventListener('click', solicitarLocalizacao);
     }
-    
-    // Adicione outras referências de DOM globais aqui, se necessário.
 }
 
-// Garante que a inicialização aconteça após o carregamento do DOM
 document.addEventListener('DOMContentLoaded', init);
