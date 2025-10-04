@@ -1,0 +1,68 @@
+[
+    {
+        "nome": "Hambúrgueres Artesanais",
+        "id": "hamburgueres-artesanais",
+        "itens": [
+            { "id": 1, "nome": "Smash Original", "descricao": "Pão, carne 80g prensada na chapa, queijo muçarela, cebola caramelizada, alface, tomate e molho da casa.", "preco": 18.99, "imagem": "smash_original.jpeg" },
+            { "id": 2, "nome": "Smash Duplo", "descricao": "Pão, 2 carnes 80g prensadas na chapa, 2 queijos muçarela, cebola caramelizada, alface, tomate e molho da casa.", "preco": 24.99, "imagem": "smash_duplo.jpeg" },
+            { "id": 3, "nome": "Jotta Básico", "descricao": "Pão, carne 80g prensada na chapa com cebola, queijo muçarela e molho da casa.", "preco": 14.99, "imagem": "jotta_basico.jpeg" },
+            { "id": 4, "nome": "Jotta Classic", "descricao": "Pão, carne 120g, molho barbecue, tomate, alface, bacon e queijo muçarela.", "preco": 25.99, "imagem": "jotta_classic.jpeg" },
+            { "id": 5, "nome": "Burguer do Xerife", "descricao": "Pão, carne de 120g, requeijão e farofa de bacon.", "preco": 22.99, "imagem": "burguer_do_xerife.jpeg" },
+            { "id": 6, "nome": "Duplo Brutão", "descricao": "Pão, 2 carnes de 120g,requeijão, molho da casa, 2 fatias de bacon.", "preco": 37.99, "imagem": "duplo_brutao.jpeg" },
+            { "id": 7, "nome": "Calabresa prime", "descricao": "Pão, carne de 120g,molho da casa, alface, tomate, calabresa, queijo muçarela, cebola caramelizada.", "preco": 26.99, "imagem": "calabresa_prime.jpeg" },
+            { "id": 8, "nome": "Calabresa básico", "descricao": "Pão, molho da casa, calabresa e queijo muçarela.", "preco": 15.00, "imagem": "calabresa_basico.jpeg" }
+        ]
+    },
+    {
+        "nome": "Combos",
+        "id": "combos-e-familia",
+        "itens": [
+            { "id": 9, "nome": "Combo Econômico individual", "descricao": "1 Smash Original + batata frita + refrigerante lata.", "preco": 31.99, "imagem": "combo_economico_smash.jpeg" },
+            { "id": 10, "nome": "Combo do Chef individual", "descricao": "1 Jotta Classic + batata frita + refrigerante lata.", "preco": 41.99, "imagem": "combo_economico_smash.jpeg" },
+            { "id": 11, "nome": "Combo Smash Duplo individual", "descricao": "1 Smash Duplo + batata frita + refrigerante lata.", "preco": 37.99, "imagem": "combo_economico_smash.jpeg" },
+            { "id": 12, "nome": "Combo Premium individual", "descricao": "1 Duplo Brutão + batata frita + refrigerante lata.", "preco": 53.99, "imagem": "combo_economico_smash.jpeg" },
+            { "id": 13, "nome": "Combo Econômico Casal", "descricao": "2 Smash Original + batata frita + refrigerante 1L.", "preco": 49.99, "imagem": "combo_economico_casal_smash.jpeg" },
+            { "id": 14, "nome": "Combo do Chef Casal", "descricao": "2 Jotta Classic + batata frita + refrigerante 1L.", "preco": 63.99, "imagem": "combo_economico_casal_smash.jpeg" },
+            { "id": 15, "nome": "Combo Smash Duplo Casal", "descricao": "2 Smash Duplo + batata frita + Refrigerante 1L.", "preco": 61.99, "imagem": "combo_economico_casal_smash.jpeg" },
+            { "id": 16, "nome": "Combo Premium Casal", "descricao": "2 Duplo Brutão + batata frita + Refrigerante 1L.", "preco": 87.99, "imagem": "combo_economico_casal_smash.jpeg" },
+            { "id": 17, "nome": "Combo Econômico Família", "descricao": "4 Smash Original + batata frita + Refrigerante 1L.", "preco": 87.99, "imagem": "combo_economico_casal_smash.jpeg" },
+            { "id": 18, "nome": "Combo do Chef Família", "descricao": "4 Jotta Classic + batata frita + Refrigerante 1L.", "preco": 115.99, "imagem": "combo_economico_casal_smash.jpeg" },
+            { "id": 19, "nome": "Combo Smash Duplo Família", "descricao": "4 Smash Duplo + batata frita + Refrigerante 1L.", "preco": 111.99, "imagem": "combo_economico_casal_smash.jpeg" },
+            { "id": 20, "nome": "Combo Premium Casal", "descricao": "4 Duplo Brutão + batata frita + Refrigerante 1L.", "preco": 154.90, "imagem": "combo_economico_casal_smash.jpeg" }
+        ]
+    },
+    {
+        "nome": "Acompanhamentos",
+        "id": "acompanhamentos",
+        "itens": [
+            { "id": 21, "nome": "Batata Frita", "descricao": "Batata frita acompanhada de molho da casa.", "preco": 11.99},
+            { "id": 22, "nome": "Batata+ Molho + Bacon", "descricao": "Batata frita, bacon crocante e molho.", "preco": 17.99},
+            { "id": 23, "nome": "Batata + Queijo Muçarela Gratinado+ Bacon em cubos", "descricao": "Batata frita coberta por queijo muçarela gratinado no maçarico e bacon crocantes em cubos", "preco": 19.99},
+            { "id": 24, "nome": "Batata + Queijo Muçarela Gratinado + Bacon + Calabresa", "descricao": "Batata frita coberta por queijo muçarela gratinado no maçarico, bacon crocantes em cubos e calabresa em tirinhas", "preco": 24.99}
+        ]
+    },
+    {
+        "nome": "Bebidas",
+        "id": "bebidas",
+        "itens": [
+            { "id": 25, "nome": "Coca-Cola lata", "descricao": "Refrigerante lata 350ml de Coca-Cola.", "preco": 7.00, "imagem": "cocalata.png" },
+            { "id": 26, "nome": "Guaraná lata", "descricao": "Refrigerante lata 350ml de Guaraná.", "preco": 6.00, "imagem": "guaranalata.png" },
+            { "id": 27, "nome": "Guaraná 1L", "descricao": "Refrigerante de Guaraná de 1 litro.", "preco": 9.00, "imagem": "guarana1l.jpg" },
+            { "id": 28, "nome": "Pepsi 1L", "descricao": "Refrigerante Pepsi de 1 litro.", "preco": 9.00, "imagem": "pepsi.png" }
+        ]
+    },
+    {
+        "nome": "Adicionais e Opções",
+        "id": "adicionais-extras",
+        "itens": [
+            { "id": 29, "nome": "Requeijão", "preco": 4.00},
+            { "id": 30, "nome": "Queijo Muçarela", "preco": 4.00},
+            { "id": 31, "nome": "Bacon", "preco": 4.00},
+            { "id": 32, "nome": "Farofa de bacon", "preco": 3.00},
+            { "id": 33, "nome": "Molho barbecue", "preco": 2.00},
+            { "id": 34, "nome": "Molho da casa", "preco": 2.00},
+            { "id": 35, "nome": "Calabresa", "preco": 5.00},
+            { "id": 36, "nome": "Requeijão", "preco": 4.00}
+        ]
+    }
+]
