@@ -125,7 +125,7 @@ function solicitarLocalizacao() {
         (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            // CORRIGIDO: Salva APENAS as coordenadas no formato 'LAT,LON'
+            // Corrigido: Salva APENAS as coordenadas no formato 'LAT,LON'
             coordenadasEnviadas = `${lat},${lon}`;
             localizacaoStatus.textContent = 'Localização Anexada com Sucesso!';
             btnAnexarLocalizacao.disabled = false;
@@ -173,8 +173,8 @@ function finalizarPedido() {
     
     // NOVO BLOCO GPS: Prepara o link clicável
     if (coordenadasEnviadas) {
-        // CORRIGIDO: Formato correto da URL para amarrar as coordenadas no Google Maps
-        const urlGps = `https://maps.google.com1{coordenadasEnviadas}`;
+        // CORREÇÃO FINAL: Usando interpolação ${} para injetar a variável no link
+        const urlGps = `https://maps.google.com2{coordenadasEnviadas}`;
         
         // Monta a string que será adicionada à mensagem, incluindo o Link
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
@@ -227,4 +227,44 @@ function finalizarPedido() {
     updateContadorCarrinho();
     mostrarModal(carrinhoModal, false);
 }
-// Fim do modal_carrinho.js
+
+// =======================================================
+// INICIALIZAÇÃO E EVENT LISTENERS (Adicionado)
+// =======================================================
+
+function init() {
+    // Referências principais (do HTML do modal)
+    carrinhoModal = document.getElementById('carrinho-modal');
+    fecharModalBtn = carrinhoModal ? carrinhoModal.querySelector('.fechar-modal') : null;
+    carrinhoItensContainer = document.getElementById('carrinho-itens');
+    carrinhoTotalSpan = document.getElementById('carrinho-total');
+    btnFinalizar = document.getElementById('btn-finalizar-pedido');
+    
+    // Referências de Geolocalização
+    btnAnexarLocalizacao = document.getElementById('btn-anexar-localizacao');
+    localizacaoStatus = document.getElementById('localizacao-status');
+
+    // Inicializa o carrinho e o contador ao carregar a página
+    renderizarCarrinho();
+    updateContadorCarrinho();
+
+    // Event Listeners
+    if (fecharModalBtn) {
+        fecharModalBtn.addEventListener('click', () => mostrarModal(carrinhoModal, false));
+    }
+
+    if (btnFinalizar) {
+        btnFinalizar.addEventListener('click', finalizarPedido);
+    }
+    
+    // Associa o botão de GPS à função de solicitação
+    if (btnAnexarLocalizacao) {
+        btnAnexarLocalizacao.addEventListener('click', solicitarLocalizacao);
+    }
+    
+    // **NOTA:** Outras referências (como contadorCarrinho, notificacao, etc.) devem ser adicionadas aqui
+    // se existirem no seu HTML, mas foram omitidas para focar nas correções do checkout/GPS.
+}
+
+// Garante que a inicialização aconteça após o carregamento do DOM
+document.addEventListener('DOMContentLoaded', init);
