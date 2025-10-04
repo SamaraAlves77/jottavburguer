@@ -5,11 +5,11 @@
 
 /* 0. VARIÁVEIS E ESTILOS GLOBAIS (Opcional se já estiver em um CSS principal) */
 :root {
-    --primary-color: #ff69b4; /* Rosa Neon */
-    --secondary-color: #333;
-    --text-color: #eee;
-    --background-color: #1a1a1a;
-    --card-background: #2b2b2b;
+    --primary-color: #45a135; /* Cor dos botões de adicionar ao carrinho */
+    --secondary-color: #ffea07; /*Cor da navbar*/
+    --text-color: #070707; /*Cor dos nomes da navbar(inicio etc...)*/
+    --background-color: #1a1a1a; /*Cor de fundo da página*/
+    --card-background: #2b2b2b; /*Cor de fundo do card*/
 }
 
 * {
