@@ -178,7 +178,7 @@ function finalizarPedido() {
     }
     
     // 4. Monta a lista de itens
-    mensagem += `\n*ITENS DO PEDIDO (${carrinho.length} itens):*\n`;
+    mensagem += `*ITENS DO PEDIDO (${carrinho.length} itens):*\n`;
 
     let totalPedido = 0;
     carrinho.forEach((item, index) => {
@@ -187,19 +187,19 @@ function finalizarPedido() {
         totalPedido += totalItem;
 
         // Linha principal do item
-        mensagem += `\n*${index + 1}. ${item.nome} (x${item.quantidade}) - R$ ${formatarMoeda(totalItem)}*\n`;
+        mensagem += `*${index + 1}. ${item.nome} (x${item.quantidade}) - R$ ${formatarMoeda(totalItem)}*\n`;
         
         // Adiciona os adicionais, se houver
         if (item.adicionais && item.adicionais.length > 0) {
             const adicionaisStr = item.adicionais.map(add => 
                 `   + ${add.nome} (R$ ${formatarMoeda(add.preco)})`
-            ).join('\\n');
+            ).join('\n');
             mensagem += `${adicionaisStr}\n`;
         }
     });
 
     // 5. Monta o rodapé e Observações
-    mensagem += `\n*TOTAL: R$ ${formatarMoeda(totalPedido)}*\n`;
+    mensagem += `*TOTAL: R$ ${formatarMoeda(totalPedido)}*\n`;
     mensagem += `*FORMA DE PAGAMENTO:* ${pagamento ? pagamento.replace('_', ' ').toUpperCase() : 'Não Escolhida'}\n`;
     
     if (observacoes) {
