@@ -106,7 +106,7 @@ function removerItem(index) {
 }
 
 // =======================================================
-// LÓGICA DE GEOLOCALIZAÇÃO
+// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida)
 // =======================================================
 
 function solicitarLocalizacao() {
@@ -125,7 +125,7 @@ function solicitarLocalizacao() {
         (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            // AQUI, COORDENADAS SÃO SALVAS NO FORMATO LATITUDE,LONGITUDE
+            // CORRIGIDO: Salva APENAS as coordenadas no formato 'LAT,LON'
             coordenadasEnviadas = `${lat},${lon}`;
             localizacaoStatus.textContent = 'Localização Anexada com Sucesso!';
             btnAnexarLocalizacao.disabled = false;
@@ -144,7 +144,7 @@ function solicitarLocalizacao() {
 }
 
 // =======================================================
-// LÓGICA DE CHECKOUT (WhatsApp)
+// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida)
 // =======================================================
 
 function finalizarPedido() {
@@ -161,14 +161,7 @@ function finalizarPedido() {
     const pagamento = pagamentoSelect ? pagamentoSelect.value : '';
     const observacoes = observacoesInput ? observacoesInput.value.trim() : '';
     
-    // 2. Validação (Ajuste conforme seus campos obrigatórios)
-    // if (!nome || !bairro || !endereco || !pagamento) {
-    //    alert("Por favor, preencha todos os campos obrigatórios (Nome, Bairro, Endereço e Pagamento).");
-    //    return;
-    // }
-
-    // **INÍCIO DA CORREÇÃO:**
-    // VARIÁVEL TEMPORÁRIA para guardar o link do GPS, que será adicionado no final
+    // VARIÁVEL TEMPORÁRIA para guardar o link do GPS
     let linkGpsFinal = ''; 
 
     // 3. Monta o cabeçalho da mensagem (GPS REMOVIDO DESTE BLOCO)
@@ -180,8 +173,8 @@ function finalizarPedido() {
     
     // NOVO BLOCO GPS: Prepara o link clicável
     if (coordenadasEnviadas) {
-        // Formata as coordenadas como um link clicável do Google Maps
-        const urlGps = `https://maps.google.com0{coordenadasEnviadas}`;
+        // CORRIGIDO: Formato correto da URL para amarrar as coordenadas no Google Maps
+        const urlGps = `https://maps.google.com1{coordenadasEnviadas}`;
         
         // Monta a string que será adicionada à mensagem, incluindo o Link
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
@@ -218,7 +211,7 @@ function finalizarPedido() {
         mensagem += `*OBSERVAÇÕES:* Nenhuma.\n`;
     }
 
-    // **CORREÇÃO AQUI:** Adiciona o link do GPS formatado no final da mensagem
+    // AQUI: Adiciona o link do GPS formatado no final da mensagem
     mensagem += linkGpsFinal;
 
     // 6. Envia para o WhatsApp
