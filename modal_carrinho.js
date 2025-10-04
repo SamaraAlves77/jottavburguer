@@ -167,11 +167,11 @@ function finalizarPedido() {
     // }
 
     // 3. Monta o cabeçalho da mensagem
-    let mensagem = `*PEDIDO JottaV BURGUER*\\n\\n`;
-    mensagem += `*DADOS DO CLIENTE:*\\n`;
-    mensagem += `*Nome:* ${nome || 'Não Informado'}\\n`;
-    mensagem += `*Bairro:* ${bairro || 'Não Informado'}\\n`;
-    mensagem += `*Endereço:* ${endereco || 'Não Informado'}\\n`;
+    let mensagem = '*PEDIDO JottaV BURGUER*\n';
+    mensagem += '*DADOS DO CLIENTE:*\n';
+    mensagem += '*Nome:* ${nome || 'Não Informado'}\n';
+    mensagem += '*Bairro:* ${bairro || 'Não Informado'}\n';
+    mensagem += '*Endereço:* ${endereco || 'Não Informado'}\n';
     
     if (coordenadasEnviadas) {
         mensagem += `*Localização GPS:* ${coordenadasEnviadas}\\n`;
