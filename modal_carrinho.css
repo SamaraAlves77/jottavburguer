@@ -5,7 +5,7 @@
     --primary-color: #45a135; /* cor botoes adicionar carrinho e adicionar item customizado */
     --secondary-color: #1a1a1a; /*cor da navbar*/
     --text-color: #fff; /*cor dos nomes da navbar*/
-    --background-color: #fff; /*cor do nome adicionar item customizado*/
+    --background-color: #000000; /*cor do nome adicionar item customizado*/
     --red-alert: #e53935; /* Cor para alerta/lixeira */
     --option-background: #444; /* Fundo para as opções de adicional */
     --option-hover: #555; /* Efeito hover nas opções de adicional */
