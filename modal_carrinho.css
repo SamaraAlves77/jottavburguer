@@ -2,10 +2,10 @@
 /* modal_carrinho.css - VERSÃO FINAL (Expansão do Modal de Customização) */
 /* ======================================================= */
 :root {
-    --primary-color: #45a135; /* cor botoes adicionar carrinho */
+    --primary-color: #45a135; /* cor botoes adicionar carrinho e adicionar item customizado */
     --secondary-color: #4444; /*cor da navbar*/
     --text-color: #fff; /*cor dos nomes da navbar*/
-    --background-color: #1a1a1a;
+    --background-color: #fff; /*cor do nome adicionar item customizado*/
     --red-alert: #e53935; /* Cor para alerta/lixeira */
     --option-background: #444; /* Fundo para as opções de adicional */
     --option-hover: #555; /* Efeito hover nas opções de adicional */
