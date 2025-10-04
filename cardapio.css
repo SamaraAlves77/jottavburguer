@@ -1,0 +1,272 @@
+/* ======================================================= */
+/* cardapio.css */
+/* Estilos Globais, Cardápio Principal e FAB */
+/* ======================================================= */
+
+/* 0. VARIÁVEIS E ESTILOS GLOBAIS (Opcional se já estiver em um CSS principal) */
+:root {
+    --primary-color: #ff69b4; /* Rosa Neon */
+    --secondary-color: #333;
+    --text-color: #eee;
+    --background-color: #1a1a1a;
+    --card-background: #2b2b2b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif; 
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    scroll-behavior: smooth;
+    padding-top: 70px; 
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 1. CONTEÚDO PRINCIPAL (Cardápio) */
+
+#main-content-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.menu-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 2em;
+    text-shadow: 0 0 8px rgba(255, 105, 180, 0.6);
+}
+
+/* 2. GRID PADRÃO (DESKTOP: 4 COLUNAS) */
+.cardapio-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Padrão Desktop */
+    gap: 30px;
+}
+
+
+/* 3. ESTILO DOS CARDS */
+.item-card {
+    background-color: var(--card-background);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 105, 180, 0.4);
+}
+
+.item-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.item-card h3 {
+    padding: 15px 15px 0;
+    color: #fff;
+    font-size: 1.4em;
+}
+
+.item-card p {
+    padding: 0 15px;
+    color: #aaa;
+    flex-grow: 1;
+    margin-bottom: 15px;
+}
+
+/* Container para Preço e Botão */
+.item-card .card-actions {
+    margin-top: auto; 
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* CORREÇÃO 1: Estilo do preço - ALINHADO À ESQUERDA */
+.item-card .price {
+    font-size: 1.5em;
+    color: var(--primary-color);
+    font-weight: bold;
+    text-align: left; /* CORRIGIDO: Alinha o preço à esquerda */
+}
+
+/* Estilo do botão */
+.item-card button {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px; 
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    border-radius: 5px;
+}
+
+.item-card button:hover {
+    background-color: #e6539e;
+}
+
+
+/* 4. NOTIFICAÇÃO (TOAST) */
+.notificacao {
+    position: fixed;
+    bottom: 90px; 
+    left: 50%;
+    transform: translateX(-50%);
+    
+    background-color: var(--card-background);
+    color: var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 8px;
+    
+    border: 2px solid var(--primary-color); 
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.8); 
+    
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    
+    font-weight: bold;
+    text-align: center;
+}
+
+.notificacao.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* 5. BOTÃO FLUTUANTE DO CARRINHO (FAB) */
+.carrinho-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5em;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    z-index: 910;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carrinho-fab:hover {
+    background-color: #e6539e;
+    transform: scale(1.05);
+}
+
+#fab-contador-carrinho {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #e53935;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7em;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+
+/* 6. RODAPÉ */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 50px;
+    border-top: 1px solid #444;
+    color: #888;
+}
+
+
+/* ======================================================= */
+/* MEDIA QUERIES (Ajuste da grade de cards para Mobile/Tablet) */
+/* ======================================================= */
+
+/* TABLET (Até 1024px) */
+@media (max-width: 1024px) {
+    .cardapio-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    .item-card img {
+        height: 180px; 
+    }
+}
+
+/* MOBILE (Até 600px) */
+@media (max-width: 600px) {
+    .cardapio-grid {
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px;
+    }
+    
+    #main-content-container {
+        padding: 10px; 
+    }
+    
+    .section-title {
+        font-size: 1.6em; 
+        margin-bottom: 15px;
+    }
+
+    .item-card img {
+        height: 140px; 
+    }
+    
+    .item-card h3 {
+        font-size: 1.2em;
+        padding: 10px 10px 0;
+    }
+
+    .item-card p {
+        font-size: 0.9em;
+        padding: 0 10px;
+    }
+    
+    .carrinho-fab {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3em;
+        bottom: 15px;
+        right: 15px;
+    }
+}

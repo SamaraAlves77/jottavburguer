@@ -1,0 +1,181 @@
+/* ======================================================= */
+/* index.css - LANDING PAGE | AJUSTE FINAL E MOBILE FIXO */
+/* ======================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+
+:root {
+    /* PALETA DE CORES */
+    --primary-color: #e53935; /* Vermelho Escuro/Vibrante */
+    --secondary-color: #212121; /* Cinza Escuro/Preto */
+    --accent-color: #ff69b4; /* Rosa Neon (Destaque) */
+    
+    --card-background: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: var(--secondary-color); 
+    min-height: 100vh;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* --- CARD PRINCIPAL: Layout de 2 COLUNAS (Desktop) --- */
+.landing-page-container {
+    width: 100%;
+    max-width: 900px;
+}
+
+.landing-card {
+    background-color: var(--card-background);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    overflow: hidden;
+    
+    /* Layout Flex para 2 Colunas */
+    display: flex;
+    min-height: 400px; 
+}
+
+/* --- COLUNA ESQUERDA (Logo e Slogan) --- */
+.card-left {
+    flex: 1; /* Ocupa 50% ou mais */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: var(--primary-color);
+    text-align: center;
+    color: white;
+}
+
+.logo-landing {
+    max-width: 70%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.slogan {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* --- COLUNA DIREITA (Botões de Ação) --- */
+.card-right {
+    flex: 1; /* Ocupa 50% ou mais */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    gap: 15px;
+}
+
+/* --- ESTILOS DOS BOTÕES (Arredondados) --- */
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 25px; 
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid transparent;
+}
+
+.social-btn:hover {
+    transform: scale(1.05);
+    border-color: var(--accent-color); 
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.6);
+}
+
+.social-btn i {
+    margin-right: 10px;
+}
+
+.instagram {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); 
+    color: white;
+}
+
+.whatsapp {
+    background-color: #25D366; 
+    color: white;
+}
+
+.cardapio {
+    background-color: var(--secondary-color); 
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+
+/* --- CORREÇÃO DE RESPONSIVIDADE (Telas Pequenas) --- */
+
+@media (max-width: 768px) {
+    
+    body {
+        /* Garante que o card principal não fique colado nas bordas da tela */
+        padding: 1rem;
+    }
+    
+    .landing-card {
+        /* CRÍTICO: Mantém o display flex (lado a lado) e permite quebra de linha se necessário. */
+        flex-direction: row; 
+        flex-wrap: wrap; /* Permite quebrar a linha se o conteúdo não couber em 50% */
+        min-height: auto;
+    }
+
+    /* As duas colunas forçadas a ocupar metade da largura no mobile */
+    .card-left, 
+    .card-right {
+        /* Cada coluna ocupa 50% da largura, mantendo-as lado a lado. */
+        width: 50%;
+        min-width: 150px; /* Evita que fiquem muito estreitas */
+        flex-basis: 50%;
+        padding: 1rem; /* Reduz o padding para ganhar espaço */
+    }
+    
+    .logo-landing {
+        max-width: 90%; /* Ajusta o logo para a nova largura */
+        margin-bottom: 10px;
+    }
+
+    .slogan {
+        font-size: 1.1rem; /* Reduz o slogan para caber */
+    }
+
+    .social-btn {
+        padding: 0.8rem 1rem; /* Botões menores */
+        font-size: 0.9rem;
+    }
+}
+
+/* Se for muito, muito pequeno (larguras abaixo de 400px), força o empilhamento para evitar quebra total */
+@media (max-width: 400px) {
+    .landing-card {
+        flex-direction: column; /* Empilha os blocos */
+    }
+    .card-left, 
+    .card-right {
+        width: 100%; /* Cada um ocupa a largura total */
+        flex-basis: 100%;
+        padding: 1.5rem;
+    }
+}

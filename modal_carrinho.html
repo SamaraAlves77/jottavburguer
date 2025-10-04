@@ -1,0 +1,65 @@
+<div id="carrinho-modal" class="modal">
+    <div class="modal-content">
+        <span class="fechar-modal">×</span>
+        <h3>Seu Carrinho</h3>
+        
+        <div class="carrinho-itens" id="carrinho-itens"></div>
+
+        <div class="carrinho-total-container">
+            <span>Total:</span>
+            R$ <span id="carrinho-total">0,00</span>
+        </div>
+        
+        <div class="carrinho-finalizar">
+            
+            <h4>Dados para o Pedido (Opcional):</h4> 
+            
+            <select id="forma-pagamento" required>
+                <option value="" disabled selected>Escolha a Forma de Pagamento</option>
+                <option value="pix">PIX</option>
+                <option value="cartao_debito">Cartão de Débito</option>
+                <option value="cartao_credito">Cartão de Crédito</option>
+                <option value="dinheiro">Dinheiro (Avisar se precisar de troco)</option>
+            </select>
+            
+            <input type="text" id="nome-cliente" placeholder="Seu nome">
+            
+            <input type="text" id="bairro-cliente" placeholder="Bairro">
+            
+            <input type="text" id="endereco-cliente" placeholder="Endereço (Rua, Número, Referência)">
+            
+            <div class="opcoes-pedido">
+                <h4>Observações:</h4>
+                <textarea id="observacoes-pedido" placeholder="Observações (Ex: Sem cebola, Troco para R$ 50,00)" rows="3"></textarea>
+            </div>
+            
+            <div class="campo-localizacao">
+                <button type="button" id="btn-anexar-localizacao" class="btn-secundario">
+                    <i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)
+                </button>
+                <p id="localizacao-status" style="font-size: 0.85rem; margin-top: 5px;"></p>
+            </div>
+            
+            <button id="btn-finalizar-pedido">Finalizar Pedido (WhatsApp)</button>
+        </div>
+    </div>
+</div>
+
+<div id="customizacao-modal" class="modal">
+    <div class="modal-content">
+        <span class="fechar-customizacao">×</span>
+        
+        <div class="adicionais-opcoes">
+            <h3>Customizar <span id="item-customizacao-nome"></span></h3>
+            <h4>Adicionais:</h4>
+            <div id="adicionais-opcoes-lista"></div>
+        </div>
+        <div class="customizacao-resumo">
+            <p>Preço Base: R$ <span id="preco-base-customizacao">0,00</span></p>
+            <p>Adicionais: R$ <span id="preco-adicionais-customizacao">0,00</span></p>
+            <p class="customizacao-total">Total: R$ <span id="preco-total-item-customizacao">0,00</span></p>
+        </div>
+        
+        <button id="btn-adicionar-customizado">Adicionar Item Customizado</button>
+    </div>
+</div>
