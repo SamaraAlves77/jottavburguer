@@ -125,7 +125,8 @@ function solicitarLocalizacao() {
         (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            coordenadasEnviadas = `Lat: ${lat}, Lon: ${lon}`;
+            // AQUI, COORDENADAS SÃO SALVAS NO FORMATO LATITUDE,LONGITUDE
+            coordenadasEnviadas = `${lat},${lon}`;
             localizacaoStatus.textContent = 'Localização Anexada com Sucesso!';
             btnAnexarLocalizacao.disabled = false;
             btnAnexarLocalizacao.classList.add('localizacao-anexada');
@@ -162,19 +163,28 @@ function finalizarPedido() {
     
     // 2. Validação (Ajuste conforme seus campos obrigatórios)
     // if (!nome || !bairro || !endereco || !pagamento) {
-    //     alert("Por favor, preencha todos os campos obrigatórios (Nome, Bairro, Endereço e Pagamento).");
-    //     return;
+    //    alert("Por favor, preencha todos os campos obrigatórios (Nome, Bairro, Endereço e Pagamento).");
+    //    return;
     // }
 
-    // 3. Monta o cabeçalho da mensagem
+    // **INÍCIO DA CORREÇÃO:**
+    // VARIÁVEL TEMPORÁRIA para guardar o link do GPS, que será adicionado no final
+    let linkGpsFinal = ''; 
+
+    // 3. Monta o cabeçalho da mensagem (GPS REMOVIDO DESTE BLOCO)
     let mensagem = `*PEDIDO JottaV BURGUER*\n`;
     mensagem += `*DADOS DO CLIENTE:*\n`;
     mensagem += `*Nome:* ${nome || 'Não Informado'}\n`;
     mensagem += `*Bairro:* ${bairro || 'Não Informado'}\n`;
     mensagem += `*Endereço:* ${endereco || 'Não Informado'}\n`;
     
+    // NOVO BLOCO GPS: Prepara o link clicável
     if (coordenadasEnviadas) {
-        mensagem += `*Localização GPS:* ${coordenadasEnviadas}\n`;
+        // Formata as coordenadas como um link clicável do Google Maps
+        const urlGps = `https://maps.google.com0{coordenadasEnviadas}`;
+        
+        // Monta a string que será adicionada à mensagem, incluindo o Link
+        linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
     }
     
     // 4. Monta a lista de itens
@@ -192,7 +202,7 @@ function finalizarPedido() {
         // Adiciona os adicionais, se houver
         if (item.adicionais && item.adicionais.length > 0) {
             const adicionaisStr = item.adicionais.map(add => 
-                `   + ${add.nome} (R$ ${formatarMoeda(add.preco)})`
+                `    + ${add.nome} (R$ ${formatarMoeda(add.preco)})`
             ).join('\n');
             mensagem += `${adicionaisStr}\n`;
         }
@@ -207,6 +217,9 @@ function finalizarPedido() {
     } else {
         mensagem += `*OBSERVAÇÕES:* Nenhuma.\n`;
     }
+
+    // **CORREÇÃO AQUI:** Adiciona o link do GPS formatado no final da mensagem
+    mensagem += linkGpsFinal;
 
     // 6. Envia para o WhatsApp
     const numero = '5586994253258'; // Seu número de WhatsApp (incluir o 55 e DDD)
