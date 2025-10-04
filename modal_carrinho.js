@@ -106,7 +106,7 @@ function removerItem(index) {
 }
 
 // =======================================================
-// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida: Timeout aumentado e texto de erro limpo)
+// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida: Timeout aumentado)
 // =======================================================
 
 function solicitarLocalizacao() {
@@ -146,7 +146,7 @@ function solicitarLocalizacao() {
 }
 
 // =======================================================
-// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida: Link formatado e condicional)
+// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida: Link formatado para preview de mapa)
 // =======================================================
 
 function finalizarPedido() {
@@ -175,8 +175,8 @@ function finalizarPedido() {
     
     // NOVO BLOCO GPS: Prepara o link clicável APENAS SE A LOCALIZAÇÃO FOI OBTIDA
     if (coordenadasEnviadas) {
-        // CORREÇÃO FINAL: Usa concatenação (+) para ser robusto no WhatsApp
-        const urlGps = "https://maps.google.com9" + coordenadasEnviadas;
+        // CORREÇÃO FINAL: Usando o formato padrão e concatenação para ser robusto no WhatsApp
+        const urlGps = "https://www.google.com/maps/search/?api=1&query=starbucks&query_place_id=ChIJsU30zM1qkFQRbnOm1_LBoG0.\\n...\\nParâmetros\\n\\n-1" + coordenadasEnviadas;
         
         // Monta a string que será adicionada à mensagem
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
