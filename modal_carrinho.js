@@ -106,7 +106,7 @@ function removerItem(index) {
 }
 
 // =======================================================
-// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida)
+// LÓGICA DE GEOLOCALIZAÇÃO (Corrigida: Timeout aumentado)
 // =======================================================
 
 function solicitarLocalizacao() {
@@ -125,7 +125,7 @@ function solicitarLocalizacao() {
         (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            // Corrigido: Salva APENAS as coordenadas no formato 'LAT,LON'
+            // Salva APENAS as coordenadas no formato 'LAT,LON'
             coordenadasEnviadas = `${lat},${lon}`;
             localizacaoStatus.textContent = 'Localização Anexada com Sucesso!';
             btnAnexarLocalizacao.disabled = false;
@@ -134,17 +134,19 @@ function solicitarLocalizacao() {
         },
         (error) => {
             coordenadasEnviadas = '';
+            // Mensagem de erro mais clara
             localizacaoStatus.textContent = `Erro ao obter localização: ${error.message}. (Tente novamente)`;
             btnAnexarLocalizacao.disabled = false;
             btnAnexarLocalizacao.classList.remove('localizacao-anexada');
             btnAnexarLocalizacao.innerHTML = '<i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)';
         },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        // TIMEOUT AUMENTADO PARA 15 SEGUNDOS (15000 ms)
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 } 
     );
 }
 
 // =======================================================
-// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida)
+// LÓGICA DE CHECKOUT (WhatsApp) (Corrigida: Link formatado)
 // =======================================================
 
 function finalizarPedido() {
@@ -164,7 +166,7 @@ function finalizarPedido() {
     // VARIÁVEL TEMPORÁRIA para guardar o link do GPS
     let linkGpsFinal = ''; 
 
-    // 3. Monta o cabeçalho da mensagem (GPS REMOVIDO DESTE BLOCO)
+    // 3. Monta o cabeçalho da mensagem
     let mensagem = `*PEDIDO JottaV BURGUER*\n`;
     mensagem += `*DADOS DO CLIENTE:*\n`;
     mensagem += `*Nome:* ${nome || 'Não Informado'}\n`;
@@ -173,10 +175,10 @@ function finalizarPedido() {
     
     // NOVO BLOCO GPS: Prepara o link clicável
     if (coordenadasEnviadas) {
-        // CORREÇÃO FINAL: Usando interpolação ${} para injetar a variável no link
-        const urlGps = `https://maps.google.com2{coordenadasEnviadas}`;
+        // CORREÇÃO FINAL: Usa concatenação (+) para ser robusto no WhatsApp
+        const urlGps = "https://maps.google.com/?q=LATITUDE,LONGITUDE" + coordenadasEnviadas;
         
-        // Monta a string que será adicionada à mensagem, incluindo o Link
+        // Monta a string que será adicionada à mensagem, usando Template Literal APENAS para a mensagem
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
     }
     
@@ -229,11 +231,11 @@ function finalizarPedido() {
 }
 
 // =======================================================
-// INICIALIZAÇÃO E EVENT LISTENERS (Adicionado)
+// INICIALIZAÇÃO E EVENT LISTENERS (Função adicionada para ligar o HTML ao JS)
 // =======================================================
 
 function init() {
-    // Referências principais (do HTML do modal)
+    // Referências principais
     carrinhoModal = document.getElementById('carrinho-modal');
     fecharModalBtn = carrinhoModal ? carrinhoModal.querySelector('.fechar-modal') : null;
     carrinhoItensContainer = document.getElementById('carrinho-itens');
@@ -248,7 +250,7 @@ function init() {
     renderizarCarrinho();
     updateContadorCarrinho();
 
-    // Event Listeners
+    // Event Listeners (para abrir, fechar e finalizar)
     if (fecharModalBtn) {
         fecharModalBtn.addEventListener('click', () => mostrarModal(carrinhoModal, false));
     }
@@ -262,8 +264,7 @@ function init() {
         btnAnexarLocalizacao.addEventListener('click', solicitarLocalizacao);
     }
     
-    // **NOTA:** Outras referências (como contadorCarrinho, notificacao, etc.) devem ser adicionadas aqui
-    // se existirem no seu HTML, mas foram omitidas para focar nas correções do checkout/GPS.
+    // Adicione outras referências de DOM globais aqui, se necessário.
 }
 
 // Garante que a inicialização aconteça após o carregamento do DOM
