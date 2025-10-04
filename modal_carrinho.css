@@ -2,9 +2,9 @@
 /* modal_carrinho.css - VERSÃO FINAL (Expansão do Modal de Customização) */
 /* ======================================================= */
 :root {
-    --primary-color: #ff69b4; /* Rosa Neon */
-    --secondary-color: #333;
-    --text-color: #eee;
+    --primary-color: #45a135; /* cor botoes adicionar carrinho */
+    --secondary-color: ffea07; /*cor da navbar*/
+    --text-color: #070707; /*cor dos nomes da navbar*/
     --background-color: #1a1a1a;
     --red-alert: #e53935; /* Cor para alerta/lixeira */
     --option-background: #444; /* Fundo para as opções de adicional */
