@@ -23,6 +23,18 @@ function formatarMoeda(valor) {
     return num.toFixed(2).replace('.', ',');
 }
 
+// ============== FUNÇÃO DE NOTIFICAÇÃO (REINCLUÍDA) ==============
+function showNotification(message) {
+    if (!notificacao) return;
+    // O elemento HTML com ID 'notificacao' precisa existir para isso funcionar.
+    notificacao.textContent = message;
+    notificacao.classList.add('show');
+    setTimeout(() => {
+        notificacao.classList.remove('show');
+    }, 2000);
+}
+// =================================================================
+
 function updateContadorCarrinho() {
     const totalItens = (carrinho || []).reduce((acc, item) => acc + (item.quantidade || 0), 0);
     if (contadorCarrinho) contadorCarrinho.textContent = totalItens;
@@ -84,6 +96,9 @@ function removerItem(index) {
     localStorage.setItem('carrinho', JSON.stringify(carrinho));
     renderizarCarrinho();
     updateContadorCarrinho();
+    
+    // Notificação de item removido (agora funcionando)
+    showNotification('Item removido do carrinho!');
 }
 
 // =======================================================
@@ -93,7 +108,7 @@ function removerItem(index) {
 function solicitarLocalizacao() {
     if (!localizacaoStatus || !btnAnexarLocalizacao) return;
 
-    // Limpa a variável para garantir que não use um valor antigo (como o do Starbucks).
+    // Limpa a variável antes de buscar a localização.
     coordenadasEnviadas = ''; 
     localizacaoStatus.textContent = 'Buscando localização...';
     btnAnexarLocalizacao.disabled = true;
@@ -117,7 +132,7 @@ function solicitarLocalizacao() {
         },
         (error) => {
             coordenadasEnviadas = '';
-            // Exibe a mensagem de erro (como 'Timeout expired' ou 'Permissão negada').
+            // Exibe a mensagem de erro (Timeout expired ou Permissão negada).
             localizacaoStatus.textContent = `Erro ao obter localização: ${error.message}. Verifique a permissão do seu navegador.`;
             btnAnexarLocalizacao.disabled = false;
             btnAnexarLocalizacao.classList.remove('localizacao-anexada');
@@ -157,7 +172,7 @@ function finalizarPedido() {
     
     // BLOCO GPS: Usa a sintaxe que você forneceu.
     if (coordenadasEnviadas) {
-        // CORREÇÃO: Usando a URL específica para forçar o preview de mapa.
+        // Link corrigido para gerar o preview de mapa (Localização Atual)
         const urlGps = "https://www.google.com/maps/place/2%C2%B053'35.7%22S+41%C2%B042'10.9%22W/@-2.8932582,-41.7055957,17z/data=!3m1!4b1!4m4!3m3!8m2!3d-2.8932582!4d-41.7030208?hl=pt-BR&entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D" + coordenadasEnviadas;
         
         linkGpsFinal = `\n*LINK DE RASTREAMENTO GPS:*\n${urlGps}\n`;
