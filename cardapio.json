@@ -18,8 +18,8 @@
         "id": "combos-e-familia",
         "itens": [
             { "id": 9, "nome": "Combo Econômico individual", "descricao": "1 Smash Original + batata frita + refrigerante lata.", "preco": 31.99, "imagem": "combo_economico_smash.jpeg" },
-            { "id": 10, "nome": "Combo do Chef individual", "descricao": "1 Jotta Classic + batata frita + refrigerante lata.", "preco": 41.99, "imagem": "combodochefindividual.png" },
-            { "id": 11, "nome": "Combo Smash Duplo individual", "descricao": "1 Smash Duplo + batata frita + refrigerante lata.", "preco": 37.99, "imagem": "combosmashduploindividual.png" },
+            { "id": 10, "nome": "Combo do Chef individual", "descricao": "1 Jotta Classic + batata frita + refrigerante lata.", "preco": 41.99, "imagem": "combo_do_chef_individual.png" },
+            { "id": 11, "nome": "Combo Smash Duplo individual", "descricao": "1 Smash Duplo + batata frita + refrigerante lata.", "preco": 37.99, "imagem": "combo_do_chef_individual.png" },
             { "id": 12, "nome": "Combo Premium individual", "descricao": "1 Duplo Brutão + batata frita + refrigerante lata.", "preco": 53.99, "imagem": "combo_economico_smash.jpeg" },
             { "id": 13, "nome": "Combo Econômico Casal", "descricao": "2 Smash Original + batata frita + refrigerante 1L.", "preco": 49.99, "imagem": "combo_economico_casal_smash.jpeg" },
             { "id": 14, "nome": "Combo do Chef Casal", "descricao": "2 Jotta Classic + batata frita + refrigerante 1L.", "preco": 63.99, "imagem": "combo_economico_casal_smash.jpeg" },
