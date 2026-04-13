@@ -134,6 +134,12 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .btn-salvar-secao{width:100%;padding:12px;margin-top:12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:0.95em;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-salvar-secao:hover{background:#3a8f2b}
 .btn-salvar-secao:disabled{background:#333;cursor:not-allowed}
+.color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:20px}
+.color-item{background:var(--surface2);border-radius:10px;padding:14px}
+.color-item label{display:block;font-size:.8em;color:var(--muted);margin-bottom:8px}
+.color-picker-row{display:flex;align-items:center;gap:10px}
+.color-picker-row input[type=color]{width:44px;height:36px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0}
+.color-picker-row input[type=text]{flex:1;background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 10px;font-family:monospace;font-size:.85em}
 
 /* MODAL DE EDIÇÃO */
 #overlay-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;overflow-y:auto;padding:20px}
@@ -148,6 +154,12 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .color-picker-row { display:flex; align-items:center; gap:10px; }
 .color-picker-row input[type=color] { width:44px; height:36px; border:none; border-radius:6px; cursor:pointer; background:none; padding:0; }
 .color-picker-row input[type=text] { flex:1; background:var(--surface3); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:7px 10px; font-family:monospace; font-size:0.85em; }
+.color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:20px}
+.color-item{background:var(--surface2);border-radius:10px;padding:14px}
+.color-item label{display:block;font-size:.8em;color:var(--muted);margin-bottom:8px}
+.color-picker-row{display:flex;align-items:center;gap:10px}
+.color-picker-row input[type=color]{width:44px;height:36px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0}
+.color-picker-row input[type=text]{flex:1;background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 10px;font-family:monospace;font-size:.85em}
 /* LOADING */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -288,6 +300,23 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 </div>
 
 <!-- MODAL DE EDIÇÃO DE ITEM -->
+
+<!-- TAB: APARÊNCIA -->
+<div id="tab-aparencia" class="tab-content">
+  <div class="card">
+    <h3><i class="fas fa-palette"></i> Cores do sistema</h3>
+    <p style="color:var(--muted);font-size:.85em;margin-bottom:20px">Edite as cores e veja a prévia em tempo real. Clique em Salvar para aplicar no site.</p>
+    <div class="color-grid" id="color-grid"></div>
+    <button class="btn-salvar-secao" onclick="salvarTema()">
+      <i class="fas fa-cloud-upload-alt"></i> Salvar tema no GitHub
+    </button>
+  </div>
+  <div class="card">
+    <h3><i class="fas fa-eye"></i> Prévia em tempo real</h3>
+    <div id="aparencia-preview" style="border-radius:12px;overflow:hidden;border:1px solid var(--border)"></div>
+  </div>
+</div>
+
 <div id="overlay-modal">
   <div class="modal-box">
     <h3 id="modal-titulo">Editar Item</h3>
