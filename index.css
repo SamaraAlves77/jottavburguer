@@ -193,10 +193,16 @@ body {
 
 .cardapio { background-color: #1C1C1C; color: #fff; }
 
-/* ÍCONES dos botões */
-.social-btn i {
-    font-size: 1.1em;
+/* Ícones SVG inline dos botões */
+.social-btn svg {
     flex-shrink: 0;
+    transition: transform 0.2s;
+}
+.social-btn:hover svg {
+    transform: scale(1.15) rotate(-5deg);
+}
+.social-btn span {
+    font-weight: 700;
 }
 
 /* RESPONSIVO */
