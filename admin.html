@@ -829,8 +829,9 @@ async function testarConexao() {
   try {
     const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`, { headers: authHeaders() });
     if (r.ok) {
-      document.getElementById('status-conexao').innerHTML = '<span class="badge-conectado"><i class="fas fa-check-circle"></i> Conectado ao repositório jottabburguer</span>';
+      document.getElementById('status-conexao').innerHTML = '<span class="badge-conectado"><i class="fas fa-check-circle"></i> Conectado ao repositório jottavburguer</span>';
       await carregarDados();
+      await carregarTema();
     } else {
       document.getElementById('status-conexao').innerHTML = `<span style="color:#e53935">Erro ${r.status}. Verifique o token.</span>`;
     }
@@ -1058,12 +1059,7 @@ async function salvarTema() {
     } catch(e) { setStatus('Erro: '+e.message,'erro'); }
 }
 
-// Carregar tema junto com os dados
-const _carregarDadosOriginal = carregarDados;
-async function carregarDados() {
-    await _carregarDadosOriginal();
-    await carregarTema();
-}
+// Tema é carregado automaticamente após carregarDados via testarConexao
 
 </script>
 </body>
