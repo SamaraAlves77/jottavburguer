@@ -299,18 +299,73 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
   </div>
   <!-- TAB: APARÊNCIA -->
   <div id="tab-aparencia" class="tab-content">
+
+    <!-- IDENTIDADE -->
     <div class="card">
-      <h3><i class="fas fa-palette"></i> Cores do sistema</h3>
-      <p style="color:var(--muted);font-size:.85em;margin-bottom:20px">Edite as cores e veja a prévia em tempo real. Salve para aplicar no site.</p>
-      <div class="color-grid" id="color-grid"></div>
-      <button class="btn-salvar-secao" onclick="salvarTema()">
-        <i class="fas fa-cloud-upload-alt"></i> Salvar tema no GitHub
+      <h3><i class="fas fa-store"></i> Identidade do estabelecimento</h3>
+      <div class="form-group">
+        <label>Nome do estabelecimento</label>
+        <input type="text" id="ap-nome" placeholder="JottaV Burguer">
+      </div>
+      <div class="form-group">
+        <label>Slogan</label>
+        <input type="text" id="ap-slogan" placeholder="O verdadeiro sabor...">
+      </div>
+      <div class="form-group">
+        <label>Logo atual</label>
+        <div class="upload-area" id="upload-logo-area" onclick="document.getElementById('upload-logo-file').click()">
+          <i class="fas fa-cloud-upload-alt" style="font-size:1.6em;color:var(--muted);margin-bottom:6px"></i>
+          <p style="color:var(--muted);font-size:.82em">Clique para trocar a logo</p>
+          <input type="file" id="upload-logo-file" accept="image/*" onchange="onLogoSelecionada(event)">
+          <img id="logo-preview" style="max-height:80px;margin-top:10px;display:none;border-radius:8px">
+        </div>
+      </div>
+      <button class="btn-salvar-secao" onclick="salvarIdentidade()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar identidade no GitHub
       </button>
     </div>
+
+    <!-- LANDING PAGE -->
+    <div class="card">
+      <h3><i class="fas fa-mobile-alt"></i> Cartão de visita (landing page)</h3>
+      <div class="form-group">
+        <label>Cor do painel esquerdo (onde fica a logo)</label>
+        <div class="color-picker-row">
+          <input type="color" id="ap-cor-esquerda" value="#950606" oninput="document.getElementById('ap-cor-esquerda-txt').value=this.value;atualizarPrevia()">
+          <input type="text"  id="ap-cor-esquerda-txt" value="#950606" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value)){document.getElementById('ap-cor-esquerda').value=this.value;atualizarPrevia()}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Link do Instagram</label>
+        <input type="text" id="ap-instagram" placeholder="https://www.instagram.com/jottavburguer/">
+      </div>
+      <div class="form-group">
+        <label>Número do WhatsApp (com DDI, sem espaços)</label>
+        <input type="text" id="ap-whatsapp" placeholder="5586994253258">
+      </div>
+      <h4 style="color:var(--primary-color);margin:16px 0 10px;font-size:.9em">Botões</h4>
+      <div id="botoes-landing"></div>
+      <button class="btn-salvar-secao" onclick="salvarLanding()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar landing page no GitHub
+      </button>
+    </div>
+
+    <!-- CORES -->
+    <div class="card">
+      <h3><i class="fas fa-palette"></i> Cores do sistema</h3>
+      <p style="color:var(--muted);font-size:.85em;margin-bottom:20px">Edite as cores do cardápio e da navbar.</p>
+      <div class="color-grid" id="color-grid"></div>
+      <button class="btn-salvar-secao" onclick="salvarTema()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar cores no GitHub
+      </button>
+    </div>
+
+    <!-- PRÉVIA -->
     <div class="card">
       <h3><i class="fas fa-eye"></i> Prévia em tempo real</h3>
       <div id="aparencia-preview" style="border-radius:12px;overflow:hidden;border:1px solid var(--border)"></div>
     </div>
+
   </div>
 
 </div>
@@ -493,8 +548,10 @@ async function carregarDados() {
       const cfg = await ghGet('config.json');
       shaConfig  = cfg.sha;
       configData = JSON.parse(b64Decode(cfg.content));
+      configLanding = configData; // compartilha referência
     } catch(e) {
       configData = configPadrao();
+      configLanding = configData;
       shaConfig  = null;
     }
 
@@ -503,6 +560,8 @@ async function carregarDados() {
     renderizarAdicionais();
     renderizarPagamento();
     renderizarWhatsapp();
+    await carregarTema();
+    carregarIdentidade();
     setStatus('Dados carregados com sucesso.', 'ok');
     setTimeout(() => setStatus('',''), 3000);
   } catch(e) {
@@ -1097,6 +1156,115 @@ async function salvarTema() {
 
 // Tema é carregado automaticamente após carregarDados via testarConexao
 
+
+// =============================================================
+// IDENTIDADE + LANDING PAGE
+// =============================================================
+
+let logoBase64Pendente = null;
+let logoNomePendente   = null;
+let configLanding      = {};
+
+function onLogoSelecionada(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    logoNomePendente = f.name.toLowerCase().replace(/\s+/g,'_');
+    const reader = new FileReader();
+    reader.onload = ev => {
+        logoBase64Pendente = ev.target.result.split(',')[1];
+        const prev = document.getElementById('logo-preview');
+        prev.src = ev.target.result;
+        prev.style.display = 'block';
+    };
+    reader.readAsDataURL(f);
+}
+
+function renderizarBotoesLanding() {
+    const cont = document.getElementById('botoes-landing');
+    if (!cont) return;
+    const botoes = configLanding.landing?.botoes || [];
+    cont.innerHTML = '';
+    botoes.forEach((btn, i) => {
+        const row = document.createElement('div');
+        row.className = 'pagamento-row';
+        row.style.marginBottom = '8px';
+        row.innerHTML = `
+            <label class="toggle-ativo" title="Ativo">
+                <input type="checkbox" ${btn.ativo !== false ? 'checked' : ''} onchange="configLanding.landing.botoes[${i}].ativo=this.checked">
+                <span class="toggle-slider"></span>
+            </label>
+            <input type="text" value="${btn.texto}" placeholder="Texto do botão" style="flex:1" oninput="configLanding.landing.botoes[${i}].texto=this.value;atualizarPrevia()">
+            <input type="text" value="${btn.link}" placeholder="Link" style="flex:2" oninput="configLanding.landing.botoes[${i}].link=this.value">
+        `;
+        cont.appendChild(row);
+    });
+}
+
+function carregarIdentidade() {
+    const est  = configLanding.estabelecimento || {};
+    const land = configLanding.landing || {};
+    const el   = (id) => document.getElementById(id);
+
+    if (el('ap-nome'))          el('ap-nome').value           = est.nome      || '';
+    if (el('ap-slogan'))        el('ap-slogan').value         = est.slogan    || '';
+    if (el('ap-instagram'))     el('ap-instagram').value      = est.instagram || '';
+    if (el('ap-whatsapp'))      el('ap-whatsapp').value       = est.whatsapp  || '';
+    if (el('ap-cor-esquerda'))  el('ap-cor-esquerda').value   = land.cor_esquerda || '#950606';
+    if (el('ap-cor-esquerda-txt')) el('ap-cor-esquerda-txt').value = land.cor_esquerda || '#950606';
+
+    if (est.logo) {
+        const prev = document.getElementById('logo-preview');
+        if (prev) { prev.src = est.logo; prev.style.display = 'block'; }
+    }
+
+    renderizarBotoesLanding();
+    atualizarPrevia();
+}
+
+async function salvarIdentidade() {
+    if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+
+    const est = configLanding.estabelecimento || {};
+    est.nome      = document.getElementById('ap-nome')?.value.trim()      || est.nome;
+    est.slogan    = document.getElementById('ap-slogan')?.value.trim()    || est.slogan;
+    est.instagram = document.getElementById('ap-instagram')?.value.trim() || est.instagram;
+    est.whatsapp  = document.getElementById('ap-whatsapp')?.value.trim()  || est.whatsapp;
+    configLanding.estabelecimento = est;
+    // Atualizar número do whatsapp também na seção de mensagens
+    if (configLanding.whatsapp) configLanding.whatsapp.numero = est.whatsapp;
+
+    setStatus('Salvando...','info');
+    try {
+        if (logoBase64Pendente && logoNomePendente) {
+            setStatus('Fazendo upload da logo...','info');
+            await ghUploadImagem(logoNomePendente, logoBase64Pendente);
+            est.logo = 'imagens/' + logoNomePendente;
+        }
+        const res = await ghPut('config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: identidade');
+        shaConfig = res.content.sha;
+        setStatus('✅ Identidade salva! O site atualiza em instantes.','ok');
+        setTimeout(()=>setStatus('',''),5000);
+    } catch(e) { setStatus('Erro: '+e.message,'erro'); }
+}
+
+async function salvarLanding() {
+    if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+
+    const land = configLanding.landing || {};
+    land.cor_esquerda = document.getElementById('ap-cor-esquerda')?.value || land.cor_esquerda;
+    configLanding.landing = land;
+
+    setStatus('Salvando landing page...','info');
+    try {
+        const res = await ghPut('config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: landing page');
+        shaConfig = res.content.sha;
+        setStatus('✅ Landing page salva!','ok');
+        setTimeout(()=>setStatus('',''),5000);
+    } catch(e) { setStatus('Erro: '+e.message,'erro'); }
+}
+
+// Sobrescrever carregarDados para também popular configLanding
+const _origCarregarDados = window.carregarDados;
 </script>
 </body>
 </html>
