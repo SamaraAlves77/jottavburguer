@@ -1,0 +1,24 @@
+/* =====================================================
+   tema.css — Design System JottaV Burguer
+   Gerado pelo Painel Admin
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary-color:   #45a135;
+    --accent-color:    #FF6B35;
+    --bg-landing:      #F5EFE0;
+    --landing-left:    #950606;
+    --bg-page:         #1C1C1C;
+    --bg-card:         #262626;
+    --bg-navbar:       #111111;
+    --bg-modal:        #1E1E1E;
+    --text-nav:        #FFFFFF;
+    --text-card-title: #FFFFFF;
+    --text-card-desc:  #A0A0A0;
+    --text-price:      #5DBF4A;
+    --font-main: 'Plus Jakarta Sans', 'Roboto', sans-serif;
+}
+
+* { font-family: var(--font-main) !important; }
