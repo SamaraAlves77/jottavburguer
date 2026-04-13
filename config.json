@@ -1,9 +1,24 @@
 {
+    "estabelecimento": {
+        "nome": "JottaV Burguer",
+        "slogan": "O verdadeiro sabor do hambúrguer artesanal!",
+        "logo": "imagens/jottav_burguer.png",
+        "whatsapp": "5586994253258",
+        "instagram": "https://www.instagram.com/jottavburguer/"
+    },
+    "landing": {
+        "cor_esquerda": "#950606",
+        "botoes": [
+            { "tipo": "instagram", "texto": "Instagram",  "link": "https://www.instagram.com/jottavburguer/", "ativo": true },
+            { "tipo": "whatsapp",  "texto": "WhatsApp",   "link": "https://wa.me/5586994253258",             "ativo": true },
+            { "tipo": "cardapio",  "texto": "Cardápio",   "link": "cardapio.html",                           "ativo": true }
+        ]
+    },
     "pagamento": [
-        { "valor": "pix", "label": "PIX", "ativo": true },
-        { "valor": "cartao_debito", "label": "Cartão de Débito", "ativo": true },
-        { "valor": "cartao_credito", "label": "Cartão de Crédito", "ativo": true },
-        { "valor": "dinheiro", "label": "Dinheiro (Avisar se precisar de troco)", "ativo": true }
+        { "valor": "pix",            "label": "PIX",                                      "ativo": true },
+        { "valor": "cartao_debito",  "label": "Cartão de Débito",                          "ativo": true },
+        { "valor": "cartao_credito", "label": "Cartão de Crédito",                         "ativo": true },
+        { "valor": "dinheiro",       "label": "Dinheiro (Avisar se precisar de troco)",    "ativo": true }
     ],
     "whatsapp": {
         "numero": "5586994253258",
