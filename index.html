@@ -11,22 +11,87 @@
 <body>
     <div class="landing-page-container">
         <div class="landing-card">
-            <div class="card-left">
-                <img src="imagens/jottav_burguer.png" alt="Logo JottaV Burguer" class="logo-landing">
-                <h1 class="slogan">O verdadeiro sabor do hambúrguer artesanal!</h1>
+            <div class="card-left" id="card-left">
+                <img src="imagens/jottav_burguer.png" alt="Logo" class="logo-landing" id="logo-landing">
+                <h1 class="slogan" id="slogan">O verdadeiro sabor do hambúrguer artesanal!</h1>
             </div>
-            <div class="card-right">
-                <a href="https://www.instagram.com/jottavburguer/" target="_blank" class="social-btn instagram">
-                    <i class="fab fa-instagram"></i> Instagram
-                </a>
-                <a href="https://wa.me/5586994253258" target="_blank" class="social-btn whatsapp">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </a>
-                <a href="cardapio.html" class="social-btn cardapio">
-                    <i class="fas fa-list-alt"></i> Cardápio
-                </a>
-            </div>
+            <div class="card-right" id="card-right"></div>
         </div>
     </div>
+
+<script>
+const ICONES = {
+    instagram: 'fab fa-instagram',
+    whatsapp:  'fab fa-whatsapp',
+    cardapio:  'fas fa-list-alt',
+};
+
+const COR_BOTAO = {
+    instagram: 'instagram',
+    whatsapp:  'whatsapp',
+    cardapio:  'cardapio',
+};
+
+async function carregarLanding() {
+    let cfg = null;
+    try {
+        const r = await fetch('config.json?v=' + Date.now());
+        if (r.ok) cfg = await r.json();
+    } catch(e) {}
+
+    const est    = cfg?.estabelecimento || {};
+    const land   = cfg?.landing || {};
+    const botoes = land.botoes || [];
+
+    // Título da página
+    if (est.nome) document.title = est.nome + ' - Cardápio Virtual';
+
+    // Logo
+    const logoEl = document.getElementById('logo-landing');
+    if (est.logo) logoEl.src = est.logo;
+
+    // Slogan
+    const sloganEl = document.getElementById('slogan');
+    if (est.slogan) sloganEl.textContent = est.slogan;
+
+    // Cor painel esquerdo
+    const leftEl = document.getElementById('card-left');
+    if (land.cor_esquerda) leftEl.style.backgroundColor = land.cor_esquerda;
+
+    // Botões dinâmicos
+    const rightEl = document.getElementById('card-right');
+    rightEl.innerHTML = '';
+
+    const botoesAtivos = botoes.filter(b => b.ativo !== false);
+
+    if (botoesAtivos.length === 0) {
+        // Fallback padrão
+        rightEl.innerHTML = `
+            <a href="${est.instagram || '#'}" target="_blank" class="social-btn instagram">
+                <i class="fab fa-instagram"></i> Instagram
+            </a>
+            <a href="https://wa.me/${est.whatsapp || ''}" target="_blank" class="social-btn whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            <a href="cardapio.html" class="social-btn cardapio">
+                <i class="fas fa-list-alt"></i> Cardápio
+            </a>`;
+    } else {
+        botoesAtivos.forEach(btn => {
+            const a = document.createElement('a');
+            a.href   = btn.link || '#';
+            a.className = 'social-btn ' + (COR_BOTAO[btn.tipo] || 'cardapio');
+            if (btn.tipo === 'instagram' || btn.tipo === 'whatsapp') {
+                a.target = '_blank';
+            }
+            const icon = ICONES[btn.tipo] || 'fas fa-link';
+            a.innerHTML = `<i class="${icon}"></i> ${btn.texto}`;
+            rightEl.appendChild(a);
+        });
+    }
+}
+
+carregarLanding();
+</script>
 </body>
 </html>
