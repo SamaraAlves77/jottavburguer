@@ -142,6 +142,12 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .modal-box h3{color:var(--green);margin-bottom:20px;font-size:1.1em}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 
+.color-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin-bottom:20px; }
+.color-item { background:var(--surface2); border-radius:10px; padding:14px; }
+.color-item label { display:block; font-size:0.8em; color:var(--muted); margin-bottom:8px; }
+.color-picker-row { display:flex; align-items:center; gap:10px; }
+.color-picker-row input[type=color] { width:44px; height:36px; border:none; border-radius:6px; cursor:pointer; background:none; padding:0; }
+.color-picker-row input[type=text] { flex:1; background:var(--surface3); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:7px 10px; font-family:monospace; font-size:0.85em; }
 /* LOADING */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -184,6 +190,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     <button class="tab-btn" onclick="mostrarTab('pagamento')">💳 Pagamento</button>
     <button class="tab-btn" onclick="mostrarTab('whatsapp')">📱 WhatsApp</button>
     <button class="tab-btn" onclick="mostrarTab('github')">⚙️ GitHub</button>
+    <button class="tab-btn" onclick="mostrarTab('aparencia')">🎨 Aparência</button>
   </div>
 
   <!-- TAB: CARDÁPIO -->
@@ -884,6 +891,180 @@ function configPadrao() {
     }
   };
 }
+
+// =============================================================
+// TAB APARÊNCIA — MANIPULADOR DE CORES
+// =============================================================
+const CORES_CONFIG = [
+    { id: 'cp-primary',      var: '--primary-color',   label: 'Cor principal (botões, títulos)',   default: '#45a135' },
+    { id: 'cp-accent',       var: '--accent-color',     label: 'Cor de destaque (hover)',           default: '#FF6B35' },
+    { id: 'cp-bg-landing',   var: '--bg-landing',       label: 'Fundo da landing page',             default: '#F5EFE0' },
+    { id: 'cp-landing-left', var: '--landing-left',     label: 'Painel esquerdo (logo)',             default: '#950606' },
+    { id: 'cp-bg-page',      var: '--bg-page',          label: 'Fundo do cardápio',                 default: '#1C1C1C' },
+    { id: 'cp-bg-card',      var: '--bg-card',          label: 'Fundo dos cards',                   default: '#262626' },
+    { id: 'cp-bg-navbar',    var: '--bg-navbar',        label: 'Fundo da navbar',                   default: '#111111' },
+    { id: 'cp-text-price',   var: '--text-price',       label: 'Cor do preço',                      default: '#5DBF4A' },
+    { id: 'cp-text-nav',     var: '--text-nav',         label: 'Cor do texto da navbar',            default: '#FFFFFF' },
+];
+
+let temaAtual = {};
+let shaTema = null;
+
+function renderizarManipuladorCores() {
+    const grid = document.getElementById('color-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    CORES_CONFIG.forEach(cor => {
+        const val = temaAtual[cor.var] || cor.default;
+        const div = document.createElement('div');
+        div.className = 'color-item';
+        div.innerHTML = `
+            <label>${cor.label}</label>
+            <div class="color-picker-row">
+                <input type="color" id="${cor.id}" value="${val}" oninput="sincronizarCor('${cor.id}','${cor.id}-txt','${cor.var}',this.value)">
+                <input type="text" id="${cor.id}-txt" value="${val}" oninput="sincronizarCorTexto('${cor.id}','${cor.id}-txt','${cor.var}',this.value)">
+            </div>
+        `;
+        grid.appendChild(div);
+        temaAtual[cor.var] = val;
+    });
+
+    atualizarPrevia();
+}
+
+function sincronizarCor(idColor, idText, cssVar, valor) {
+    const txt = document.getElementById(idText);
+    if (txt) txt.value = valor;
+    temaAtual[cssVar] = valor;
+    atualizarPrevia();
+}
+
+function sincronizarCorTexto(idColor, idText, cssVar, valor) {
+    if (/^#[0-9A-Fa-f]{6}$/.test(valor)) {
+        const picker = document.getElementById(idColor);
+        if (picker) picker.value = valor;
+        temaAtual[cssVar] = valor;
+        atualizarPrevia();
+    }
+}
+
+function atualizarPrevia() {
+    const p = temaAtual;
+    const primary  = p['--primary-color']  || '#45a135';
+    const accent   = p['--accent-color']   || '#FF6B35';
+    const bgLand   = p['--bg-landing']     || '#F5EFE0';
+    const landLeft = p['--landing-left']   || '#950606';
+    const bgPage   = p['--bg-page']        || '#1C1C1C';
+    const bgCard   = p['--bg-card']        || '#262626';
+    const bgNav    = p['--bg-navbar']      || '#111111';
+    const priceClr = p['--text-price']     || '#5DBF4A';
+    const navTxt   = p['--text-nav']       || '#FFFFFF';
+
+    const prev = document.getElementById('aparencia-preview');
+    if (!prev) return;
+
+    prev.innerHTML = `
+    <div style="font-family:'Plus Jakarta Sans',sans-serif">
+
+      <!-- NAVBAR -->
+      <div style="background:${bgNav};padding:10px 20px;display:flex;align-items:center;justify-content:space-between">
+        <span style="color:${primary};font-weight:800;font-size:.9em">🍔 JottaV Burguer</span>
+        <div style="display:flex;gap:16px">
+          <span style="color:${navTxt};font-size:.75em">Início</span>
+          <span style="color:${navTxt};font-size:.75em">Hambúrgueres</span>
+          <span style="color:${navTxt};font-size:.75em">Combos</span>
+        </div>
+        <span style="color:${navTxt};font-size:.85em">🛒 <span style="background:red;color:#fff;border-radius:50%;padding:1px 5px;font-size:.7em">2</span></span>
+      </div>
+
+      <!-- PILLS -->
+      <div style="background:${bgPage};padding:8px 16px;display:flex;gap:8px;overflow:hidden">
+        <span style="background:${primary};color:#fff;padding:4px 12px;border-radius:20px;font-size:.72em;font-weight:700">Hambúrgueres</span>
+        <span style="border:1px solid rgba(255,255,255,.2);color:#888;padding:4px 12px;border-radius:20px;font-size:.72em">Combos</span>
+        <span style="border:1px solid rgba(255,255,255,.2);color:#888;padding:4px 12px;border-radius:20px;font-size:.72em">Batatas</span>
+        <span style="border:1px solid rgba(255,255,255,.2);color:#888;padding:4px 12px;border-radius:20px;font-size:.72em">Bebidas</span>
+      </div>
+
+      <!-- CARDS -->
+      <div style="background:${bgPage};padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        ${['Smash Original','Jotta Classic','Duplo Brutão'].map((nome,i) => `
+        <div style="background:${bgCard};border-radius:12px;overflow:hidden">
+          <div style="height:90px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#444;font-size:1.6em">🍔</div>
+          <div style="padding:10px">
+            <div style="color:#fff;font-weight:700;font-size:.82em;margin-bottom:3px">${nome}</div>
+            <div style="color:#888;font-size:.7em;margin-bottom:8px">Ingredientes do hambúrguer artesanal...</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="color:${priceClr};font-weight:800;font-size:.9em">R$ ${['18,99','25,99','37,99'][i]}</span>
+              <button style="background:${primary};color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:.7em;font-weight:700;cursor:pointer">+ Adicionar</button>
+            </div>
+          </div>
+        </div>`).join('')}
+      </div>
+
+      <!-- LANDING PAGE MINI -->
+      <div style="background:${bgLand};padding:12px 16px">
+        <p style="color:#666;font-size:.72em;margin-bottom:8px;font-weight:600">PRÉVIA — LANDING PAGE</p>
+        <div style="display:flex;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.2);max-width:400px">
+          <div style="flex:1;background:${landLeft};padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:50px;height:50px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4em">🍔</div>
+            <p style="color:#fff;font-size:.72em;font-weight:700;text-align:center">O verdadeiro sabor artesanal!</p>
+          </div>
+          <div style="flex:1;background:#fff;padding:12px;display:flex;flex-direction:column;gap:8px">
+            <div style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366);color:#fff;padding:8px;border-radius:8px;font-size:.72em;font-weight:700;text-align:center">📸 Instagram</div>
+            <div style="background:#25D366;color:#fff;padding:8px;border-radius:8px;font-size:.72em;font-weight:700;text-align:center">💬 WhatsApp</div>
+            <div style="background:#1C1C1C;color:#fff;padding:8px;border-radius:8px;font-size:.72em;font-weight:700;text-align:center">📋 Cardápio</div>
+          </div>
+        </div>
+      </div>
+
+    </div>`;
+}
+
+async function carregarTema() {
+    try {
+        const data = await ghGet('tema.css');
+        shaTema = data.sha;
+        const css = atob(data.content.replace(/\n/g,''));
+        CORES_CONFIG.forEach(cor => {
+            const match = css.match(new RegExp(cor.var.replace('--','--') + ':\s*([^;]+);'));
+            if (match) temaAtual[cor.var] = match[1].trim();
+        });
+    } catch(e) {
+        CORES_CONFIG.forEach(cor => { temaAtual[cor.var] = cor.default; });
+    }
+    renderizarManipuladorCores();
+}
+
+async function salvarTema() {
+    if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+
+    let css = '/* tema.css — Design System JottaV Burguer — gerado pelo Painel Admin */\n';
+    css += "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');\n\n";
+    css += ':root {\n';
+    CORES_CONFIG.forEach(cor => {
+        css += `    ${cor.var}: ${temaAtual[cor.var] || cor.default};\n`;
+    });
+    css += "    --font-main: 'Plus Jakarta Sans', 'Roboto', sans-serif;\n";
+    css += '}\n\n';
+    css += '* { font-family: var(--font-main) !important; }\n';
+
+    setStatus('Salvando tema...','info');
+    try {
+        const res = await ghPut('tema.css', css, shaTema, 'Admin: atualizar tema');
+        shaTema = res.content.sha;
+        setStatus('✅ Tema salvo! O site atualiza em instantes.','ok');
+        setTimeout(()=>setStatus('',''),5000);
+    } catch(e) { setStatus('Erro: '+e.message,'erro'); }
+}
+
+// Carregar tema junto com os dados
+const _carregarDadosOriginal = carregarDados;
+async function carregarDados() {
+    await _carregarDadosOriginal();
+    await carregarTema();
+}
+
 </script>
 </body>
 </html>
