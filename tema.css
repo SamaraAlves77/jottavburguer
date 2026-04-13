@@ -19,4 +19,7 @@
     --font-main: 'Plus Jakarta Sans', 'Roboto', sans-serif;
 }
 
-* { font-family: var(--font-main) !important; }
+/* CORREÇÃO: Nunca sobrescrever ícones do FontAwesome */
+*:not(i):not(.fa):not(.fas):not(.fab):not(.far):not(.fal):not([class*="fa-"]) {
+    font-family: var(--font-main);
+}
