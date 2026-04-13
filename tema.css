@@ -19,7 +19,10 @@
     --font-main: 'Plus Jakarta Sans', 'Roboto', sans-serif;
 }
 
-/* CORREÇÃO: Nunca sobrescrever ícones do FontAwesome */
-*:not(i):not(.fa):not(.fas):not(.fab):not(.far):not(.fal):not([class*="fa-"]) {
+/* CORREÇÃO: aplicar fonte APENAS nos elementos de texto — nunca em i/span de ícone */
+body, h1, h2, h3, h4, h5, h6,
+p, a, button, input, select, textarea,
+label, div, section, header, footer, nav,
+span:not([class*="fa"]):not([class*="fa-"]) {
     font-family: var(--font-main);
 }
