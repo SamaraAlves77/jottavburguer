@@ -297,25 +297,25 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
       </div>
     </div>
   </div>
+  <!-- TAB: APARÊNCIA -->
+  <div id="tab-aparencia" class="tab-content">
+    <div class="card">
+      <h3><i class="fas fa-palette"></i> Cores do sistema</h3>
+      <p style="color:var(--muted);font-size:.85em;margin-bottom:20px">Edite as cores e veja a prévia em tempo real. Salve para aplicar no site.</p>
+      <div class="color-grid" id="color-grid"></div>
+      <button class="btn-salvar-secao" onclick="salvarTema()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar tema no GitHub
+      </button>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-eye"></i> Prévia em tempo real</h3>
+      <div id="aparencia-preview" style="border-radius:12px;overflow:hidden;border:1px solid var(--border)"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- MODAL DE EDIÇÃO DE ITEM -->
-
-<!-- TAB: APARÊNCIA -->
-<div id="tab-aparencia" class="tab-content">
-  <div class="card">
-    <h3><i class="fas fa-palette"></i> Cores do sistema</h3>
-    <p style="color:var(--muted);font-size:.85em;margin-bottom:20px">Edite as cores e veja a prévia em tempo real. Clique em Salvar para aplicar no site.</p>
-    <div class="color-grid" id="color-grid"></div>
-    <button class="btn-salvar-secao" onclick="salvarTema()">
-      <i class="fas fa-cloud-upload-alt"></i> Salvar tema no GitHub
-    </button>
-  </div>
-  <div class="card">
-    <h3><i class="fas fa-eye"></i> Prévia em tempo real</h3>
-    <div id="aparencia-preview" style="border-radius:12px;overflow:hidden;border:1px solid var(--border)"></div>
-  </div>
-</div>
 
 <div id="overlay-modal">
   <div class="modal-box">
