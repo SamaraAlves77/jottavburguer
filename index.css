@@ -1,181 +1,116 @@
-/* ======================================================= */
-/* index.css - LANDING PAGE | AJUSTE FINAL E MOBILE FIXO */
-/* ======================================================= */
+/* =====================================================
+   index.css — Landing Page 2025
+   ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-    /* PALETA DE CORES */
-    --primary-color: #950606; /* cor do card onde esta a logo  */
-    --secondary-color: #212121; /* Cinza Escuro/Preto */
-    --accent-color:#ffA500; /* sobreado (Destaque) */
-    
-    --card-background: #ffffff;
-    --shadow-color: rgba(0, 0, 0, 0.4);
+    --primary-color:  #45a135;
+    --accent-color:   #FF6B35;
+    --bg-landing:     #F5EFE0;
+    --landing-left:   #950606;
+    --shadow:         rgba(0,0,0,0.18);
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Roboto', sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', 'Roboto', sans-serif; }
 
 body {
-    background-color: var(--secondary-color); 
+    background-color: var(--bg-landing);
     min-height: 100vh;
-    display: flex; 
+    display: flex;
     justify-content: center;
     align-items: center;
     padding: 2rem;
 }
 
-/* --- CARD PRINCIPAL: Layout de 2 COLUNAS (Desktop) --- */
-.landing-page-container {
-    width: 100%;
-    max-width: 900px;
-}
+/* CARD PRINCIPAL */
+.landing-page-container { width: 100%; max-width: 860px; }
 
 .landing-card {
-    background-color: var(--card-background);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px var(--shadow-color);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px var(--shadow);
     overflow: hidden;
-    
-    /* Layout Flex para 2 Colunas */
     display: flex;
-    min-height: 400px; 
+    min-height: 420px;
 }
 
-/* --- COLUNA ESQUERDA (Logo e Slogan) --- */
+/* COLUNA ESQUERDA */
 .card-left {
-    flex: 1; /* Ocupa 50% ou mais */
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
-    background-color: var(--primary-color);
+    padding: 2.5rem 2rem;
+    background-color: var(--landing-left);
     text-align: center;
-    color: white;
+    color: #fff;
+    gap: 16px;
 }
 
 .logo-landing {
-    max-width: 70%;
+    max-width: 65%;
     height: auto;
-    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
 }
 
 .slogan {
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     font-weight: 700;
+    line-height: 1.4;
+    opacity: 0.95;
 }
 
-/* --- COLUNA DIREITA (Botões de Ação) --- */
+/* COLUNA DIREITA */
 .card-right {
-    flex: 1; /* Ocupa 50% ou mais */
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
-    gap: 15px;
+    padding: 2.5rem 2rem;
+    background: #fff;
+    gap: 14px;
 }
 
-/* --- ESTILOS DOS BOTÕES (Arredondados) --- */
-
+/* BOTÕES */
 .social-btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     width: 100%;
     padding: 1rem 1.5rem;
-    border-radius: 25px; 
+    border-radius: 12px;
     text-decoration: none;
     font-weight: 700;
     font-size: 1rem;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border: 2px solid transparent;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    border: none;
 }
 
 .social-btn:hover {
-    transform: scale(1.05);
-    border-color: var(--accent-color); 
-    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.6);
-}
-
-.social-btn i {
-    margin-right: 10px;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+    opacity: 0.93;
+    text-decoration: none;
 }
 
 .instagram {
-    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); 
-    color: white;
+    background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    color: #fff;
 }
 
-.whatsapp {
-    background-color: #25D366; 
-    color: white;
-}
+.whatsapp { background: #25D366; color: #fff; }
 
-.cardapio {
-    background-color: var(--secondary-color); 
-    color: white;
-    border-color: var(--secondary-color);
-}
+.cardapio { background: #1C1C1C; color: #fff; }
 
-
-/* --- CORREÇÃO DE RESPONSIVIDADE (Telas Pequenas) --- */
-
-@media (max-width: 768px) {
-    
-    body {
-        /* Garante que o card principal não fique colado nas bordas da tela */
-        padding: 1rem;
-    }
-    
-    .landing-card {
-        /* CRÍTICO: Mantém o display flex (lado a lado) e permite quebra de linha se necessário. */
-        flex-direction: row; 
-        flex-wrap: wrap; /* Permite quebrar a linha se o conteúdo não couber em 50% */
-        min-height: auto;
-    }
-
-    /* As duas colunas forçadas a ocupar metade da largura no mobile */
-    .card-left, 
-    .card-right {
-        /* Cada coluna ocupa 50% da largura, mantendo-as lado a lado. */
-        width: 50%;
-        min-width: 150px; /* Evita que fiquem muito estreitas */
-        flex-basis: 50%;
-        padding: 1rem; /* Reduz o padding para ganhar espaço */
-    }
-    
-    .logo-landing {
-        max-width: 90%; /* Ajusta o logo para a nova largura */
-        margin-bottom: 10px;
-    }
-
-    .slogan {
-        font-size: 1.1rem; /* Reduz o slogan para caber */
-    }
-
-    .social-btn {
-        padding: 0.8rem 1rem; /* Botões menores */
-        font-size: 0.9rem;
-    }
-}
-
-/* Se for muito, muito pequeno (larguras abaixo de 400px), força o empilhamento para evitar quebra total */
-@media (max-width: 400px) {
-    .landing-card {
-        flex-direction: column; /* Empilha os blocos */
-    }
-    .card-left, 
-    .card-right {
-        width: 100%; /* Cada um ocupa a largura total */
-        flex-basis: 100%;
-        padding: 1.5rem;
-    }
+/* RESPONSIVO */
+@media (max-width: 600px) {
+    body { padding: 1rem; }
+    .landing-card { flex-direction: column; min-height: auto; }
+    .card-left, .card-right { padding: 2rem 1.5rem; }
+    .logo-landing { max-width: 55%; }
+    .slogan { font-size: 1rem; }
 }
