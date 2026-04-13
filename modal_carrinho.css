@@ -1,0 +1,28 @@
+
+/* ------------------------------------------------------- */
+/* AVISO DE TAXA DE ENTREGA */
+/* ------------------------------------------------------- */
+.aviso-taxa-entrega {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background-color: #2a2000;
+    border: 1px solid #ffA500;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    color: #ffcc66;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.aviso-taxa-entrega i {
+    color: #ffA500;
+    font-size: 1.2em;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.aviso-taxa-entrega strong {
+    color: #ffA500;
+}
