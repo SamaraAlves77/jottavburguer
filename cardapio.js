@@ -182,6 +182,7 @@ function renderizarCardapio() {
 
         const grid = document.getElementById(`grid-${secao.id}`);
         secao.itens.forEach(item => {
+            if (item.ativo === false) return; // Item desativado no admin
             const card = document.createElement('div');
             card.classList.add('item-card');
             card.setAttribute('data-item-id', item.id);

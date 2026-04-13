@@ -127,6 +127,12 @@ function setupEventListeners() {
 // =======================================================
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Carrega config.json primeiro
+    try {
+        const cfgResp = await fetch('config.json');
+        if (cfgResp.ok) window.siteConfig = await cfgResp.json();
+    } catch(e) { window.siteConfig = null; }
+
     // 1. Carrega os componentes HTML
     const navbarOK = await loadHTML('navbar.html', 'navbar-container');
     const modalOK = await loadHTML('modal_carrinho.html', 'modal-container');
@@ -134,9 +140,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navbarOK && modalOK) {
         
         // 2. Re-liga os elementos injetados às variáveis JS
-        rebindElements(); 
+        rebindElements();
+
+        // 3. Popula formas de pagamento do config
+        popularFormasPagamento();
         
-        // 3. Carrega os dados do Cardápio (cardapio.js)
+        // 4. Carrega os dados do Cardápio (cardapio.js)
         if (typeof carregarCardapio === 'function') {
             await carregarCardapio(); 
         }
@@ -152,3 +161,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 // Fim do index.js
+
+function popularFormasPagamento() {
+    const select = document.getElementById('forma-pagamento');
+    if (!select) return;
+    const opcoes = window.siteConfig?.pagamento || [
+        { valor: 'pix',            label: 'PIX',                                  ativo: true },
+        { valor: 'cartao_debito',  label: 'Cartão de Débito',                     ativo: true },
+        { valor: 'cartao_credito', label: 'Cartão de Crédito',                    ativo: true },
+        { valor: 'dinheiro',       label: 'Dinheiro (Avisar se precisar de troco)', ativo: true }
+    ];
+    select.innerHTML = '<option value="" disabled selected>Escolha a Forma de Pagamento</option>';
+    opcoes.filter(o => o.ativo !== false).forEach(op => {
+        const opt = document.createElement('option');
+        opt.value = op.valor;
+        opt.textContent = op.label;
+        select.appendChild(opt);
+    });
+}

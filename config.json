@@ -1,0 +1,22 @@
+{
+    "pagamento": [
+        { "valor": "pix", "label": "PIX", "ativo": true },
+        { "valor": "cartao_debito", "label": "Cartão de Débito", "ativo": true },
+        { "valor": "cartao_credito", "label": "Cartão de Crédito", "ativo": true },
+        { "valor": "dinheiro", "label": "Dinheiro (Avisar se precisar de troco)", "ativo": true }
+    ],
+    "whatsapp": {
+        "numero": "5586994253258",
+        "header": "🍔 *PEDIDO - JottaV BURGUER* 🍔",
+        "separador": "━━━━━━━━━━━━━━━━━━━━━━",
+        "label_dados": "*📋 DADOS DO CLIENTE:*",
+        "label_itens": "*🛒 ITENS DO PEDIDO:*",
+        "label_total": "💵 *TOTAL DO PEDIDO:*",
+        "label_pagamento": "💳 *PAGAMENTO:*",
+        "label_observacoes": "📝 *OBSERVAÇÕES:*",
+        "label_taxa": "🛵 *TAXA DE ENTREGA:* A confirmar",
+        "label_taxa_sub": "_(Por favor, informe se há taxa de entrega para o endereço acima)_",
+        "label_localizacao": "📌 *LOCALIZAÇÃO DO CLIENTE:*",
+        "cidade": "Parnaíba, PI"
+    }
+}

@@ -162,17 +162,32 @@ function finalizarPedido() {
     const pagamento = pagamentoSelect ? pagamentoSelect.value : '';
     const observacoes = observacoesInput ? observacoesInput.value.trim() : '';
 
+    // Usa config.json se disponível
+    const wa = (window.siteConfig && window.siteConfig.whatsapp) ? window.siteConfig.whatsapp : {};
+    const SEP  = wa.separador       || '━━━━━━━━━━━━━━━━━━━━━━';
+    const HDR  = wa.header          || '🍔 *PEDIDO - JottaV BURGUER* 🍔';
+    const LBL_DADOS = wa.label_dados || '*📋 DADOS DO CLIENTE:*';
+    const LBL_ITENS = wa.label_itens || '*🛒 ITENS DO PEDIDO:*';
+    const LBL_TOTAL = wa.label_total || '💵 *TOTAL DO PEDIDO:*';
+    const LBL_PAG   = wa.label_pagamento || '💳 *PAGAMENTO:*';
+    const LBL_OBS   = wa.label_observacoes || '📝 *OBSERVAÇÕES:*';
+    const LBL_TAXA  = wa.label_taxa  || '🛵 *TAXA DE ENTREGA:* A confirmar';
+    const LBL_TAXA_SUB = wa.label_taxa_sub || '_(Por favor, informe se há taxa de entrega para o endereço acima)_';
+    const LBL_LOC   = wa.label_localizacao || '📌 *LOCALIZAÇÃO DO CLIENTE:*';
+    const CIDADE    = wa.cidade      || 'Parnaíba, PI';
+    const NUMERO    = wa.numero      || '5586994253258';
+
     // Cabeçalho
-    let mensagem = `🍔 *PEDIDO - JottaV BURGUER* 🍔\n`;
-    mensagem += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    mensagem += `*📋 DADOS DO CLIENTE:*\n`;
+    let mensagem = `${HDR}\n`;
+    mensagem += `${SEP}\n`;
+    mensagem += `${LBL_DADOS}\n`;
     mensagem += `👤 *Nome:* ${nome || 'Não informado'}\n`;
     mensagem += `📍 *Bairro:* ${bairro || 'Não informado'}\n`;
     mensagem += `🏠 *Endereço:* ${endereco || 'Não informado'}\n`;
-    mensagem += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+    mensagem += `${SEP}\n`;
 
     // Itens do pedido
-    mensagem += `*🛒 ITENS DO PEDIDO:*\n\n`;
+    mensagem += `${LBL_ITENS}\n\n`;
 
     let totalPedido = 0;
 
@@ -197,27 +212,43 @@ function finalizarPedido() {
         }
     });
 
-    mensagem += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    mensagem += `💵 *TOTAL DO PEDIDO: R$ ${formatarMoeda(totalPedido)}*\n`;
-    mensagem += `💳 *PAGAMENTO:* ${pagamento ? pagamento.replace('_', ' ').toUpperCase() : 'Não escolhido'}\n`;
+    mensagem += `${SEP}\n`;
+    mensagem += `${LBL_TOTAL} R$ ${formatarMoeda(totalPedido)}\n`;
+    mensagem += `${LBL_PAG} ${pagamento ? pagamento.replace('_', ' ').toUpperCase() : 'Não escolhido'}\n`;
 
     if (observacoes) {
-        mensagem += `📝 *OBSERVAÇÕES:* ${observacoes}\n`;
+        mensagem += `${LBL_OBS} ${observacoes}\n`;
     }
 
     // Taxa de entrega
-    mensagem += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    mensagem += `🛵 *TAXA DE ENTREGA:* A confirmar\n`;
-    mensagem += `_(Por favor, informe se há taxa de entrega para o endereço acima)_\n`;
+    mensagem += `${SEP}\n`;
+    mensagem += `${LBL_TAXA}\n`;
+    mensagem += `${LBL_TAXA_SUB}\n`;
 
-    // Link GPS — CORRIGIDO: usa as coordenadas reais do cliente
+    // Localização: GPS (se anexado) OU endereço digitado como fallback
+    mensagem += `${SEP}\n`;
+    mensagem += `${LBL_LOC}\n`;
+
     if (coordenadasEnviadas) {
-        const urlGps = `https://www.google.com/maps?q=${coordenadasEnviadas}`;
-        mensagem += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-        mensagem += `📌 *LOCALIZAÇÃO DO CLIENTE:*\n${urlGps}\n`;
+        const urlMaps = `https://www.google.com/maps?q=${coordenadasEnviadas}`;
+        const urlWaze = `https://waze.com/ul?ll=${coordenadasEnviadas}&navigate=yes`;
+        mensagem += `🗺️ Google Maps: ${urlMaps}\n`;
+        mensagem += `🚗 Waze: ${urlWaze}\n`;
+    } else {
+        const enderecoTexto = [endereco, bairro].filter(Boolean).join(', ');
+        if (enderecoTexto) {
+            const query = encodeURIComponent(enderecoTexto + ', ' + CIDADE);
+            const urlMaps = `https://www.google.com/maps/search/?q=${query}`;
+            const urlWaze = `https://waze.com/ul?q=${query}`;
+            mensagem += `🗺️ Google Maps: ${urlMaps}\n`;
+            mensagem += `🚗 Waze: ${urlWaze}\n`;
+            mensagem += `_(Gerado pelo endereço informado)_\n`;
+        } else {
+            mensagem += `_(Localização não informada)_\n`;
+        }
     }
 
-    const numero = '5586994253258';
+    const numero = NUMERO;
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
 
