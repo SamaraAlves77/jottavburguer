@@ -7,7 +7,7 @@ let cardapioData = [];
 let carrinho = [];
 let adicionaisGlobais = [];
 let itemEmCustomizacao = null;
-const ID_CATEGORIA_CUSTOMIZAVEL = 'hamburgueres-artesanais';
+const CATEGORIAS_CUSTOMIZAVEIS = ['hamburgueres-artesanais', 'acompanhamentos'];
 
 // Variáveis do Painel de Admin
 const SENHA_ADMIN = "jottav2025";
@@ -188,7 +188,7 @@ function renderizarCardapio() {
             card.setAttribute('data-categoria-id', secao.id);
 
             const precoFormatado = item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00';
-            const isCustomizavel = secao.id === ID_CATEGORIA_CUSTOMIZAVEL;
+            const isCustomizavel = CATEGORIAS_CUSTOMIZAVEIS.includes(secao.id);
 
             card.innerHTML = `
                 ${gerarImagemCard(item)}
@@ -352,7 +352,7 @@ function handleAdicionarAoCarrinho(event) {
 
     if (!item) return;
 
-    if (categoriaId === ID_CATEGORIA_CUSTOMIZAVEL) {
+    if (CATEGORIAS_CUSTOMIZAVEIS.includes(categoriaId)) {
         itemEmCustomizacao = { ...item, categoriaId: categoriaId };
         setupCustomizacaoModal(item);
         if (typeof mostrarModal === 'function' && typeof customizacaoModal !== 'undefined') {
