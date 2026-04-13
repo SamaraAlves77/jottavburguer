@@ -158,10 +158,9 @@ async function carregarCardapioAdmin() {
 // CORREÇÃO: Função auxiliar para gerar HTML de imagem com tratamento de erro
 function gerarImagemCard(item) {
     if (item.imagem) {
-        return `<img src="imagens/${item.imagem}" alt="${item.nome}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                <div class="sem-imagem" style="display:none"><i class="fas fa-hamburger"></i></div>`;
+        return `<img src="imagens/${item.imagem}" alt="${item.nome}" onerror="this.src='hamburguer.png';this.style.objectFit='contain';this.style.padding='20px'">`;
     }
-    return `<div class="sem-imagem"><i class="fas fa-hamburger"></i></div>`;
+    return `<img src="hamburguer.png" alt="Sem imagem" style="width:100%;height:100%;object-fit:contain;padding:24px;opacity:0.35">`;
 }
 
 function renderizarCardapio() {
