@@ -158,8 +158,8 @@ async function carregarCardapioAdmin() {
 // CORREÇÃO: Função auxiliar para gerar HTML de imagem com tratamento de erro
 function gerarImagemCard(item) {
     if (item.imagem) {
-        return `<img src="imagens/${item.imagem}" alt="${item.nome}" onerror="this.parentElement.querySelector('.sem-imagem').style.display='flex'; this.style.display='none';">
-                <div class="sem-imagem" style="display:none;"><i class="fas fa-hamburger"></i></div>`;
+        return `<img src="imagens/${item.imagem}" alt="${item.nome}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="sem-imagem" style="display:none"><i class="fas fa-hamburger"></i></div>`;
     }
     return `<div class="sem-imagem"><i class="fas fa-hamburger"></i></div>`;
 }
@@ -171,18 +171,17 @@ function renderizarCardapio() {
     cardapioList.innerHTML = '';
 
     cardapioData.forEach(secao => {
-        // Não renderiza a seção de adicionais na tela principal
         if (secao.id === 'adicionais-extras') return;
 
         const section = document.createElement('section');
         section.id = secao.id;
         section.classList.add('menu-section');
-        section.innerHTML = `<h2 class="section-title" id="${secao.id}-secao">${secao.nome}</h2><div class="cardapio-grid" id="grid-${secao.id}"></div>`;
+        section.innerHTML = `<h2 class="section-title">${secao.nome}</h2><div class="cardapio-grid" id="grid-${secao.id}"></div>`;
         cardapioList.appendChild(section);
 
         const grid = document.getElementById(`grid-${secao.id}`);
         secao.itens.forEach(item => {
-            if (item.ativo === false) return; // Item desativado no admin
+            if (item.ativo === false) return;
             const card = document.createElement('div');
             card.classList.add('item-card');
             card.setAttribute('data-item-id', item.id);
@@ -192,14 +191,18 @@ function renderizarCardapio() {
             const isCustomizavel = CATEGORIAS_CUSTOMIZAVEIS.includes(secao.id);
 
             card.innerHTML = `
-                ${gerarImagemCard(item)}
-                <h3>${item.nome}</h3>
-                <p>${item.descricao || ''}</p>
-                <div class="card-actions">
-                    <div class="price">R$ ${precoFormatado}</div>
-                    <button class="btn-adicionar" data-item-id="${item.id}" data-categoria-id="${secao.id}">
-                        ${isCustomizavel ? 'Customizar e Adicionar' : 'Adicionar ao Carrinho'}
-                    </button>
+                <div class="card-img-wrapper">
+                    ${gerarImagemCard(item)}
+                </div>
+                <div class="card-body">
+                    <h3 class="card-nome">${item.nome}</h3>
+                    <p class="card-desc">${item.descricao || ''}</p>
+                    <div class="card-footer">
+                        <span class="card-preco">R$ ${precoFormatado}</span>
+                        <button class="card-btn btn-adicionar" data-item-id="${item.id}" data-categoria-id="${secao.id}">
+                            ${isCustomizavel ? 'Customizar' : '+ Adicionar'}
+                        </button>
+                    </div>
                 </div>
             `;
             grid.appendChild(card);
@@ -209,6 +212,56 @@ function renderizarCardapio() {
     document.querySelectorAll('.btn-adicionar').forEach(button => {
         button.addEventListener('click', handleAdicionarAoCarrinho);
     });
+
+    // Renderiza pills de categoria
+    renderizarCategoriasPills();
+}
+
+function renderizarCategoriasPills() {
+    const container = document.getElementById('categorias-pills');
+    if (!container) return;
+    container.innerHTML = '';
+
+    cardapioData.forEach(sec => {
+        if (sec.id === 'adicionais-extras') return;
+        const pill = document.createElement('a');
+        pill.className = 'cat-pill';
+        pill.href = '#' + sec.id;
+        pill.textContent = sec.nome;
+        pill.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('ativo'));
+            pill.classList.add('ativo');
+            const section = document.getElementById(sec.id);
+            if (section) {
+                const offset = 120;
+                window.scrollTo({ top: section.offsetTop - offset, behavior: 'smooth' });
+            }
+        });
+        container.appendChild(pill);
+    });
+
+    // Primeiro pill ativo
+    const first = container.querySelector('.cat-pill');
+    if (first) first.classList.add('ativo');
+
+    // Scroll spy
+    window.addEventListener('scroll', () => {
+        const sections = cardapioData
+            .filter(s => s.id !== 'adicionais-extras')
+            .map(s => document.getElementById(s.id))
+            .filter(Boolean);
+
+        let current = sections[0]?.id || '';
+        sections.forEach(sec => {
+            if (sec.offsetTop - 140 <= window.scrollY) current = sec.id;
+        });
+
+        container.querySelectorAll('.cat-pill').forEach(pill => {
+            const ativo = pill.getAttribute('href') === '#' + current;
+            pill.classList.toggle('ativo', ativo);
+        });
+    }, { passive: true });
 }
 
 // =======================================================
