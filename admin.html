@@ -854,10 +854,14 @@ async function verificarConexao() {
 function mostrarTab(nome) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('ativo'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
-  document.getElementById('tab-' + nome).classList.add('ativo');
+  const tabEl = document.getElementById('tab-' + nome);
+  if (tabEl) tabEl.classList.add('ativo');
   document.querySelectorAll('.tab-btn').forEach(b => {
-    if (b.textContent.toLowerCase().includes(nome) || b.getAttribute('onclick')?.includes(nome)) b.classList.add('ativo');
+    if (b.getAttribute('onclick')?.includes("'" + nome + "'")) b.classList.add('ativo');
   });
+  if (nome === 'aparencia') {
+    renderizarManipuladorCores();
+  }
 }
 
 function setStatus(msg, tipo) {
@@ -1023,16 +1027,19 @@ function atualizarPrevia() {
 }
 
 async function carregarTema() {
+    // Garante padrões primeiro
+    CORES_CONFIG.forEach(cor => { if (!temaAtual[cor.var]) temaAtual[cor.var] = cor.default; });
     try {
         const data = await ghGet('tema.css');
         shaTema = data.sha;
-        const css = atob(data.content.replace(/\n/g,''));
+        const css = b64Decode(data.content);
         CORES_CONFIG.forEach(cor => {
-            const match = css.match(new RegExp(cor.var.replace('--','--') + ':\s*([^;]+);'));
+            const regex = new RegExp(cor.var + '\s*:\s*([^;\n]+)');
+            const match = css.match(regex);
             if (match) temaAtual[cor.var] = match[1].trim();
         });
     } catch(e) {
-        CORES_CONFIG.forEach(cor => { temaAtual[cor.var] = cor.default; });
+        shaTema = null; // tema.css ainda nao existe, usa padroes
     }
     renderizarManipuladorCores();
 }
