@@ -699,7 +699,7 @@ async function salvarCardapio() {
     // Sempre busca SHA atual — evita erro 409 de conflito
     let atual;
     try {
-      atual = await ghGet('cardapio.json');
+      atual = await ghGet('data/cardapio.json');
       shaCardapio = atual.sha;
     } catch(shaErr) {
       setStatus('Erro ao verificar versão: ' + shaErr.message + ' — Verifique sua conexão.', 'erro');
