@@ -119,17 +119,18 @@ function carregarCardapioDoLocalStorage() {
 // =======================================================
 
 async function carregarCardapio() {
-    let dados = carregarCardapioDoLocalStorage();
-
-    if (dados) {
-        cardapioData = dados;
-    } else {
-        try {
-            const response = await fetch('cardapio.json');
-            if (!response.ok) throw new Error('Falha ao carregar cardapio.json');
-            cardapioData = await response.json();
-            salvarCardapioNoLocalStorage(cardapioData);
-        } catch (error) {
+    // Sempre busca do servidor — garante que itens ocultados no admin apareçam corretamente
+    try {
+        const response = await fetch('cardapio.json?v=' + Date.now());
+        if (!response.ok) throw new Error('Falha ao carregar cardapio.json');
+        cardapioData = await response.json();
+        salvarCardapioNoLocalStorage(cardapioData);
+    } catch (error) {
+        // Se falhar, tenta o cache local como fallback
+        const dados = carregarCardapioDoLocalStorage();
+        if (dados) {
+            cardapioData = dados;
+        } else {
             console.error("Erro ao carregar cardápio:", error);
             cardapioData = [];
         }
@@ -158,9 +159,11 @@ async function carregarCardapioAdmin() {
 // CORREÇÃO: Função auxiliar para gerar HTML de imagem com tratamento de erro
 function gerarImagemCard(item) {
     if (item.imagem) {
-        return `<img src="imagens/${item.imagem}" alt="${item.nome}" onerror="this.src='hamburguer.png';this.style.objectFit='contain';this.style.padding='20px'">`;
+        return `<img src="imagens/${item.imagem}" alt="${item.nome}"
+            onerror="this.src='hamburguer.png';this.style.objectFit='contain';this.style.padding='24px';this.style.mixBlendMode='screen';this.style.opacity='0.5'">`;
     }
-    return `<img src="hamburguer.png" alt="Sem imagem" style="width:100%;height:100%;object-fit:contain;padding:24px;opacity:0.35">`;
+    return `<img src="hamburguer.png" alt="Sem imagem"
+        style="width:100%;height:100%;object-fit:contain;padding:24px;mix-blend-mode:screen;opacity:0.45">`;
 }
 
 function renderizarCardapio() {
