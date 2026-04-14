@@ -155,11 +155,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Garante que o contador inicial seja 0
         updateContadorCarrinho();
+
+        // Scroll suave + highlight ativo no nav
+        setupNavScroll();
         
     } else {
         console.error("Não foi possível carregar componentes essenciais.");
     }
 });
+// SCROLL SUAVE + HIGHLIGHT ATIVO NO NAV
+function setupNavScroll() {
+    // Scroll suave ao clicar nas âncoras do nav
+    document.querySelectorAll('.nav-ancora').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href').replace('#', '');
+            const target = document.getElementById(targetId);
+            if (!target) return; // se não está na página do cardápio, deixa navegar normalmente
+
+            e.preventDefault();
+            const offset = 120; // altura navbar + pills
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+
+            window.scrollTo({ top, behavior: 'smooth' });
+
+            // Atualiza destaque ativo
+            document.querySelectorAll('.nav-ancora').forEach(a => a.classList.remove('nav-ativo'));
+            this.classList.add('nav-ativo');
+        });
+    });
+
+    // Scroll spy — destaca o link ativo conforme rola a página
+    const secoes = ['hamburgueres-artesanais', 'combos-e-familia', 'acompanhamentos', 'bebidas']
+        .map(id => document.getElementById(id))
+        .filter(Boolean);
+
+    if (secoes.length === 0) return;
+
+    window.addEventListener('scroll', () => {
+        let atual = secoes[0]?.id;
+        secoes.forEach(sec => {
+            if (sec.getBoundingClientRect().top <= 140) atual = sec.id;
+        });
+
+        document.querySelectorAll('.nav-ancora').forEach(a => {
+            const href = a.getAttribute('href').replace('#', '');
+            a.classList.toggle('nav-ativo', href === atual);
+        });
+    }, { passive: true });
+}
+
 // Fim do index.js
 
 function popularFormasPagamento() {
