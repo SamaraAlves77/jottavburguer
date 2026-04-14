@@ -76,9 +76,14 @@ async function carregarLanding() {
     const sloganEl = document.getElementById('slogan');
     if (est.slogan) sloganEl.textContent = est.slogan;
 
-    // Cor painel esquerdo
+    // 3 cores do cartão de visita
     const leftEl = document.getElementById('card-left');
     if (land.cor_esquerda) leftEl.style.backgroundColor = land.cor_esquerda;
+
+    const rightEl2 = document.getElementById('card-right');
+    if (land.cor_direita) rightEl2.style.backgroundColor = land.cor_direita;
+
+    if (land.cor_fundo) document.body.style.backgroundColor = land.cor_fundo;
 
     // Botões com SVG inline
     const rightEl = document.getElementById('card-right');
@@ -90,8 +95,13 @@ async function carregarLanding() {
         a.className = 'social-btn ' + (btn.tipo || 'cardapio');
         if (btn.tipo === 'instagram' || btn.tipo === 'whatsapp') a.target = '_blank';
 
-        const icon = ICONES[btn.tipo] || SVG_CARDAPIO;
-        a.innerHTML = `${icon}<span>${btn.texto}</span>`;
+        // Ícone: customizado (SVG externo) ou padrão inline
+        if (btn.icone && btn.icone !== '') {
+            a.innerHTML = `<img src="${btn.icone}" width="22" height="22" style="flex-shrink:0;object-fit:contain"><span>${btn.texto}</span>`;
+        } else {
+            const icon = ICONES[btn.tipo] || SVG_CARDAPIO;
+            a.innerHTML = `${icon}<span>${btn.texto}</span>`;
+        }
         rightEl.appendChild(a);
     });
 }
