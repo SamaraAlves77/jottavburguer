@@ -470,7 +470,15 @@ async function fazerLogin() {
     sessionStorage.setItem('adminLogado', '1');
     document.getElementById('tela-login').style.display = 'none';
     document.getElementById('painel-admin').style.display = 'flex';
-    githubToken = localStorage.getItem('ghToken') || '';
+    // Recupera token de qualquer fonte disponível
+    githubToken = localStorage.getItem('ghToken')
+      || sessionStorage.getItem('ghToken')
+      || getCookieToken()
+      || '';
+    if (githubToken) {
+      const inp = document.getElementById('token-input');
+      if (inp) inp.value = githubToken;
+    }
     verificarConexao();
   } else {
     document.getElementById('erro-login').textContent = 'Senha incorreta.';
@@ -493,7 +501,15 @@ window.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('adminLogado') === '1') {
     document.getElementById('tela-login').style.display = 'none';
     document.getElementById('painel-admin').style.display = 'flex';
-    githubToken = localStorage.getItem('ghToken') || '';
+    // Recupera token de qualquer fonte disponível
+    githubToken = localStorage.getItem('ghToken')
+      || sessionStorage.getItem('ghToken')
+      || getCookieToken()
+      || '';
+    if (githubToken) {
+      const inp = document.getElementById('token-input');
+      if (inp) inp.value = githubToken;
+    }
     verificarConexao();
   }
   // Drag and drop no upload
@@ -626,7 +642,7 @@ function renderizarItens() {
         <div class="item-desc">${item.descricao||''}</div>
       </div>
       <label class="toggle-ativo" title="Visível no cardápio">
-        <input type="checkbox" ${item.ativo !== false ? 'checked' : ''} onchange="toggleAtivo(${secaoAtual},${i},this.checked)">
+        <input type="checkbox" ${item.ativo !== false ? 'checked' : ''} data-sec="${secaoAtual}" data-idx="${i}" onchange="toggleAtivo(this)">
         <span class="toggle-slider"></span>
       </label>
       <button class="btn-icon" onclick="abrirModalEditarItem(${i})" title="Editar"><i class="fas fa-edit"></i></button>
@@ -636,22 +652,27 @@ function renderizarItens() {
   });
 }
 
-function toggleAtivo(secIdx, itemIdx, valor) {
-  if (!cardapioData[secIdx] || cardapioData[secIdx].itens[itemIdx] === undefined) {
+function toggleAtivo(checkbox) {
+  // Lê índices direto do data-attribute — sem risco de closure incorreto
+  const secIdx  = parseInt(checkbox.getAttribute('data-sec'));
+  const itemIdx = parseInt(checkbox.getAttribute('data-idx'));
+  const valor   = checkbox.checked;
+
+  if (isNaN(secIdx) || isNaN(itemIdx) || !cardapioData[secIdx] || cardapioData[secIdx].itens[itemIdx] === undefined) {
     console.error('toggleAtivo: índice inválido', secIdx, itemIdx);
+    setStatus('Erro ao alterar item. Recarregue o painel.', 'erro');
     return;
   }
+
   cardapioData[secIdx].itens[itemIdx].ativo = valor;
 
-  // Atualiza visual da linha imediatamente (sem re-renderizar tudo)
-  const rows = document.querySelectorAll('#lista-itens .item-row');
-  if (rows[itemIdx]) {
-    rows[itemIdx].classList.toggle('inativo', valor === false);
-  }
+  // Atualiza visual da linha-pai imediatamente
+  const row = checkbox.closest('.item-row');
+  if (row) row.classList.toggle('inativo', !valor);
 
-  const status = valor === false ? '🔴 Oculto' : '🟢 Visível';
+  const status = !valor ? '🔴 Oculto' : '🟢 Visível';
   const nome = cardapioData[secIdx].itens[itemIdx].nome;
-  setStatus(`${nome} → ${status}. Clique em "Salvar no GitHub" para confirmar.`, 'info');
+  setStatus(`"${nome}" → ${status} — Clique em Salvar para confirmar.`, 'info');
 }
 
 function excluirItem(itemIdx) {
@@ -669,9 +690,15 @@ async function salvarCardapio() {
 
   setStatus('Verificando versão atual...', 'info');
   try {
-    // CORREÇÃO: Sempre busca SHA atual antes de salvar — evita conflito de versão
-    const atual = await ghGet('cardapio.json');
-    shaCardapio = atual.sha;
+    // Sempre busca SHA atual — evita erro 409 de conflito
+    let atual;
+    try {
+      atual = await ghGet('cardapio.json');
+      shaCardapio = atual.sha;
+    } catch(shaErr) {
+      setStatus('Erro ao verificar versão: ' + shaErr.message + ' — Verifique sua conexão.', 'erro');
+      return; // Para aqui — não tenta salvar com SHA incorreto
+    }
 
     setStatus(`Salvando... (${totalOcultos} oculto(s) de ${totalItens})`, 'info');
 
@@ -961,10 +988,21 @@ async function salvarConfig() {
 // =============================================================
 function salvarToken() {
   const t = document.getElementById('token-input').value.trim();
-  if (!t) return;
+  if (!t) { setStatus('Cole o token antes de salvar.', 'erro'); return; }
   githubToken = t;
-  localStorage.setItem('ghToken', t);
+
+  // Salva em 3 lugares para máxima persistência
+  try { localStorage.setItem('ghToken', t); } catch(e) {}
+  try { sessionStorage.setItem('ghToken', t); } catch(e) {}
+  // Cookie com 365 dias (funciona mesmo quando localStorage é limpo)
+  document.cookie = `ghToken=${encodeURIComponent(t)};max-age=31536000;path=/;SameSite=Strict`;
+
   testarConexao();
+}
+
+function getCookieToken() {
+  const match = document.cookie.match(/(?:^|;\s*)ghToken=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 async function testarConexao() {
