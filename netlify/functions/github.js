@@ -1,79 +1,55 @@
 const https = require('https');
 
-exports.handler = async function(event, context) {
-  const allowedOrigin = '*';
-
-  const responseHeaders = {
-    'Access-Control-Allow-Origin': allowedOrigin,
+exports.handler = async function(event) {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json'
   };
 
-  // Preflight
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: responseHeaders, body: '' };
-  }
-
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: responseHeaders, body: JSON.stringify({ error: 'Método não permitido' }) };
+    return { statusCode: 204, headers, body: '' };
   }
 
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
-    return { statusCode: 500, headers: responseHeaders, body: JSON.stringify({ error: 'GITHUB_TOKEN não configurado no Netlify' }) };
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: 'GITHUB_TOKEN não configurado' })
+    };
   }
 
-  let parsed;
-  try {
-    parsed = JSON.parse(event.body || '{}');
-  } catch(e) {
-    return { statusCode: 400, headers: responseHeaders, body: JSON.stringify({ error: 'JSON inválido' }) };
-  }
-
-  const { caminho, metodo = 'GET', payload = null } = parsed;
-
-  if (!caminho) {
-    return { statusCode: 400, headers: responseHeaders, body: JSON.stringify({ error: 'caminho é obrigatório' }) };
-  }
-
-  const url = new URL(`https://api.github.com/repos/${caminho}`);
-
-  const reqHeaders = {
-    'Authorization': `token ${token}`,
-    'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'Netlify-Function/1.0',
-    'Content-Type': 'application/json'
-  };
+  const { caminho, metodo = 'GET', payload = null } = JSON.parse(event.body || '{}');
 
   return new Promise((resolve) => {
     const options = {
-      hostname: url.hostname,
-      path: url.pathname + url.search,
+      hostname: 'api.github.com',
+      path: `/repos/${caminho}`,
       method: metodo,
-      headers: reqHeaders
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'Netlify-Function',
+        'Content-Type': 'application/json'
+      }
     };
 
     const req = https.request(options, (res) => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
+      let data = '';
+      res.on('data', c => data += c);
       res.on('end', () => {
-        let data;
-        try { data = JSON.parse(body); } catch(e) { data = { raw: body }; }
         resolve({
           statusCode: res.statusCode,
-          headers: responseHeaders,
-          body: JSON.stringify(data)
+          headers,
+          body: data
         });
       });
     });
 
-    req.on('error', (err) => {
-      resolve({
-        statusCode: 500,
-        headers: responseHeaders,
-        body: JSON.stringify({ error: err.message })
-      });
+    req.on('error', (e) => {
+      resolve({ statusCode: 500, headers, body: JSON.stringify({ error: e.message }) });
     });
 
     if (payload && metodo !== 'GET') {
