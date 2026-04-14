@@ -10,7 +10,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 900;
+    z-index: 9999; /* acima de tudo — pills, modais, etc */
     transition: box-shadow 0.3s;
 }
 
