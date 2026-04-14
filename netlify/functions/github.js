@@ -1,6 +1,8 @@
 // netlify/functions/github.js
 // Proxy seguro para API do GitHub — token nunca vai para o browser
 
+const https = require('https');
+
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -18,54 +20,73 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'GITHUB_TOKEN não configurado no servidor Netlify.' })
+      body: JSON.stringify({ error: 'GITHUB_TOKEN não configurado.' })
     };
   }
 
+  let body;
   try {
-    const body    = event.body ? JSON.parse(event.body) : {};
-    const caminho = body.caminho || '';
-    const metodo  = body.metodo  || 'GET';
-    const payload = body.payload || null;
+    body = event.body ? JSON.parse(event.body) : {};
+  } catch(e) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Body inválido.' }) };
+  }
 
-    if (!caminho) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Caminho não informado.' })
-      };
-    }
+  const caminho = body.caminho || '';
+  const metodo  = body.metodo  || 'GET';
+  const payload = body.payload || null;
 
-    const url = `https://api.github.com/repos/${caminho}`;
+  if (!caminho) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Caminho obrigatório.' }) };
+  }
 
+  const url = `https://api.github.com/repos/${caminho}`;
+
+  const reqHeaders = {
+    'Authorization': `token ${token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+    'User-Agent': 'Netlify-Serverless-Function',
+  };
+
+  // Usa node-fetch compatível com todas as versões do Node no Netlify
+  const response = await new Promise((resolve, reject) => {
     const options = {
       method: metodo,
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json',
-        'User-Agent': 'Netlify-Function',
-      }
+      headers: reqHeaders,
     };
+
+    const parsedUrl = new URL(url);
+    const reqOptions = {
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.pathname + parsedUrl.search,
+      method: metodo,
+      headers: reqHeaders,
+    };
+
+    const req = https.request(reqOptions, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        try {
+          resolve({ status: res.statusCode, body: JSON.parse(data) });
+        } catch(e) {
+          resolve({ status: res.statusCode, body: data });
+        }
+      });
+    });
+
+    req.on('error', reject);
 
     if (payload && metodo !== 'GET') {
-      options.body = JSON.stringify(payload);
+      req.write(JSON.stringify(payload));
     }
 
-    const resp = await fetch(url, options);
-    const data = await resp.json();
+    req.end();
+  });
 
-    return {
-      statusCode: resp.status,
-      headers,
-      body: JSON.stringify(data)
-    };
-
-  } catch (err) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: err.message })
-    };
-  }
+  return {
+    statusCode: response.status,
+    headers,
+    body: JSON.stringify(response.body)
+  };
 };
