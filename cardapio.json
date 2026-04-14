@@ -9,7 +9,7 @@
                 "descricao": "Pão, carne 80g prensada na chapa, queijo muçarela, cebola caramelizada, alface, tomate e molho da casa.",
                 "preco": 18.99,
                 "imagem": "smash_original.jpeg",
-                "ativo": false
+                "ativo": true
             },
             {
                 "id": 2,
