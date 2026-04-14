@@ -201,7 +201,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     <button class="tab-btn" onclick="mostrarTab('adicionais')">➕ Adicionais</button>
     <button class="tab-btn" onclick="mostrarTab('pagamento')">💳 Pagamento</button>
     <button class="tab-btn" onclick="mostrarTab('whatsapp')">📱 WhatsApp</button>
-    <button class="tab-btn" onclick="mostrarTab('github')">⚙️ GitHub</button>
+
     <button class="tab-btn" onclick="mostrarTab('aparencia')">🎨 Aparência</button>
   </div>
 
@@ -483,16 +483,8 @@ async function fazerLogin() {
     sessionStorage.setItem('adminLogado', '1');
     document.getElementById('tela-login').style.display = 'none';
     document.getElementById('painel-admin').style.display = 'flex';
-    // Recupera token de qualquer fonte disponível
-    githubToken = localStorage.getItem('ghToken')
-      || sessionStorage.getItem('ghToken')
-      || getCookieToken()
-      || '';
-    if (githubToken) {
-      const inp = document.getElementById('token-input');
-      if (inp) inp.value = githubToken;
-    }
-    verificarConexao();
+    // Conecta automaticamente via função serverless do Netlify
+    conectarServidor();
   } else {
     document.getElementById('erro-login').textContent = 'Senha incorreta.';
     document.getElementById('senha-input').value = '';
@@ -533,16 +525,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (sessionStorage.getItem('adminLogado') === '1') {
     document.getElementById('tela-login').style.display = 'none';
     document.getElementById('painel-admin').style.display = 'flex';
-    // Recupera token de qualquer fonte disponível
-    githubToken = localStorage.getItem('ghToken')
-      || sessionStorage.getItem('ghToken')
-      || getCookieToken()
-      || '';
-    if (githubToken) {
-      const inp = document.getElementById('token-input');
-      if (inp) inp.value = githubToken;
-    }
-    verificarConexao();
+    await conectarServidor();
   }
   // Drag and drop no upload
   const ua = document.getElementById('upload-area');
@@ -1055,10 +1038,32 @@ async function testarConexao() {
 }
 
 async function verificarConexao() {
-  if (githubToken) {
-    await testarConexao();
-  } else {
-    mostrarTab('github');
+  await conectarServidor();
+}
+
+async function conectarServidor() {
+  setStatus('Conectando ao servidor...', 'info');
+  try {
+    // Testa a função serverless — sem precisar de token no browser
+    const r = await fetch('/.netlify/functions/github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caminho: `${GITHUB_OWNER}/${GITHUB_REPO}`,
+        metodo: 'GET'
+      })
+    });
+    if (r.ok) {
+      const statusEl = document.getElementById('status-conexao');
+      if (statusEl) statusEl.innerHTML = '<span class="badge-conectado"><i class="fas fa-check-circle"></i> Conectado ao GitHub via servidor</span>';
+      await carregarDados();
+      await carregarTema();
+      carregarIdentidade();
+    } else {
+      setStatus('Erro ao conectar ao servidor. Verifique o token no Netlify.', 'erro');
+    }
+  } catch(e) {
+    setStatus('Função serverless não encontrada. Verifique netlify/functions/github.js', 'erro');
   }
 }
 
