@@ -328,13 +328,31 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     <!-- LANDING PAGE -->
     <div class="card">
       <h3><i class="fas fa-mobile-alt"></i> Cartão de visita (landing page)</h3>
-      <div class="form-group">
-        <label>Cor do painel esquerdo (onde fica a logo)</label>
-        <div class="color-picker-row">
-          <input type="color" id="ap-cor-esquerda" value="#950606" oninput="document.getElementById('ap-cor-esquerda-txt').value=this.value;atualizarPrevia()">
-          <input type="text"  id="ap-cor-esquerda-txt" value="#950606" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value)){document.getElementById('ap-cor-esquerda').value=this.value;atualizarPrevia()}">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="form-group" style="margin:0">
+          <label>Cor painel esquerdo</label>
+          <div class="color-picker-row">
+            <input type="color" id="ap-cor-esquerda" value="#950606" oninput="document.getElementById('ap-cor-esq-txt').value=this.value;atualizarPrevia()">
+            <input type="text" id="ap-cor-esq-txt" value="#950606" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value)){document.getElementById('ap-cor-esquerda').value=this.value;atualizarPrevia()}">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Cor painel direito</label>
+          <div class="color-picker-row">
+            <input type="color" id="ap-cor-direita" value="#ffffff" oninput="document.getElementById('ap-cor-dir-txt').value=this.value;atualizarPrevia()">
+            <input type="text" id="ap-cor-dir-txt" value="#ffffff" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value)){document.getElementById('ap-cor-direita').value=this.value;atualizarPrevia()}">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Cor de fundo da página</label>
+          <div class="color-picker-row">
+            <input type="color" id="ap-cor-fundo" value="#F5EFE0" oninput="document.getElementById('ap-cor-fundo-txt').value=this.value;atualizarPrevia()">
+            <input type="text" id="ap-cor-fundo-txt" value="#F5EFE0" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value)){document.getElementById('ap-cor-fundo').value=this.value;atualizarPrevia()}">
+          </div>
         </div>
       </div>
+
       <div class="form-group">
         <label>Link do Instagram</label>
         <input type="text" id="ap-instagram" placeholder="https://www.instagram.com/jottavburguer/">
@@ -343,8 +361,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
         <label>Número do WhatsApp (com DDI, sem espaços)</label>
         <input type="text" id="ap-whatsapp" placeholder="5586994253258">
       </div>
+
       <h4 style="color:var(--primary-color);margin:16px 0 10px;font-size:.9em">Botões</h4>
+      <p style="color:var(--muted);font-size:.8em;margin-bottom:12px">Edite o nome, ícone e ative/desative cada botão.</p>
       <div id="botoes-landing"></div>
+
       <button class="btn-salvar-secao" onclick="salvarLanding()">
         <i class="fas fa-cloud-upload-alt"></i> Salvar landing page no GitHub
       </button>
@@ -1185,19 +1206,52 @@ function renderizarBotoesLanding() {
     const botoes = configLanding.landing?.botoes || [];
     cont.innerHTML = '';
     botoes.forEach((btn, i) => {
-        const row = document.createElement('div');
-        row.className = 'pagamento-row';
-        row.style.marginBottom = '8px';
-        row.innerHTML = `
-            <label class="toggle-ativo" title="Ativo">
-                <input type="checkbox" ${btn.ativo !== false ? 'checked' : ''} onchange="configLanding.landing.botoes[${i}].ativo=this.checked">
-                <span class="toggle-slider"></span>
-            </label>
-            <input type="text" value="${btn.texto}" placeholder="Texto do botão" style="flex:1" oninput="configLanding.landing.botoes[${i}].texto=this.value;atualizarPrevia()">
-            <input type="text" value="${btn.link}" placeholder="Link" style="flex:2" oninput="configLanding.landing.botoes[${i}].link=this.value">
+        const div = document.createElement('div');
+        div.style.cssText = 'background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid var(--border)';
+        div.innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <label class="toggle-ativo" title="Ativo">
+                    <input type="checkbox" ${btn.ativo !== false ? 'checked' : ''} onchange="configLanding.landing.botoes[${i}].ativo=this.checked;atualizarPrevia()">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span style="font-size:.8em;color:var(--muted);font-weight:600;text-transform:uppercase">${btn.tipo}</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+                <input type="text" value="${btn.texto}" placeholder="Nome do botão" style="flex:1;background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 10px;font-size:.9em" oninput="configLanding.landing.botoes[${i}].texto=this.value;atualizarPrevia()">
+                <input type="text" value="${btn.link || ''}" placeholder="Link (URL)" style="flex:2;background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 10px;font-size:.9em" oninput="configLanding.landing.botoes[${i}].link=this.value">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:.78em;color:var(--muted)">Ícone:</div>
+                ${btn.icone ? `<img src="${btn.icone}" style="width:24px;height:24px;object-fit:contain;background:#333;border-radius:4px;padding:2px" id="icon-prev-${i}">` : `<div id="icon-prev-${i}" style="width:24px;height:24px;background:#333;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#666;font-size:.7em">N/A</div>`}
+                <input type="text" value="${btn.icone || ''}" placeholder="nome_do_icone.svg" style="flex:1;background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 8px;font-size:.8em;font-family:monospace" oninput="configLanding.landing.botoes[${i}].icone=this.value">
+                <button onclick="document.getElementById('icon-file-${i}').click()" style="background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 10px;font-size:.78em;cursor:pointer">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+                <input type="file" id="icon-file-${i}" accept="image/*,.svg" style="display:none" onchange="uploadIconeBotao(event,${i})">
+            </div>
         `;
-        cont.appendChild(row);
+        cont.appendChild(div);
     });
+}
+
+async function uploadIconeBotao(event, idx) {
+    const f = event.target.files[0];
+    if (!f || !githubToken) return;
+    const nome = f.name.toLowerCase().replace(/\s+/g,'_');
+    const reader = new FileReader();
+    reader.onload = async ev => {
+        const base64 = ev.target.result.split(',')[1];
+        setStatus('Fazendo upload do ícone...','info');
+        try {
+            await ghUploadImagem(nome, base64);
+            configLanding.landing.botoes[idx].icone = nome;
+            const prev = document.getElementById('icon-prev-' + idx);
+            if (prev) { prev.outerHTML = `<img src="${nome}" style="width:24px;height:24px;object-fit:contain;background:#333;border-radius:4px;padding:2px" id="icon-prev-${idx}">`; }
+            setStatus('✅ Ícone enviado! Clique em Salvar para aplicar.','ok');
+            setTimeout(()=>setStatus('',''),4000);
+        } catch(e) { setStatus('Erro: '+e.message,'erro'); }
+    };
+    reader.readAsDataURL(f);
 }
 
 function carregarIdentidade() {
@@ -1205,12 +1259,22 @@ function carregarIdentidade() {
     const land = configLanding.landing || {};
     const el   = (id) => document.getElementById(id);
 
-    if (el('ap-nome'))          el('ap-nome').value           = est.nome      || '';
-    if (el('ap-slogan'))        el('ap-slogan').value         = est.slogan    || '';
-    if (el('ap-instagram'))     el('ap-instagram').value      = est.instagram || '';
-    if (el('ap-whatsapp'))      el('ap-whatsapp').value       = est.whatsapp  || '';
-    if (el('ap-cor-esquerda'))  el('ap-cor-esquerda').value   = land.cor_esquerda || '#950606';
-    if (el('ap-cor-esquerda-txt')) el('ap-cor-esquerda-txt').value = land.cor_esquerda || '#950606';
+    if (el('ap-nome'))       el('ap-nome').value      = est.nome      || '';
+    if (el('ap-slogan'))     el('ap-slogan').value     = est.slogan    || '';
+    if (el('ap-instagram'))  el('ap-instagram').value  = est.instagram || '';
+    if (el('ap-whatsapp'))   el('ap-whatsapp').value   = est.whatsapp  || '';
+
+    // 3 cores
+    const corEsq   = land.cor_esquerda || '#950606';
+    const corDir   = land.cor_direita  || '#ffffff';
+    const corFundo = land.cor_fundo    || '#F5EFE0';
+
+    if (el('ap-cor-esquerda'))  { el('ap-cor-esquerda').value  = corEsq;   }
+    if (el('ap-cor-esq-txt'))   { el('ap-cor-esq-txt').value   = corEsq;   }
+    if (el('ap-cor-direita'))   { el('ap-cor-direita').value   = corDir;   }
+    if (el('ap-cor-dir-txt'))   { el('ap-cor-dir-txt').value   = corDir;   }
+    if (el('ap-cor-fundo'))     { el('ap-cor-fundo').value     = corFundo; }
+    if (el('ap-cor-fundo-txt')) { el('ap-cor-fundo-txt').value = corFundo; }
 
     if (est.logo) {
         const prev = document.getElementById('logo-preview');
@@ -1252,13 +1316,15 @@ async function salvarLanding() {
 
     const land = configLanding.landing || {};
     land.cor_esquerda = document.getElementById('ap-cor-esquerda')?.value || land.cor_esquerda;
+    land.cor_direita  = document.getElementById('ap-cor-direita')?.value  || land.cor_direita;
+    land.cor_fundo    = document.getElementById('ap-cor-fundo')?.value    || land.cor_fundo;
     configLanding.landing = land;
 
     setStatus('Salvando landing page...','info');
     try {
         const res = await ghPut('config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: landing page');
         shaConfig = res.content.sha;
-        setStatus('✅ Landing page salva!','ok');
+        setStatus('✅ Landing page salva! O site atualiza em instantes.','ok');
         setTimeout(()=>setStatus('',''),5000);
     } catch(e) { setStatus('Erro: '+e.message,'erro'); }
 }
