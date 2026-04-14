@@ -119,8 +119,10 @@ function carregarCardapioDoLocalStorage() {
 // =======================================================
 
 async function carregarCardapio() {
-    // Remove qualquer cache local antigo
+    // Remove cache antigo do cardápio (não do carrinho)
     localStorage.removeItem('cardapioJottaV');
+    // Restaura carrinho da sessão anterior
+    carregarCarrinhoLocal();
     try {
         // cache: 'no-store' força busca real ignorando cache do browser E do CDN
         const response = await fetch('cardapio.json', {
@@ -161,10 +163,14 @@ async function carregarCardapioAdmin() {
 // CORREÇÃO: Função auxiliar para gerar HTML de imagem com tratamento de erro
 function gerarImagemCard(item) {
     if (item.imagem) {
-        return `<img src="imagens/${item.imagem}" alt="${item.nome}"
+        return `<img
+            src="imagens/${item.imagem}"
+            alt="${item.nome}"
+            loading="lazy"
+            decoding="async"
             onerror="this.src='hamburguer.png';this.style.objectFit='contain';this.style.padding='24px';this.style.mixBlendMode='screen';this.style.opacity='0.5'">`;
     }
-    return `<img src="hamburguer.png" alt="Sem imagem"
+    return `<img src="hamburguer.png" alt="Sem imagem" loading="lazy"
         style="width:100%;height:100%;object-fit:contain;padding:24px;mix-blend-mode:screen;opacity:0.45">`;
 }
 
@@ -204,7 +210,7 @@ function renderizarCardapio() {
                     <div class="card-footer">
                         <span class="card-preco">R$ ${precoFormatado}</span>
                         <button class="card-btn btn-adicionar" data-item-id="${item.id}" data-categoria-id="${secao.id}">
-                            ${isCustomizavel ? 'Customizar' : '+ Adicionar'}
+                            ${isCustomizavel ? '🔧 Customizar' : '+ Adicionar'}
                         </button>
                     </div>
                 </div>
@@ -431,7 +437,19 @@ function adicionarItemSimplesAoCarrinho(item) {
     } else {
         carrinho.push({ ...item, quantidade: 1 });
     }
+    salvarCarrinhoLocal(); // persiste carrinho
     if (typeof updateContadorCarrinho === 'function') updateContadorCarrinho();
+}
+
+function salvarCarrinhoLocal() {
+    try { localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho)); } catch(e) {}
+}
+
+function carregarCarrinhoLocal() {
+    try {
+        const saved = localStorage.getItem('carrinhoJottaV');
+        if (saved) carrinho = JSON.parse(saved);
+    } catch(e) { carrinho = []; }
 }
 
 function setupCustomizacaoModal(item) {
@@ -512,6 +530,7 @@ function adicionarItemCustomizadoAoCarrinho() {
         quantidade: 1
     });
 
+    salvarCarrinhoLocal(); // persiste carrinho
     itemEmCustomizacao = null;
 
     if (typeof mostrarModal === 'function' && typeof customizacaoModal !== 'undefined') {
