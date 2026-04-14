@@ -447,7 +447,9 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 // Configurações carregadas dinamicamente do config.json
 let GITHUB_OWNER = '';
 let GITHUB_REPO  = '';
-let SENHA_HASH   = '';
+// Hash padrão — sobrescrito pelo config.json quando carregado
+let SENHA_HASH   = 'aa76dcb7a8c364f43564c71bd5b4188d2daf2e1a6d00a8b037f47bb36e2ceab1';
+let configCarregado = false;
 
 // Estado global
 let githubToken = '';
@@ -466,6 +468,16 @@ let imagemNomePendente  = null;
 async function fazerLogin() {
   const senha = document.getElementById('senha-input').value;
   if (!senha) return;
+
+  // Aguarda config carregar (máx 3s) para ter o hash atualizado
+  if (!configCarregado) {
+    let tentativas = 0;
+    while (!configCarregado && tentativas < 30) {
+      await new Promise(r => setTimeout(r, 100));
+      tentativas++;
+    }
+  }
+
   const hash = await sha256(senha);
   if (hash === SENHA_HASH) {
     sessionStorage.setItem('adminLogado', '1');
@@ -506,8 +518,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       const cfg = await r.json();
       GITHUB_OWNER = cfg.github?.owner || '';
       GITHUB_REPO  = cfg.github?.repo  || '';
-      // Fallback: hash hardcoded caso config.json falhe
-      SENHA_HASH   = cfg.admin?.senha_hash || 'aa76dcb7a8c364f43564c71bd5b4188d2daf2e1a6d00a8b037f47bb36e2ceab1';
+      SENHA_HASH   = cfg.admin?.senha_hash || SENHA_HASH;
+      configCarregado = true;
       window.siteConfig = cfg;
       const nome = cfg.negocio?.nome || 'Admin';
       const span = document.querySelector('.header-logo span');
