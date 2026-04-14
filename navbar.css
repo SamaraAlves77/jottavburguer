@@ -64,12 +64,35 @@
     font-size: 0.9rem;
     font-weight: 600;
     opacity: 0.85;
-    transition: opacity 0.2s, color 0.2s;
+    transition: opacity 0.25s ease, color 0.25s ease, transform 0.2s ease;
+    position: relative;
+    display: inline-block;
 }
 
-.nav-links a:hover {
+/* Sublinhado animado */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color, #45a135);
+    border-radius: 2px;
+    transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-links a:hover,
+.nav-links a.nav-ativo {
     opacity: 1;
     color: var(--primary-color, #45a135);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.nav-links a:hover::after,
+.nav-links a.nav-ativo::after {
+    width: 100%;
 }
 
 /* AÇÕES */
