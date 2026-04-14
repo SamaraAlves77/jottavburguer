@@ -445,8 +445,8 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 // CONFIGURAÇÕES
 // =============================================================
 // Configurações carregadas dinamicamente do config.json
-let GITHUB_OWNER = '';
-let GITHUB_REPO  = '';
+const GITHUB_OWNER = 'SamaraAlves77'; // repositório hardcoded
+const GITHUB_REPO  = 'jottavburguer'; // repositório hardcoded
 // Hash padrão — sobrescrito pelo config.json quando carregado
 let SENHA_HASH   = 'aa76dcb7a8c364f43564c71bd5b4188d2daf2e1a6d00a8b037f47bb36e2ceab1';
 let configCarregado = false;
@@ -508,8 +508,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     const r = await fetch('data/config.json', { cache: 'no-store' });
     if (r.ok) {
       const cfg = await r.json();
-      GITHUB_OWNER = cfg.github?.owner || '';
-      GITHUB_REPO  = cfg.github?.repo  || '';
+      // GITHUB_OWNER é hardcoded — não sobrescreve
+      // GITHUB_REPO é hardcoded — não sobrescreve
       SENHA_HASH   = cfg.admin?.senha_hash || SENHA_HASH;
       configCarregado = true;
       window.siteConfig = cfg;
@@ -610,13 +610,13 @@ async function carregarDados() {
   setStatus('Carregando dados...', 'info');
   try {
     // Cardápio
-    const dc = await ghGet('cardapio.json');
+    const dc = await ghGet('data/cardapio.json');
     shaCardapio = dc.sha;
     cardapioData = JSON.parse(b64Decode(dc.content));
 
     // Config
     try {
-      const cfg = await ghGet('config.json');
+      const cfg = await ghGet('data/config.json');
       shaConfig  = cfg.sha;
       configData = JSON.parse(b64Decode(cfg.content));
       configLanding = configData; // compartilha referência
@@ -737,7 +737,7 @@ async function salvarCardapio() {
     setStatus(`Salvando... (${totalOcultos} oculto(s) de ${totalItens})`, 'info');
 
     const novoJson = JSON.stringify(cardapioData, null, 4);
-    const res = await ghPut('cardapio.json', novoJson, shaCardapio, 'Admin: atualizar cardápio');
+    const res = await ghPut('data/cardapio.json', novoJson, shaCardapio, 'Admin: atualizar cardápio');
     shaCardapio = res.content.sha;
 
     // Confirmar salvamento mostrando estado real
@@ -844,7 +844,7 @@ async function salvarItemModal() {
       if (imgNome) item.imagem = imgNome;
     }
 
-    const res = await ghPut('cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, `Admin: ${nome}`);
+    const res = await ghPut('data/cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, `Admin: ${nome}`);
     shaCardapio = res.content.sha;
     renderizarItens();
     setStatus('✅ Item salvo! O site atualiza em instantes.','ok');
@@ -900,7 +900,7 @@ async function salvarAdicionais() {
   if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
   setStatus('Salvando adicionais...','info');
   try {
-    const res = await ghPut('cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, 'Admin: adicionais');
+    const res = await ghPut('data/cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, 'Admin: adicionais');
     shaCardapio = res.content.sha;
     setStatus('✅ Adicionais salvos!','ok');
     setTimeout(()=>setStatus('',''),4000);
@@ -1010,7 +1010,7 @@ async function salvarConfig() {
   if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
   setStatus('Salvando configurações...','info');
   try {
-    const res = await ghPut('config.json', JSON.stringify(configData,null,4), shaConfig, 'Admin: config');
+    const res = await ghPut('data/config.json', JSON.stringify(configData,null,4), shaConfig, 'Admin: config');
     shaConfig = res.content.sha;
     setStatus('✅ Configurações salvas! O site atualiza em instantes.','ok');
     setTimeout(()=>setStatus('',''),5000);
@@ -1272,7 +1272,7 @@ async function carregarTema() {
     // Garante padrões primeiro
     CORES_CONFIG.forEach(cor => { if (!temaAtual[cor.var]) temaAtual[cor.var] = cor.default; });
     try {
-        const data = await ghGet('tema.css');
+        const data = await ghGet('assets/css/tema.css');
         shaTema = data.sha;
         const css = b64Decode(data.content);
         CORES_CONFIG.forEach(cor => {
@@ -1301,7 +1301,7 @@ async function salvarTema() {
 
     setStatus('Salvando tema...','info');
     try {
-        const res = await ghPut('tema.css', css, shaTema, 'Admin: atualizar tema');
+        const res = await ghPut('assets/css/tema.css', css, shaTema, 'Admin: atualizar tema');
         shaTema = res.content.sha;
         setStatus('✅ Tema salvo! O site atualiza em instantes.','ok');
         setTimeout(()=>setStatus('',''),5000);
@@ -1437,7 +1437,7 @@ async function salvarIdentidade() {
             await ghUploadImagem(logoNomePendente, logoBase64Pendente);
             est.logo = 'imagens/' + logoNomePendente;
         }
-        const res = await ghPut('config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: identidade');
+        const res = await ghPut('data/config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: identidade');
         shaConfig = res.content.sha;
         setStatus('✅ Identidade salva! O site atualiza em instantes.','ok');
         setTimeout(()=>setStatus('',''),5000);
@@ -1455,7 +1455,7 @@ async function salvarLanding() {
 
     setStatus('Salvando landing page...','info');
     try {
-        const res = await ghPut('config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: landing page');
+        const res = await ghPut('data/config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: landing page');
         shaConfig = res.content.sha;
         setStatus('✅ Landing page salva! O site atualiza em instantes.','ok');
         setTimeout(()=>setStatus('',''),5000);
