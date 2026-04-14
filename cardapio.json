@@ -213,7 +213,7 @@
                 "descricao": "Refrigerante Pepsi de 1 litro.",
                 "preco": 9,
                 "imagem": "pepsi.png",
-                "ativo": true
+                "ativo": false
             }
         ]
     },
