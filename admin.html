@@ -268,35 +268,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     </div>
   </div>
 
-  <!-- TAB: GITHUB -->
-  <div id="tab-github" class="tab-content">
-    <div class="card">
-      <h3><i class="fab fa-github"></i> Conexão com GitHub</h3>
-      <div id="status-conexao" style="margin-bottom:16px"></div>
 
-      <div class="config-section">
-        <h4>Token de acesso</h4>
-        <div class="token-input" style="margin-bottom:10px">
-          <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-          <button class="btn btn-primary" onclick="salvarToken()">Salvar</button>
-          <button class="btn btn-secondary" onclick="testarConexao()">Testar</button>
-        </div>
-      </div>
-
-      <div class="config-section">
-        <div class="instrucoes">
-          <strong>Como gerar o Token:</strong><br>
-          1. Acesse <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
-          2. Em <strong>Note</strong> escreva: <em>JottaV Admin</em><br>
-          3. Em <strong>Expiration</strong> escolha: <em>No expiration</em><br>
-          4. Em <strong>Select scopes</strong> marque: <em>repo</em> (primeira opção)<br>
-          5. Clique em <strong>Generate token</strong><br>
-          6. Copie o token gerado (começa com <em>ghp_</em>) e cole acima<br><br>
-          <strong>⚠️ O token é salvo só no seu dispositivo. Nunca é enviado para ninguém.</strong>
-        </div>
-      </div>
-    </div>
-  </div>
   <!-- TAB: APARÊNCIA -->
   <div id="tab-aparencia" class="tab-content">
 
@@ -717,7 +689,7 @@ function excluirItem(itemIdx) {
 }
 
 async function salvarCardapio() {
-  if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+  // Token gerenciado pelo servidor Netlify — sem verificação no browser
 
   const totalOcultos = cardapioData.flatMap(s => s.itens).filter(i => i.ativo === false).length;
   const totalItens   = cardapioData.flatMap(s => s.itens).length;
@@ -815,7 +787,7 @@ function processarImagem(file) {
 }
 
 async function salvarItemModal() {
-  if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); fecharModal(); mostrarTab('github'); return; }
+  // Token gerenciado pelo servidor Netlify — sem verificação no browser
   const nome     = document.getElementById('edit-nome').value.trim();
   const preco    = parseFloat(document.getElementById('edit-preco').value);
   const descricao= document.getElementById('edit-descricao').value.trim();
@@ -897,7 +869,7 @@ function excluirAdicional(i) {
 }
 
 async function salvarAdicionais() {
-  if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+  // Token gerenciado pelo servidor Netlify — sem verificação no browser
   setStatus('Salvando adicionais...','info');
   try {
     const res = await ghPut('data/cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, 'Admin: adicionais');
@@ -1007,7 +979,7 @@ ${wa.label_localizacao||''}
 // SALVAR CONFIG (Pagamento + WhatsApp)
 // =============================================================
 async function salvarConfig() {
-  if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+  // Token gerenciado pelo servidor Netlify — sem verificação no browser
   setStatus('Salvando configurações...','info');
   try {
     const res = await ghPut('data/config.json', JSON.stringify(configData,null,4), shaConfig, 'Admin: config');
@@ -1040,7 +1012,7 @@ function getCookieToken() {
 }
 
 async function testarConexao() {
-  if (!githubToken) { document.getElementById('status-conexao').innerHTML = '<span style="color:#e53935">Token não configurado.</span>'; return; }
+  // Token gerenciado pelo servidor Netlify
   document.getElementById('status-conexao').innerHTML = '<span style="color:var(--muted)">Testando...</span>';
   try {
     const r = await fetch('/.netlify/functions/github', {
@@ -1287,7 +1259,7 @@ async function carregarTema() {
 }
 
 async function salvarTema() {
-    if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+    // Token gerenciado pelo servidor Netlify — sem verificação no browser
 
     let css = '/* tema.css — Design System JottaV Burguer — gerado pelo Painel Admin */\n';
     css += "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');\n\n";
@@ -1419,7 +1391,7 @@ function carregarIdentidade() {
 }
 
 async function salvarIdentidade() {
-    if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+    // Token gerenciado pelo servidor Netlify — sem verificação no browser
 
     const est = configLanding.estabelecimento || {};
     est.nome      = document.getElementById('ap-nome')?.value.trim()      || est.nome;
@@ -1445,7 +1417,7 @@ async function salvarIdentidade() {
 }
 
 async function salvarLanding() {
-    if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
+    // Token gerenciado pelo servidor Netlify — sem verificação no browser
 
     const land = configLanding.landing || {};
     land.cor_esquerda = document.getElementById('ap-cor-esquerda')?.value || land.cor_esquerda;
