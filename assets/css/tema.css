@@ -1,0 +1,28 @@
+/* =====================================================
+   tema.css — Design System do Cardápio
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary-color:   #45a135;
+    --accent-color:    #FF6B35;
+    --bg-landing:      #F5EFE0;
+    --landing-left:    #950606;
+    --bg-page:         #1C1C1C;
+    --bg-card:         #262626;
+    --bg-navbar:       #111111;
+    --text-nav:        #FFFFFF;
+    --text-card-title: #FFFFFF;
+    --text-card-desc:  #A0A0A0;
+    --text-price:      #5DBF4A;
+    --font-main: 'Plus Jakarta Sans', 'Roboto', sans-serif;
+}
+
+/* CORREÇÃO: aplicar fonte APENAS nos elementos de texto — nunca em i/span de ícone */
+body, h1, h2, h3, h4, h5, h6,
+p, a, button, input, select, textarea,
+label, div, section, header, footer, nav,
+span:not([class*="fa"]):not([class*="fa-"]) {
+    font-family: var(--font-main);
+}

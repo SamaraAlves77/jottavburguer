@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio</title>
+    <link rel="icon" type="image/png" href="assets/img/hamburguer.png">
+    <link rel="stylesheet" href="assets/css/tema.css">
+    <link rel="stylesheet" href="assets/css/cardapio.css">
+    <link rel="stylesheet" href="assets/css/navbar.css">
+    <link rel="stylesheet" href="assets/css/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="categorias-sticky">
+        <div class="categorias-pills" id="categorias-pills"></div>
+    </div>
+
+    <main id="main-content-container"></main>
+
+    <div id="modal-container"></div>
+
+    <div id="notificacao" class="notificacao">Item adicionado ao carrinho!</div>
+
+    <button class="carrinho-fab" id="fab-carrinho">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="fab-contador-carrinho">0</span>
+    </button>
+
+    <footer id="footer-cardapio">
+        <p>Cardápio Digital</p>
+    </footer>
+
+    <script src="assets/js/cardapio.js"></script>
+    <script src="assets/js/modal.js"></script>
+    <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+/* ======================================================= */
+/* navbar.css — Redesign 2025                              */
+/* ======================================================= */
+
+.navbar {
+    background-color: var(--bg-navbar, #111111);
+    padding: 8px 0;
+    box-shadow: 0 1px 12px rgba(0,0,0,0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999; /* acima de tudo — pills, modais, etc */
+    transition: box-shadow 0.3s;
+}
+
+.navbar.scrolled {
+    box-shadow: 0 2px 20px rgba(0,0,0,0.7);
+}
+
+.navbar-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    gap: 20px;
+}
+
+/* LOGO */
+.logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.logo img {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.2s;
+}
+
+.logo img:hover { transform: scale(1.05); }
+
+/* NAV LINKS */
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-grow: 1;
+    justify-content: center;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.nav-links a {
+    color: var(--text-nav, #FFFFFF);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.85;
+    transition: opacity 0.25s ease, color 0.25s ease, transform 0.2s ease;
+    position: relative;
+    display: inline-block;
+}
+
+/* Sublinhado animado */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color, #45a135);
+    border-radius: 2px;
+    transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-links a:hover,
+.nav-links a.nav-ativo {
+    opacity: 1;
+    color: var(--primary-color, #45a135);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.nav-links a:hover::after,
+.nav-links a.nav-ativo::after {
+    width: 100%;
+}
+
+/* AÇÕES */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.carrinho-btn {
+    background: none;
+    border: none;
+    color: var(--text-nav, #FFFFFF);
+    font-size: 1.3em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+}
+
+.carrinho-btn:hover { opacity: 1; }
+
+#contador-carrinho {
+    background-color: var(--primary-color, #45a135);
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.65em;
+    font-weight: 700;
+    color: white;
+    min-width: 18px;
+    text-align: center;
+}
+
+.hamburger-menu-btn { display: none !important; }
+
+/* TABLET */
+@media (max-width: 900px) {
+    .logo img { height: 36px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 0.85rem; }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .navbar-content-wrapper {
+        padding: 0 12px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .navbar-content-wrapper::-webkit-scrollbar { display: none; }
+    .logo img { height: 32px; }
+    .nav-links { gap: 14px; flex-grow: 0; }
+    .nav-links a { font-size: 0.8rem; }
+}
