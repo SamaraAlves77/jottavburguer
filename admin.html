@@ -637,10 +637,21 @@ function renderizarItens() {
 }
 
 function toggleAtivo(secIdx, itemIdx, valor) {
-  if (cardapioData[secIdx] && cardapioData[secIdx].itens[itemIdx] !== undefined) {
-    cardapioData[secIdx].itens[itemIdx].ativo = valor;
-    console.log('toggleAtivo:', cardapioData[secIdx].nome, cardapioData[secIdx].itens[itemIdx].nome, '→', valor);
+  if (!cardapioData[secIdx] || cardapioData[secIdx].itens[itemIdx] === undefined) {
+    console.error('toggleAtivo: índice inválido', secIdx, itemIdx);
+    return;
   }
+  cardapioData[secIdx].itens[itemIdx].ativo = valor;
+
+  // Atualiza visual da linha imediatamente (sem re-renderizar tudo)
+  const rows = document.querySelectorAll('#lista-itens .item-row');
+  if (rows[itemIdx]) {
+    rows[itemIdx].classList.toggle('inativo', valor === false);
+  }
+
+  const status = valor === false ? '🔴 Oculto' : '🟢 Visível';
+  const nome = cardapioData[secIdx].itens[itemIdx].nome;
+  setStatus(`${nome} → ${status}. Clique em "Salvar no GitHub" para confirmar.`, 'info');
 }
 
 function excluirItem(itemIdx) {
@@ -653,20 +664,33 @@ function excluirItem(itemIdx) {
 async function salvarCardapio() {
   if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
 
-  // Verificação: contar itens ocultos para confirmar ao usuário
   const totalOcultos = cardapioData.flatMap(s => s.itens).filter(i => i.ativo === false).length;
   const totalItens   = cardapioData.flatMap(s => s.itens).length;
 
-  setStatus(`Salvando cardápio... (${totalOcultos} item(s) oculto(s) de ${totalItens})`, 'info');
+  setStatus('Verificando versão atual...', 'info');
   try {
-    const res = await ghPut('cardapio.json', JSON.stringify(cardapioData, null, 4), shaCardapio, 'Admin: atualizar cardápio');
+    // CORREÇÃO: Sempre busca SHA atual antes de salvar — evita conflito de versão
+    const atual = await ghGet('cardapio.json');
+    shaCardapio = atual.sha;
+
+    setStatus(`Salvando... (${totalOcultos} oculto(s) de ${totalItens})`, 'info');
+
+    const novoJson = JSON.stringify(cardapioData, null, 4);
+    const res = await ghPut('cardapio.json', novoJson, shaCardapio, 'Admin: atualizar cardápio');
     shaCardapio = res.content.sha;
-    const msg = totalOcultos > 0
-      ? `✅ Cardápio salvo! ${totalOcultos} item(s) oculto(s). Aguarde ~1 min para atualizar.`
-      : '✅ Cardápio salvo! Todos os itens visíveis. Aguarde ~1 min para atualizar.';
-    setStatus(msg, 'ok');
-    setTimeout(() => setStatus('',''), 8000);
-  } catch(e) { setStatus('Erro ao salvar: ' + e.message + ' — Tente recarregar o painel.','erro'); }
+
+    // Confirmar salvamento mostrando estado real
+    const ocultos = cardapioData.flatMap(s => s.itens).filter(i => i.ativo === false).map(i => i.nome);
+    const msgOcultos = ocultos.length > 0 ? ` | Ocultos: ${ocultos.join(', ')}` : ' | Todos visíveis';
+    setStatus('✅ Salvo!' + msgOcultos + ' — Aguarde até 2 min para o site atualizar.', 'ok');
+    setTimeout(() => setStatus('',''), 10000);
+
+    // Re-renderiza itens para confirmar estado visual
+    renderizarItens();
+
+  } catch(e) {
+    setStatus('❌ Erro ao salvar: ' + e.message, 'erro');
+  }
 }
 
 // =============================================================
