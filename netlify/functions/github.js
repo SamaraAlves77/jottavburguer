@@ -1,16 +1,14 @@
 // netlify/functions/github.js
-// Função serverless — proxy seguro para a API do GitHub
-// O token nunca vai para o browser — fica só no servidor
+// Proxy seguro para API do GitHub — token nunca vai para o browser
 
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, PUT, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, PUT, POST, OPTIONS',
     'Content-Type': 'application/json',
   };
 
-  // Preflight CORS
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
@@ -20,15 +18,15 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Token não configurado no servidor.' })
+      body: JSON.stringify({ error: 'GITHUB_TOKEN não configurado no servidor Netlify.' })
     };
   }
 
   try {
-    const body   = event.body ? JSON.parse(event.body) : {};
+    const body    = event.body ? JSON.parse(event.body) : {};
     const caminho = body.caminho || '';
     const metodo  = body.metodo  || 'GET';
-    const payload = body.payload  || null;
+    const payload = body.payload || null;
 
     if (!caminho) {
       return {
@@ -46,10 +44,11 @@ exports.handler = async (event) => {
         'Authorization': `token ${token}`,
         'Accept': 'application/vnd.github.v3+json',
         'Content-Type': 'application/json',
+        'User-Agent': 'Netlify-Function',
       }
     };
 
-    if (payload && (metodo === 'PUT' || metodo === 'POST')) {
+    if (payload && metodo !== 'GET') {
       options.body = JSON.stringify(payload);
     }
 
