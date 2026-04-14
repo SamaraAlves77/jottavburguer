@@ -501,12 +501,13 @@ async function sha256(texto) {
 window.addEventListener('DOMContentLoaded', async () => {
   // Carrega config.json — remove todas as dependências hardcoded
   try {
-    const r = await fetch('config.json', { cache: 'no-store' });
+    const r = await fetch('data/config.json', { cache: 'no-store' });
     if (r.ok) {
       const cfg = await r.json();
       GITHUB_OWNER = cfg.github?.owner || '';
       GITHUB_REPO  = cfg.github?.repo  || '';
-      SENHA_HASH   = cfg.admin?.senha_hash || '';
+      // Fallback: hash hardcoded caso config.json falhe
+      SENHA_HASH   = cfg.admin?.senha_hash || 'aa76dcb7a8c364f43564c71bd5b4188d2daf2e1a6d00a8b037f47bb36e2ceab1';
       window.siteConfig = cfg;
       const nome = cfg.negocio?.nome || 'Admin';
       const span = document.querySelector('.header-logo span');
