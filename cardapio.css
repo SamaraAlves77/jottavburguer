@@ -27,15 +27,14 @@ a { color: var(--primary-color); text-decoration: none; }
 /* ── PILLS DE CATEGORIA (sticky) ── */
 .categorias-sticky {
     position: sticky;
-    top: 58px;        /* cola logo abaixo da navbar */
-    z-index: 800;     /* abaixo da navbar (z-index 900) */
+    top: 58px;
+    z-index: 500; /* bem abaixo da navbar */
     background: var(--bg-page);
     padding: 10px 20px;
     border-bottom: 1px solid rgba(255,255,255,0.06);
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    pointer-events: auto; /* garante que só a pill recebe clique, não sobrepõe navbar */
 }
 .categorias-sticky::-webkit-scrollbar { display: none; }
 .categorias-pills { display: flex; gap: 8px; white-space: nowrap; }
