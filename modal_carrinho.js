@@ -90,6 +90,7 @@ function renderizarCarrinho() {
 function removerItem(index) {
     if (!carrinho || index < 0 || index >= carrinho.length) return;
     carrinho.splice(index, 1);
+    try { localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho)); } catch(e) {}
     renderizarCarrinho();
     updateContadorCarrinho();
     showNotification('Item removido do carrinho!');
@@ -252,8 +253,9 @@ function finalizarPedido() {
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
 
-    // Limpa o carrinho
+    // Limpa o carrinho (memória + localStorage)
     carrinho = [];
+    try { localStorage.removeItem('carrinhoJottaV'); } catch(e) {}
     renderizarCarrinho();
     updateContadorCarrinho();
     mostrarModal(carrinhoModal, false);
