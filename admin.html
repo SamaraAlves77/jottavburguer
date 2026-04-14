@@ -626,7 +626,7 @@ function renderizarItens() {
         <div class="item-desc">${item.descricao||''}</div>
       </div>
       <label class="toggle-ativo" title="Visível no cardápio">
-        <input type="checkbox" ${item.ativo !== false ? 'checked' : ''} onchange="toggleAtivo(${i},this.checked)">
+        <input type="checkbox" ${item.ativo !== false ? 'checked' : ''} onchange="toggleAtivo(${secaoAtual},${i},this.checked)">
         <span class="toggle-slider"></span>
       </label>
       <button class="btn-icon" onclick="abrirModalEditarItem(${i})" title="Editar"><i class="fas fa-edit"></i></button>
@@ -636,8 +636,11 @@ function renderizarItens() {
   });
 }
 
-function toggleAtivo(itemIdx, valor) {
-  cardapioData[secaoAtual].itens[itemIdx].ativo = valor;
+function toggleAtivo(secIdx, itemIdx, valor) {
+  if (cardapioData[secIdx] && cardapioData[secIdx].itens[itemIdx] !== undefined) {
+    cardapioData[secIdx].itens[itemIdx].ativo = valor;
+    console.log('toggleAtivo:', cardapioData[secIdx].nome, cardapioData[secIdx].itens[itemIdx].nome, '→', valor);
+  }
 }
 
 function excluirItem(itemIdx) {
@@ -649,13 +652,21 @@ function excluirItem(itemIdx) {
 
 async function salvarCardapio() {
   if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
-  setStatus('Salvando cardápio...','info');
+
+  // Verificação: contar itens ocultos para confirmar ao usuário
+  const totalOcultos = cardapioData.flatMap(s => s.itens).filter(i => i.ativo === false).length;
+  const totalItens   = cardapioData.flatMap(s => s.itens).length;
+
+  setStatus(`Salvando cardápio... (${totalOcultos} item(s) oculto(s) de ${totalItens})`, 'info');
   try {
     const res = await ghPut('cardapio.json', JSON.stringify(cardapioData, null, 4), shaCardapio, 'Admin: atualizar cardápio');
     shaCardapio = res.content.sha;
-    setStatus('✅ Cardápio salvo! O site atualiza em instantes.','ok');
-    setTimeout(() => setStatus('',''), 5000);
-  } catch(e) { setStatus('Erro: ' + e.message,'erro'); }
+    const msg = totalOcultos > 0
+      ? `✅ Cardápio salvo! ${totalOcultos} item(s) oculto(s). Aguarde ~1 min para atualizar.`
+      : '✅ Cardápio salvo! Todos os itens visíveis. Aguarde ~1 min para atualizar.';
+    setStatus(msg, 'ok');
+    setTimeout(() => setStatus('',''), 8000);
+  } catch(e) { setStatus('Erro ao salvar: ' + e.message + ' — Tente recarregar o painel.','erro'); }
 }
 
 // =============================================================
