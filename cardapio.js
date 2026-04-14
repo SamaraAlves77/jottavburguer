@@ -119,21 +119,15 @@ function carregarCardapioDoLocalStorage() {
 // =======================================================
 
 async function carregarCardapio() {
-    // Sempre busca do servidor — garante que itens ocultados no admin apareçam corretamente
+    // SEMPRE busca do servidor — sem cache local para garantir itens atualizados
+    localStorage.removeItem('cardapioJottaV'); // Limpa cache antigo se existir
     try {
-        const response = await fetch('cardapio.json?v=' + Date.now());
+        const response = await fetch('cardapio.json?nocache=' + Date.now());
         if (!response.ok) throw new Error('Falha ao carregar cardapio.json');
         cardapioData = await response.json();
-        salvarCardapioNoLocalStorage(cardapioData);
     } catch (error) {
-        // Se falhar, tenta o cache local como fallback
-        const dados = carregarCardapioDoLocalStorage();
-        if (dados) {
-            cardapioData = dados;
-        } else {
-            console.error("Erro ao carregar cardápio:", error);
-            cardapioData = [];
-        }
+        console.error("Erro ao carregar cardápio:", error);
+        cardapioData = [];
     }
 
     // Extrai adicionais globais
