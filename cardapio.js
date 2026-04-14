@@ -119,10 +119,18 @@ function carregarCardapioDoLocalStorage() {
 // =======================================================
 
 async function carregarCardapio() {
-    // SEMPRE busca do servidor — sem cache local para garantir itens atualizados
-    localStorage.removeItem('cardapioJottaV'); // Limpa cache antigo se existir
+    // Remove qualquer cache local antigo
+    localStorage.removeItem('cardapioJottaV');
     try {
-        const response = await fetch('cardapio.json?nocache=' + Date.now());
+        // cache: 'no-store' força busca real ignorando cache do browser E do CDN
+        const response = await fetch('cardapio.json', {
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        });
         if (!response.ok) throw new Error('Falha ao carregar cardapio.json');
         cardapioData = await response.json();
     } catch (error) {
@@ -305,7 +313,7 @@ function renderizarEditorCardapio() {
 }
 
 function salvarCardapioAdmin() {
-    salvarCardapioNoLocalStorage(cardapioData);
+    
     alert("Cardápio salvo com sucesso!");
     renderizarEditorCardapio();
 }
