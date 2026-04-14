@@ -175,7 +175,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 <!-- TELA DE LOGIN -->
 <div id="tela-login">
   <div class="login-card">
-    <img src="assets/img/hamburguer.png" alt="Logo">
+    <img src="imagens/jottav_burguer.png" alt="Logo">
     <h2>Painel Admin</h2>
     <p id="login-subtitle">Cardápio Digital</p>
     <input type="password" id="senha-input" placeholder="Senha" onkeydown="if(event.key==='Enter')fazerLogin()">
@@ -188,7 +188,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 <div id="painel-admin">
   <header>
     <div class="header-logo">
-      <img src="assets/img/hamburguer.png" alt="Logo">
+      <img src="imagens/jottav_burguer.png" alt="Logo">
       <span>Painel Admin</span>
     </div>
     <button class="btn-logout" onclick="fazerLogout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
@@ -501,7 +501,7 @@ async function sha256(texto) {
 window.addEventListener('DOMContentLoaded', async () => {
   // Carrega config.json — remove todas as dependências hardcoded
   try {
-    const r = await fetch('data/config.json', { cache: 'no-store' });
+    const r = await fetch('config.json', { cache: 'no-store' });
     if (r.ok) {
       const cfg = await r.json();
       GITHUB_OWNER = cfg.github?.owner || '';
@@ -569,13 +569,12 @@ async function ghPut(caminho, conteudo, sha, msg) {
   return r.json();
 }
 
-async function ghUploadImagem(nome, base64, pasta = 'imagens/') {
-  const caminho = pasta + nome;
+async function ghUploadImagem(nome, base64) {
   let sha = null;
-  try { sha = (await ghGet(caminho)).sha; } catch(e){}
-  const body = { message: `Admin: upload ${caminho}`, content: base64 };
+  try { sha = (await ghGet(`imagens/${nome}`)).sha; } catch(e){}
+  const body = { message: `Admin: imagem ${nome}`, content: base64 };
   if (sha) body.sha = sha;
-  const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${caminho}`, {
+  const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/imagens/${nome}`, {
     method: 'PUT', headers: authHeaders(), body: JSON.stringify(body)
   });
   if (!r.ok) throw new Error(`Erro no upload: ${await r.text()}`);
@@ -596,13 +595,13 @@ async function carregarDados() {
   setStatus('Carregando dados...', 'info');
   try {
     // Cardápio
-    const dc = await ghGet('data/cardapio.json');
+    const dc = await ghGet('cardapio.json');
     shaCardapio = dc.sha;
     cardapioData = JSON.parse(b64Decode(dc.content));
 
     // Config
     try {
-      const cfg = await ghGet('data/config.json');
+      const cfg = await ghGet('config.json');
       shaConfig  = cfg.sha;
       configData = JSON.parse(b64Decode(cfg.content));
       configLanding = configData; // compartilha referência
@@ -713,7 +712,7 @@ async function salvarCardapio() {
     // Sempre busca SHA atual — evita erro 409 de conflito
     let atual;
     try {
-      atual = await ghGet('data/cardapio.json');
+      atual = await ghGet('cardapio.json');
       shaCardapio = atual.sha;
     } catch(shaErr) {
       setStatus('Erro ao verificar versão: ' + shaErr.message + ' — Verifique sua conexão.', 'erro');
@@ -723,7 +722,7 @@ async function salvarCardapio() {
     setStatus(`Salvando... (${totalOcultos} oculto(s) de ${totalItens})`, 'info');
 
     const novoJson = JSON.stringify(cardapioData, null, 4);
-    const res = await ghPut('data/cardapio.json', novoJson, shaCardapio, 'Admin: atualizar cardápio');
+    const res = await ghPut('cardapio.json', novoJson, shaCardapio, 'Admin: atualizar cardápio');
     shaCardapio = res.content.sha;
 
     // Confirmar salvamento mostrando estado real
@@ -830,7 +829,7 @@ async function salvarItemModal() {
       if (imgNome) item.imagem = imgNome;
     }
 
-    const res = await ghPut('data/cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, `Admin: ${nome}`);
+    const res = await ghPut('cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, `Admin: ${nome}`);
     shaCardapio = res.content.sha;
     renderizarItens();
     setStatus('✅ Item salvo! O site atualiza em instantes.','ok');
@@ -886,7 +885,7 @@ async function salvarAdicionais() {
   if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
   setStatus('Salvando adicionais...','info');
   try {
-    const res = await ghPut('data/cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, 'Admin: adicionais');
+    const res = await ghPut('cardapio.json', JSON.stringify(cardapioData,null,4), shaCardapio, 'Admin: adicionais');
     shaCardapio = res.content.sha;
     setStatus('✅ Adicionais salvos!','ok');
     setTimeout(()=>setStatus('',''),4000);
@@ -996,7 +995,7 @@ async function salvarConfig() {
   if (!githubToken) { setStatus('Configure o token do GitHub primeiro.','erro'); mostrarTab('github'); return; }
   setStatus('Salvando configurações...','info');
   try {
-    const res = await ghPut('data/config.json', JSON.stringify(configData,null,4), shaConfig, 'Admin: config');
+    const res = await ghPut('config.json', JSON.stringify(configData,null,4), shaConfig, 'Admin: config');
     shaConfig = res.content.sha;
     setStatus('✅ Configurações salvas! O site atualiza em instantes.','ok');
     setTimeout(()=>setStatus('',''),5000);
@@ -1232,7 +1231,7 @@ async function carregarTema() {
     // Garante padrões primeiro
     CORES_CONFIG.forEach(cor => { if (!temaAtual[cor.var]) temaAtual[cor.var] = cor.default; });
     try {
-        const data = await ghGet('assets/css/tema.css');
+        const data = await ghGet('tema.css');
         shaTema = data.sha;
         const css = b64Decode(data.content);
         CORES_CONFIG.forEach(cor => {
@@ -1261,7 +1260,7 @@ async function salvarTema() {
 
     setStatus('Salvando tema...','info');
     try {
-        const res = await ghPut('assets/css/tema.css', css, shaTema, 'Admin: atualizar tema');
+        const res = await ghPut('tema.css', css, shaTema, 'Admin: atualizar tema');
         shaTema = res.content.sha;
         setStatus('✅ Tema salvo! O site atualiza em instantes.','ok');
         setTimeout(()=>setStatus('',''),5000);
@@ -1336,7 +1335,7 @@ async function uploadIconeBotao(event, idx) {
         const base64 = ev.target.result.split(',')[1];
         setStatus('Fazendo upload do ícone...','info');
         try {
-            await ghUploadImagem(nome, base64, 'assets/img/');
+            await ghUploadImagem(nome, base64);
             configLanding.landing.botoes[idx].icone = nome;
             const prev = document.getElementById('icon-prev-' + idx);
             if (prev) { prev.outerHTML = `<img src="${nome}" style="width:24px;height:24px;object-fit:contain;background:#333;border-radius:4px;padding:2px" id="icon-prev-${idx}">`; }
@@ -1394,10 +1393,10 @@ async function salvarIdentidade() {
     try {
         if (logoBase64Pendente && logoNomePendente) {
             setStatus('Fazendo upload da logo...','info');
-            await ghUploadImagem(logoNomePendente, logoBase64Pendente, 'imagens/');
+            await ghUploadImagem(logoNomePendente, logoBase64Pendente);
             est.logo = 'imagens/' + logoNomePendente;
         }
-        const res = await ghPut('data/config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: identidade');
+        const res = await ghPut('config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: identidade');
         shaConfig = res.content.sha;
         setStatus('✅ Identidade salva! O site atualiza em instantes.','ok');
         setTimeout(()=>setStatus('',''),5000);
@@ -1415,7 +1414,7 @@ async function salvarLanding() {
 
     setStatus('Salvando landing page...','info');
     try {
-        const res = await ghPut('data/config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: landing page');
+        const res = await ghPut('config.json', JSON.stringify(configLanding,null,4), shaConfig, 'Admin: landing page');
         shaConfig = res.content.sha;
         setStatus('✅ Landing page salva! O site atualiza em instantes.','ok');
         setTimeout(()=>setStatus('',''),5000);
