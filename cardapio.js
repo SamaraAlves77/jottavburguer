@@ -210,7 +210,7 @@ function renderizarCardapio() {
                     <div class="card-footer">
                         <span class="card-preco">R$ ${precoFormatado}</span>
                         <button class="card-btn btn-adicionar" data-item-id="${item.id}" data-categoria-id="${secao.id}">
-                            ${isCustomizavel ? '🔧 Customizar' : '+ Adicionar'}
+                            Adicionar
                         </button>
                     </div>
                 </div>
