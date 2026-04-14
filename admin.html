@@ -550,18 +550,31 @@ function authHeaders() {
 }
 
 async function ghGet(caminho) {
-  const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${caminho}`, { headers: authHeaders() });
+  const r = await fetch('/.netlify/functions/github', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      caminho: `${GITHUB_OWNER}/${GITHUB_REPO}/contents/${caminho}`,
+      metodo: 'GET'
+    })
+  });
   if (!r.ok) throw new Error(`${r.status} ao ler ${caminho}`);
   return r.json();
 }
 
 async function ghPut(caminho, conteudo, sha, msg) {
-  const body = { message: msg || `Admin: ${caminho}`, content: b64Encode(conteudo) };
-  if (sha) body.sha = sha;
-  const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${caminho}`, {
-    method: 'PUT', headers: authHeaders(), body: JSON.stringify(body)
+  const payload = { message: msg || `Admin: ${caminho}`, content: b64Encode(conteudo) };
+  if (sha) payload.sha = sha;
+  const r = await fetch('/.netlify/functions/github', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      caminho: `${GITHUB_OWNER}/${GITHUB_REPO}/contents/${caminho}`,
+      metodo: 'PUT',
+      payload
+    })
   });
-  if (!r.ok) throw new Error(`${r.status} ao salvar ${caminho}: ${await r.text()}`);
+  if (!r.ok) throw new Error(`${r.status} ao salvar ${caminho}`);
   return r.json();
 }
 
@@ -570,8 +583,14 @@ async function ghUploadImagem(nome, base64) {
   try { sha = (await ghGet(`imagens/${nome}`)).sha; } catch(e){}
   const body = { message: `Admin: imagem ${nome}`, content: base64 };
   if (sha) body.sha = sha;
-  const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/imagens/${nome}`, {
-    method: 'PUT', headers: authHeaders(), body: JSON.stringify(body)
+  const r = await fetch('/.netlify/functions/github', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      caminho: `${GITHUB_OWNER}/${GITHUB_REPO}/contents/imagens/${nome}`,
+      metodo: 'PUT',
+      payload: body
+    })
   });
   if (!r.ok) throw new Error(`Erro no upload: ${await r.text()}`);
   return r.json();
@@ -1024,7 +1043,11 @@ async function testarConexao() {
   if (!githubToken) { document.getElementById('status-conexao').innerHTML = '<span style="color:#e53935">Token não configurado.</span>'; return; }
   document.getElementById('status-conexao').innerHTML = '<span style="color:var(--muted)">Testando...</span>';
   try {
-    const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`, { headers: authHeaders() });
+    const r = await fetch('/.netlify/functions/github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caminho: `${GITHUB_OWNER}/${GITHUB_REPO}`, metodo: 'GET' })
+    });
     if (r.ok) {
       document.getElementById('status-conexao').innerHTML = `<span class="badge-conectado"><i class="fas fa-check-circle"></i> Conectado ao repositório ${GITHUB_REPO}</span>`;
       await carregarDados();
