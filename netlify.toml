@@ -2,13 +2,13 @@
   publish = "."
   functions = "netlify/functions"
 
-# Desabilitar cache para arquivos HTML — sempre servir versão mais recente
+[functions]
+  node_bundler = "zisi"
+
 [[headers]]
   for = "/*.html"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
-    Pragma = "no-cache"
-    Expires = "0"
 
 [[headers]]
   for = "/*"
