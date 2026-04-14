@@ -2,6 +2,14 @@
   publish = "."
   functions = "netlify/functions"
 
+# Desabilitar cache para arquivos HTML — sempre servir versão mais recente
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
 [[headers]]
   for = "/*"
   [headers.values]
