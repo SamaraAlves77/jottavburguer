@@ -170,6 +170,200 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
   .form-row{flex-direction:column}
   .item-desc{display:none}
 }
+
+/* ═══════════════════════════════════════════════════
+   ADMIN — RESPONSIVIDADE COMPLETA
+   ═══════════════════════════════════════════════════ */
+
+/* TABLET (768px) */
+@media(max-width:768px){
+    /* Header */
+    header { padding: 10px 14px; }
+    .header-logo span { font-size: .95em; }
+
+    /* Tabs — scroll horizontal */
+    .tab-nav { padding: 8px 10px; gap: 3px; }
+    .tab-btn { padding: 6px 10px; font-size: .78em; white-space: nowrap; }
+
+    /* Cards empilham em coluna */
+    .card { padding: 14px; }
+
+    /* Grids viram coluna */
+    div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Cor pickers em coluna */
+    div[style*="grid-template-columns:1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Seções e itens */
+    .secoes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    .item-row {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .item-info { min-width: 0; flex: 1 1 150px; }
+    .item-thumb { width: 52px; height: 52px; }
+
+    /* Preview landing */
+    #preview-landing { display: none; }
+}
+
+/* MOBILE (480px) */
+@media(max-width:480px){
+    /* Header compacto */
+    header { padding: 8px 12px; }
+    .header-logo img { height: 28px; }
+    .header-logo span { display: none; }
+    .btn-logout { padding: 5px 10px; font-size: .78em; }
+
+    /* Tabs menor */
+    .tab-btn { padding: 5px 8px; font-size: .72em; }
+
+    /* Item row em mobile */
+    .item-row {
+        padding: 8px;
+    }
+    .item-nome { font-size: .88em; }
+    .item-preco { font-size: .8em; }
+    .btn-icon { padding: 5px 8px; font-size: .78em; }
+
+    /* Toggle ativo menor */
+    .toggle-ativo { transform: scale(0.9); }
+
+    /* Modal de edição fullscreen */
+    .modal-backdrop { align-items: flex-end; }
+    .modal-box {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 16px 16px 0 0;
+        max-height: 92vh;
+        overflow-y: auto;
+    }
+
+    /* Formulários */
+    .form-group label { font-size: .82em; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea { font-size: .88em; padding: 7px 9px; }
+
+    /* Botão salvar */
+    .btn-salvar-secao { font-size: .85em; padding: 11px; }
+
+    /* Cards de seção */
+    .card h3 { font-size: .95em; }
+    .card h4 { font-size: .88em; }
+
+    /* Painel de destaques */
+    #lista-destaques-ativos > div { flex-wrap: wrap; }
+}
+
+/* MOBILE PEQUENO (360px) */
+@media(max-width:360px){
+    .tab-btn { padding: 4px 7px; font-size: .7em; }
+    .item-thumb { width: 44px; height: 44px; }
+    .card { padding: 10px; }
+}
+
+/* ═══════════════════════════════════════
+   ADMIN — RESPONSIVO COMPLETO
+═══════════════════════════════════════ */
+
+/* ── TABLET (até 1024px) ── */
+@media (max-width: 1024px) {
+    .tab-nav { gap: 3px; padding: 10px 12px; }
+    .tab-btn { padding: 7px 12px; font-size: 0.8em; }
+    .tab-content { padding: 16px; }
+    .card { padding: 16px; }
+}
+
+/* ── TABLET PORTRAIT / MOBILE LARGE (até 768px) ── */
+@media (max-width: 768px) {
+    /* Header compacto */
+    header { padding: 10px 12px; }
+    .header-logo span { font-size: .95em; }
+
+    /* Tabs com scroll horizontal */
+    .tab-nav {
+        padding: 8px 10px;
+        gap: 4px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .tab-btn { 
+        padding: 6px 10px; 
+        font-size: 0.78em; 
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    /* Cards com padding menor */
+    .tab-content { padding: 12px; }
+    .card { padding: 14px; margin-bottom: 12px; }
+    .card h3 { font-size: .95em; }
+
+    /* Grid de 3 cores → 2 colunas */
+    [style*="grid-template-columns: 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* Item row compacto */
+    .item-row { padding: 8px 10px; gap: 8px; }
+    .item-thumb { width: 44px; height: 44px; }
+    .item-nome { font-size: .85em; }
+    .item-preco { font-size: .8em; }
+    .item-desc { display: none; }
+
+    /* Botões de ação menores */
+    .btn-icon { padding: 5px 8px; font-size: 0.8em; }
+    .btn-salvar-secao { padding: 11px; font-size: .88em; }
+
+    /* Modal fullscreen no mobile */
+    .modal-backdrop { align-items: flex-end; padding: 0; }
+    .modal-box { 
+        border-radius: 16px 16px 0 0; 
+        max-height: 90vh;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Seções como pills horizontais */
+    .secoes-lista { 
+        display: flex; 
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 6px;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+    }
+    .secao-btn { 
+        flex-shrink: 0;
+        padding: 6px 14px;
+        font-size: .82em;
+    }
+}
+
+/* ── MOBILE PEQUENO (até 420px) ── */
+@media (max-width: 420px) {
+    .tab-btn { padding: 5px 8px; font-size: 0.74em; }
+    .tab-content { padding: 10px; }
+    .card { padding: 12px; }
+    .item-row { padding: 6px 8px; }
+    .item-thumb { width: 38px; height: 38px; }
+
+    /* Grid de 2 cores → 1 coluna */
+    [style*="grid-template-columns:1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 </style>
 </head>
 <body>
