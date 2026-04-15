@@ -106,7 +106,11 @@ function setupEventListeners() {
     
     // Listeners do Modal de Customização (cardapio.js)
     if (fecharCustomizacaoBtn) fecharCustomizacaoBtn.addEventListener('click', () => mostrarModal(customizacaoModal, false));
-    if (btnAdicionarCustomizado) btnAdicionarCustomizado.addEventListener('click', adicionarItemCustomizadoAoCarrinho);    
+    if (btnAdicionarCustomizado) btnAdicionarCustomizado.addEventListener('click', function(e) {
+        if (typeof adicionarItemCustomizadoAoCarrinho === 'function') {
+            adicionarItemCustomizadoAoCarrinho(e);
+        }
+    });    
     
     // Listeners do Checkout (modal_carrinho.js)
     if (btnFinalizar) btnFinalizar.addEventListener('click', finalizarPedido);
@@ -173,10 +177,17 @@ function setupNavScroll() {
         link.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href').replace('#', '');
             const target = document.getElementById(targetId);
-            if (!target) return; // se não está na página do cardápio, deixa navegar normalmente
+            if (!target) return;
 
             e.preventDefault();
-            const offset = 120; // altura navbar + pills
+
+            // Fechar menu mobile se estiver aberto
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks?.classList.contains('active')) {
+                navLinks.classList.remove('active');
+            }
+
+            const offset = 120;
             const top = target.getBoundingClientRect().top + window.scrollY - offset;
 
             window.scrollTo({ top, behavior: 'smooth' });
