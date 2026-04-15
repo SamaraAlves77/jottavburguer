@@ -324,9 +324,10 @@ function renderizarBannersEspeciais() {
 
 // ── MODAL COMBO INTELIGENTE ──────────────────────────────────
 function abrirComboModal() {
-    // Montar dados das categorias (exceto adicionais)
+    // Categorias que fazem sentido no combo (exceto adicionais e combos prontos)
+    const CATS_COMBO = ['hamburgueres-artesanais', 'acompanhamentos', 'bebidas'];
     const cats = cardapioData.filter(s =>
-        s.id !== 'adicionais-extras' &&
+        CATS_COMBO.includes(s.id) &&
         s.itens.some(i => i.ativo !== false)
     );
 
