@@ -257,8 +257,19 @@
     color: #fff;
 }
 
-/* Mobile: pills ficam abaixo da navbar */
-@media (max-width: 600px) {
-    .navbar-content-wrapper { height: 52px; padding: 0 14px; }
-    .navbar-pills { display: none; }
+/* Pills sempre visíveis e horizontais em TODOS os tamanhos */
+@media (max-width: 768px) {
+    .navbar-content-wrapper { height: 54px; padding: 0 12px; gap: 8px; }
+    .navbar-pills { padding: 0 6px; gap: 4px; }
+    .navbar-pills .cat-pill { padding: 5px 11px; font-size: 0.75em; }
+}
+
+@media (max-width: 480px) {
+    .navbar-content-wrapper { height: 50px; padding: 0 10px; }
+    .navbar-pills { padding: 0 4px; gap: 3px; }
+    .navbar-pills .cat-pill { padding: 4px 9px; font-size: 0.7em; }
+}
+
+@media (max-width: 360px) {
+    .navbar-pills .cat-pill { padding: 4px 7px; font-size: 0.68em; }
 }
