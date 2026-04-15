@@ -676,7 +676,7 @@ function inicializarCarrossel(secaoId, total) {
     }
 
     // Auto-play
-    let timer = setInterval(() => irPara(atual + 1), 4000);
+    let timer = setInterval(() => irPara(atual + 1), 7000);
     slides.parentElement.addEventListener('mouseenter', () => clearInterval(timer));
     slides.parentElement.addEventListener('mouseleave', () => {
         timer = setInterval(() => irPara(atual + 1), 4000);
