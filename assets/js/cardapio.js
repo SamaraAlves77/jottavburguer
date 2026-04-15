@@ -118,6 +118,49 @@ function carregarCardapioDoLocalStorage() {
 // FUNÇÕES DE CARREGAMENTO E RENDERIZAÇÃO DO CARDÁPIO
 // =======================================================
 
+// ── PROMOÇÃO DO DIA ─────────────────────────────────────────
+function verificarPromocaoAtiva(promocao) {
+    if (!promocao || !promocao.ativa) return false;
+
+    const agora = new Date();
+    const tipo = promocao.validade?.tipo || 'manual';
+
+    if (tipo === 'manual') return true;
+
+    if (tipo === 'horario') {
+        const [hIni, mIni] = (promocao.validade.horario_inicio || '00:00').split(':').map(Number);
+        const [hFim, mFim] = (promocao.validade.horario_fim || '23:59').split(':').map(Number);
+        const minAtual = agora.getHours() * 60 + agora.getMinutes();
+        const minIni   = hIni * 60 + mIni;
+        const minFim   = hFim * 60 + mFim;
+        return minAtual >= minIni && minAtual <= minFim;
+    }
+
+    if (tipo === 'data') {
+        const ini = promocao.validade.data_inicio ? new Date(promocao.validade.data_inicio + 'T00:00') : null;
+        const fim = promocao.validade.data_fim    ? new Date(promocao.validade.data_fim    + 'T23:59') : null;
+        if (ini && agora < ini) return false;
+        if (fim && agora > fim) return false;
+        return true;
+    }
+
+    return false;
+}
+
+function calcularPrecoComPromocao(item, secaoId) {
+    const cfg = window.siteConfig;
+    const promo = cfg?.promocao;
+    if (!verificarPromocaoAtiva(promo)) return { preco: item.preco, desconto: 0, emPromocao: false };
+
+    const cats = promo.categorias || [];
+    const aplicaNestaCategoria = cats.length === 0 || cats.includes(secaoId);
+    if (!aplicaNestaCategoria) return { preco: item.preco, desconto: 0, emPromocao: false };
+
+    const desconto = promo.desconto || 0;
+    const precoComDesconto = item.preco * (1 - desconto / 100);
+    return { preco: precoComDesconto, desconto, emPromocao: true, precoOriginal: item.preco };
+}
+
 async function carregarCardapio() {
     // Remove cache antigo do cardápio (não do carrinho)
     localStorage.removeItem('cardapioJottaV');
@@ -130,6 +173,8 @@ async function carregarCardapio() {
             if (r.ok) window.siteConfig = await r.json();
         } catch(e) { window.siteConfig = {}; }
     }
+    // Verificar se promoção está ativa e válida
+    window.promocaoAtiva = verificarPromocao(window.siteConfig?.promocao);
     try {
         // cache: 'no-store' força busca real ignorando cache do browser E do CDN
         const response = await fetch('data/cardapio.json', {
@@ -186,6 +231,27 @@ function renderizarCardapio() {
     if (!container) return;
     container.innerHTML = '';
 
+    // ── BANNER PROMOÇÃO DO DIA ──────────────────────────────────
+    const promo = window.promocaoAtiva;
+    if (promo) {
+        const cats = cardapioData
+            .filter(s => promo.todos || (promo.categorias||[]).includes(s.id))
+            .map(s => s.nome).join(', ');
+        const bannerPromo = document.createElement('div');
+        bannerPromo.className = 'promo-banner';
+        bannerPromo.innerHTML = `
+            <div class="promo-banner-left">
+                <span class="promo-banner-icon">🔥</span>
+                <div>
+                    <div class="promo-banner-titulo">${promo.titulo || 'Promoção do Dia'}</div>
+                    <div class="promo-banner-sub">${promo.desconto}% OFF em: ${cats}</div>
+                </div>
+            </div>
+            <div class="promo-banner-desc">${promo.desconto}% <span>OFF</span></div>
+        `;
+        container.appendChild(bannerPromo);
+    }
+
     // ── CARROSSEL GLOBAL DE DESTAQUES (topo único) ──────────────
     const todosDestaques = cardapioData.flatMap(secao =>
         secao.itens
@@ -237,6 +303,9 @@ function renderizarCardapio() {
         if (todosDestaques.length > 1) inicializarCarrossel('global', todosDestaques.length);
     }
 
+    // ── BANNER DE PROMOÇÃO DO DIA ───────────────────────────────
+    renderizarBannerPromocao();
+
     // ── BANNERS COMBO + BATATA ───────────────────────────────────
     renderizarBannersEspeciais();
 
@@ -255,17 +324,30 @@ function renderizarCardapio() {
             <h2 class="section-title">${secao.nome}</h2>
             <div class="cardapio-grid">
                 ${itensAtivos.map(item => {
-                    const preco = (item.preco || 0).toFixed(2).replace('.', ',');
+                    const infoPromo = calcularPrecoComPromocao(item, secao.id);
+                    const precoOriginal = (item.preco || 0).toFixed(2).replace('.', ',');
+                    const precoFinal = infoPromo.preco.toFixed(2).replace('.', ',');
+                    const emPromo = infoPromo.emPromocao;
+                    const precoHtml = emPromo
+                        ? `<div class="preco-promo-wrap">
+                               <span class="card-preco-original">R$ ${precoOriginal}</span>
+                               <span class="card-preco preco-promocao">R$ ${precoFinal}</span>
+                           </div>`
+                        : `<span class="card-preco">R$ ${precoOriginal}</span>`;
                     return `
-                    <div class="item-card" data-item-id="${item.id}" data-categoria-id="${secao.id}">
-                        <div class="card-img-wrapper">${gerarImagemCard(item)}</div>
+                    <div class="item-card ${emPromo ? 'em-promocao' : ''}" data-item-id="${item.id}" data-categoria-id="${secao.id}">
+                        <div class="card-img-wrapper">
+                            ${gerarImagemCard(item)}
+                            ${emPromo ? `<div class="promo-tag">-${infoPromo.desconto}%</div>` : ''}
+                        </div>
                         <div class="card-body">
                             <h3 class="card-nome">${item.nome}</h3>
                             <p class="card-desc">${item.descricao || ''}</p>
                             <div class="card-footer">
-                                <span class="card-preco">R$ ${preco}</span>
+                                ${precoHtml}
                                 <button class="card-btn btn-adicionar"
-                                    data-item-id="${item.id}" data-categoria-id="${secao.id}">
+                                    data-item-id="${item.id}" data-categoria-id="${secao.id}"
+                                    data-preco-final="${infoPromo.preco}">
                                     Adicionar
                                 </button>
                             </div>
@@ -285,6 +367,38 @@ function renderizarCardapio() {
 }
 
 // ── BANNERS ESPECIAIS (Combo + Batata) ──────────────────────
+function renderizarBannerPromocao() {
+    const container = document.getElementById('main-content-container');
+    if (!container) return;
+    const anterior = document.getElementById('banner-promocao');
+    if (anterior) anterior.remove();
+
+    const cfg = window.siteConfig;
+    const promo = cfg?.promocao;
+    if (!verificarPromocaoAtiva(promo)) return;
+
+    const cats = promo.categorias || [];
+    const catNomes = cats.length === 0
+        ? 'todos os itens'
+        : cats.map(id => cardapioData.find(s => s.id === id)?.nome || id).join(', ');
+
+    const div = document.createElement('div');
+    div.id = 'banner-promocao';
+    div.className = 'banner-promocao-dia';
+    div.innerHTML = `
+        <div class="banner-promo-ico">🔥</div>
+        <div class="banner-promo-info">
+            <div class="banner-promo-title">${promo.titulo || 'Promoção do Dia'}</div>
+            <div class="banner-promo-sub">${promo.desconto}% OFF em ${catNomes}</div>
+        </div>
+        <div class="banner-promo-badge">-${promo.desconto}%</div>
+    `;
+
+    const firstSection = container.querySelector('section');
+    if (firstSection) container.insertBefore(div, firstSection);
+    else container.prepend(div);
+}
+
 function renderizarBannersEspeciais() {
     const container = document.getElementById('main-content-container');
     if (!container) return;
@@ -453,8 +567,9 @@ function atualizarResumoCombo() {
     const entries = Object.entries(selecionados);
     const ncats = entries.length;
     const subtotal = entries.reduce((s, [, item]) => s + (item.preco || 0), 0);
+    const pctCombo = (window.siteConfig?.combo?.desconto || 10) / 100;
     const temDesc = ncats >= 2;
-    const total = temDesc ? subtotal * 0.9 : subtotal;
+    const total = temDesc ? subtotal * (1 - pctCombo) : subtotal;
     const desconto = subtotal - total;
 
     const aviso = document.getElementById('combo-aviso');
@@ -501,8 +616,9 @@ function adicionarComboAoCarrinho() {
     if (ncats < 1) return;
 
     const subtotal = entries.reduce((s, [, item]) => s + (item.preco || 0), 0);
+    const pctCombo = (window.siteConfig?.combo?.desconto || 10) / 100;
     const temDesc = ncats >= 2;
-    const total = temDesc ? subtotal * 0.9 : subtotal;
+    const total = temDesc ? subtotal * (1 - pctCombo) : subtotal;
 
     // Adicionar como item único de combo
     carrinho.push({
@@ -895,16 +1011,60 @@ function handleAdicionarAoCarrinho(event) {
     }
 }
 
-function adicionarItemSimplesAoCarrinho(item) {
+function adicionarItemSimplesAoCarrinho(item, categoriaId) {
     const existingItem = carrinho.find(c => c.id === item.id && !c.adicionais);
+    const precoPromo = getPrecoComPromocao(item, categoriaId);
+    const precoFinal = precoPromo || item.preco;
 
     if (existingItem) {
         existingItem.quantidade++;
     } else {
-        carrinho.push({ ...item, quantidade: 1 });
+        carrinho.push({
+            ...item,
+            preco: precoFinal,
+            precoOriginal: precoPromo ? item.preco : null,
+            quantidade: 1
+        });
     }
-    salvarCarrinhoLocal(); // persiste carrinho
+    salvarCarrinhoLocal();
     if (typeof updateContadorCarrinho === 'function') updateContadorCarrinho();
+}
+
+// ── PROMOÇÃO DO DIA ──────────────────────────────────────────
+function verificarPromocao(promo) {
+    if (!promo || !promo.ativa) return null;
+
+    const agora = new Date();
+    const tipo = promo.validade?.tipo || 'manual';
+
+    if (tipo === 'data') {
+        const ini = promo.validade.data_inicio ? new Date(promo.validade.data_inicio) : null;
+        const fim = promo.validade.data_fim ? new Date(promo.validade.data_fim + 'T23:59:59') : null;
+        if (ini && agora < ini) return null;
+        if (fim && agora > fim) return null;
+    }
+
+    if (tipo === 'horario') {
+        const [hIni, mIni] = (promo.validade.hora_inicio || '00:00').split(':').map(Number);
+        const [hFim, mFim] = (promo.validade.hora_fim || '23:59').split(':').map(Number);
+        const minAgora = agora.getHours() * 60 + agora.getMinutes();
+        const minIni = hIni * 60 + mIni;
+        const minFim = hFim * 60 + mFim;
+        if (minAgora < minIni || minAgora > minFim) return null;
+    }
+
+    return promo; // ativa e dentro da validade
+}
+
+function getPrecoComPromocao(item, categoriaId) {
+    const promo = window.promocaoAtiva;
+    if (!promo) return null;
+
+    const aplicar = promo.todos || (promo.categorias || []).includes(categoriaId);
+    if (!aplicar) return null;
+
+    const desconto = (promo.desconto || 0) / 100;
+    return item.preco * (1 - desconto);
 }
 
 function salvarCarrinhoLocal() {
