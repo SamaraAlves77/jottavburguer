@@ -415,6 +415,78 @@ footer {
 }
 
 
+
+/* ── PROMOÇÃO DO DIA ── */
+.promo-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #1a0800, #2a1000);
+    border: 1px solid rgba(255,100,0,.35);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    animation: promo-pulse 3s ease-in-out infinite;
+}
+
+@keyframes promo-pulse {
+    0%,100% { border-color: rgba(255,100,0,.35); }
+    50% { border-color: rgba(255,100,0,.7); }
+}
+
+.promo-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.promo-banner-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.promo-banner-titulo {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.promo-banner-sub {
+    color: rgba(255,255,255,.55);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.promo-banner-desc {
+    color: #ff6600;
+    font-size: 28px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.promo-banner-desc span {
+    font-size: 16px;
+}
+
+/* Preço promocional nos cards */
+.preco-promo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.card-preco-original {
+    color: #555;
+    font-size: 0.72em;
+    font-weight: 600;
+    text-decoration: line-through;
+    line-height: 1;
+}
+
+.preco-promo {
+    color: #ff6600 !important;
+}
+
 /* ── BANNERS ESPECIAIS ── */
 #banners-especiais { margin-bottom: 8px; }
 
@@ -630,6 +702,69 @@ footer {
 .batata-chip.sel { border-color: #45a135; background: rgba(69,161,53,.1); }
 .batata-chip-nome { color: #e0e0e0; font-size: 12px; font-weight: 500; }
 .batata-chip-preco { color: #45a135; font-size: 11px; font-weight: 700; }
+
+/* ── PROMOÇÃO DO DIA ── */
+.banner-promocao-dia {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #1a0a00, #2a1500);
+    border: 1px solid rgba(255,100,0,.35);
+    border-radius: 14px;
+    padding: 13px 16px;
+    margin-bottom: 14px;
+}
+.banner-promo-ico { font-size: 24px; }
+.banner-promo-info { flex: 1; }
+.banner-promo-title { color: #fff; font-size: 15px; font-weight: 800; }
+.banner-promo-sub { color: rgba(255,255,255,.6); font-size: 12px; margin-top: 2px; }
+.banner-promo-badge {
+    background: #ff5500;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 10px;
+    padding: 6px 14px;
+}
+
+/* Tag de % no canto da foto */
+.promo-tag {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #ff5500;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 8px;
+    padding: 3px 8px;
+    z-index: 2;
+}
+
+/* Preço riscado */
+.card-preco-original {
+    color: #666;
+    text-decoration: line-through;
+    font-size: 0.75em;
+    display: block;
+    line-height: 1;
+}
+.preco-promocao {
+    color: #ff5500 !important;
+}
+.preco-promo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+/* Card em promoção — borda sutil */
+.item-card.em-promocao {
+    border-color: rgba(255,85,0,.25);
+}
+.item-card.em-promocao:hover {
+    border-color: rgba(255,85,0,.5);
+}
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
     #main-content-container { padding: 16px 12px 40px; }
