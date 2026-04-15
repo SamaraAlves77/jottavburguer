@@ -126,13 +126,13 @@ async function carregarCardapio() {
     // Carrega config central se ainda não carregado
     if (!window.siteConfig) {
         try {
-            const r = await fetch('config.json', { cache: 'no-store' });
+            const r = await fetch('data/config.json', { cache: 'no-store' });
             if (r.ok) window.siteConfig = await r.json();
         } catch(e) { window.siteConfig = {}; }
     }
     try {
         // cache: 'no-store' força busca real ignorando cache do browser E do CDN
-        const response = await fetch('cardapio.json', {
+        const response = await fetch('data/cardapio.json', {
             cache: 'no-store',
             headers: {
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -175,9 +175,9 @@ function gerarImagemCard(item) {
             alt="${item.nome}"
             loading="lazy"
             decoding="async"
-            onerror="this.src='hamburguer.png';this.style.objectFit='contain';this.style.padding='24px';this.style.mixBlendMode='screen';this.style.opacity='0.5'">`;
+            onerror="this.src='assets/img/hamburguer.png';this.style.objectFit='contain';this.style.padding='24px';this.style.mixBlendMode='screen';this.style.opacity='0.5'">`;
     }
-    return `<img src="hamburguer.png" alt="Sem imagem" loading="lazy"
+    return `<img src="assets/img/hamburguer.png" alt="Sem imagem" loading="lazy"
         style="width:100%;height:100%;object-fit:contain;padding:24px;mix-blend-mode:screen;opacity:0.45">`;
 }
 
@@ -186,137 +186,138 @@ function renderizarCardapio() {
     if (!container) return;
     container.innerHTML = '';
 
-    // Banner carrossel de destaques
-    const destaques = [];
     cardapioData.forEach(secao => {
         if (secao.id === 'adicionais-extras') return;
-        secao.itens.forEach(item => {
-            if (item.destaque && item.ativo !== false) {
-                destaques.push({ ...item, secaoId: secao.id });
-            }
-        });
-    });
 
-    if (destaques.length > 0) {
-        const bannerSection = document.createElement('div');
-        bannerSection.className = 'banner-carousel-section';
-        bannerSection.innerHTML = criarBannerCarousel(destaques);
-        container.appendChild(bannerSection);
-        iniciarCarousel();
-    }
-
-    // Seções com grade fluida
-    cardapioData.forEach(secao => {
-        if (secao.id === 'adicionais-extras') return;
-        const itensVisiveis = secao.itens.filter(i => i.ativo !== false);
-        if (itensVisiveis.length === 0) return;
-
-        const itensOrdenados = [...itensVisiveis].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+        // Separar destaques dos itens normais
+        const itensAtivos     = secao.itens.filter(i => i.ativo !== false);
+        const itensDestaque   = itensAtivos.filter(i => i.destaque === true).slice(0, 3);
+        const itensNormais    = itensAtivos.filter(i => i.destaque !== true);
 
         const section = document.createElement('section');
         section.id = secao.id;
         section.classList.add('menu-section');
-        section.innerHTML = `<h2 class="section-title">${secao.nome}</h2><div class="cardapio-grid" id="grid-${secao.id}"></div>`;
+
+        let html = `<h2 class="section-title">${secao.nome}</h2>`;
+
+        // ── CARROSSEL DE DESTAQUES ──────────────────────────────
+        if (itensDestaque.length > 0) {
+            html += `<div class="destaque-wrap">
+                <div class="destaque-track">
+                    <div class="destaque-slides" id="slides-${secao.id}">
+                        ${itensDestaque.map((item, idx) => {
+                            const preco = item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00';
+                            const badge = item.badge || '';
+                            const isCustomizavel = CATEGORIAS_CUSTOMIZAVEIS.includes(secao.id);
+                            const fotoSrc = item.imagem ? `imagens/${item.imagem}` : 'assets/img/hamburguer.png';
+                            return `
+                            <div class="destaque-slide">
+                                <div class="destaque-foto">
+                                    <img src="${fotoSrc}" alt="${item.nome}" loading="lazy"
+                                         onerror="this.src='assets/img/hamburguer.png';this.style.objectFit='contain';this.style.padding='20px';this.style.opacity='.4'">
+                                    <div class="destaque-foto-fade"></div>
+                                </div>
+                                <div class="destaque-body">
+                                    ${badge ? `<span class="destaque-badge">${badge}</span>` : ''}
+                                    <h3 class="destaque-nome">${item.nome}</h3>
+                                    <p class="destaque-desc">${item.descricao || ''}</p>
+                                    <div class="destaque-footer">
+                                        <span class="destaque-preco">R$ ${preco}</span>
+                                        <button class="card-btn btn-adicionar destaque-btn"
+                                            data-item-id="${item.id}" data-categoria-id="${secao.id}">
+                                            Adicionar 🛒
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+                ${itensDestaque.length > 1 ? `
+                <div class="destaque-dots" id="dots-${secao.id}">
+                    ${itensDestaque.map((_, i) => `<div class="destaque-dot ${i===0?'ativo':''}" data-idx="${i}" data-secao="${secao.id}"></div>`).join('')}
+                </div>` : ''}
+            </div>`;
+        }
+
+        // ── GRADE DE ITENS NORMAIS ──────────────────────────────
+        if (itensNormais.length > 0) {
+            html += `<div class="cardapio-grid">
+                ${itensNormais.map(item => {
+                    const preco = item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00';
+                    const isCustomizavel = CATEGORIAS_CUSTOMIZAVEIS.includes(secao.id);
+                    return `
+                    <div class="item-card" data-item-id="${item.id}" data-categoria-id="${secao.id}">
+                        <div class="card-img-wrapper">${gerarImagemCard(item)}</div>
+                        <div class="card-body">
+                            <h3 class="card-nome">${item.nome}</h3>
+                            <p class="card-desc">${item.descricao || ''}</p>
+                            <div class="card-footer">
+                                <span class="card-preco">R$ ${preco}</span>
+                                <button class="card-btn btn-adicionar"
+                                    data-item-id="${item.id}" data-categoria-id="${secao.id}">
+                                    Adicionar
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>`;
+        }
+
+        section.innerHTML = html;
         container.appendChild(section);
 
-        const grid = document.getElementById(`grid-${secao.id}`);
-        itensOrdenados.forEach(item => {
-            const card = document.createElement('div');
-            card.classList.add('item-card');
-            card.setAttribute('data-item-id', item.id);
-            card.setAttribute('data-categoria-id', secao.id);
-            const precoFormatado = item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00';
-            const isCustomizavel = CATEGORIAS_CUSTOMIZAVEIS.includes(secao.id);
-            card.innerHTML = `
-                <div class="card-img-wrapper">
-                    ${gerarImagemCard(item)}
-                </div>
-                <div class="card-body">
-                    <h3 class="card-nome">${item.nome}</h3>
-                    <p class="card-desc">${item.descricao || ''}</p>
-                    <div class="card-footer">
-                        <span class="card-price">R$ ${precoFormatado}</span>
-                        <button class="btn-adicionar" onclick="handleBotaoAdicionar(event, '${secao.id}', ${item.id})">
-                            Adicionar
-                        </button>
-                    </div>
-                </div>`;
-            grid.appendChild(card);
-        });
+        // Inicializar carrossel se houver destaques
+        if (itensDestaque.length > 1) {
+            inicializarCarrossel(secao.id, itensDestaque.length);
+        }
+    });
+
+    document.querySelectorAll('.btn-adicionar').forEach(btn => {
+        btn.addEventListener('click', handleAdicionarAoCarrinho);
     });
 
     renderizarCategoriasPills();
 }
 
-function criarBannerCarousel(destaques) {
-    const slides = destaques.map((item, i) => {
-        const preco = item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00';
-        const badge = item.badge || '⭐ Destaque';
-        const img = item.imagem
-            ? `<img src="imagens/${item.imagem}" alt="${item.nome}" loading="lazy">`
-            : `<img src="assets/img/hamburguer.png" alt="${item.nome}" style="opacity:.3;padding:16px">`;
-        return `
-        <div class="banner-slide" data-secao="${item.secaoId}" data-id="${item.id}">
-            <div class="banner-img-left">${img}</div>
-            <div class="banner-content">
-                <span class="banner-badge">${badge}</span>
-                <h3 class="banner-nome">${item.nome}</h3>
-                <p class="banner-desc">${item.descricao || ''}</p>
-                <div class="banner-footer">
-                    <span class="banner-preco">R$ ${preco}</span>
-                    <button class="banner-btn" onclick="handleBotaoAdicionar(event, '${item.secaoId}', ${item.id})">Adicionar 🛒</button>
-                </div>
-            </div>
-        </div>`;
-    }).join('');
+function inicializarCarrossel(secaoId, total) {
+    const slides  = document.getElementById(`slides-${secaoId}`);
+    const dotsEl  = document.getElementById(`dots-${secaoId}`);
+    if (!slides) return;
 
-    const dots = destaques.map((_, i) =>
-        `<div class="banner-dot ${i === 0 ? 'ativo' : ''}" data-idx="${i}"></div>`
-    ).join('');
+    let atual = 0;
 
-    return `
-    <div class="banner-carousel" id="bannerCarousel">
-        <div class="banner-slides-track" id="bannerTrack">${slides}</div>
-    </div>
-    <div class="banner-dots" id="bannerDots">${dots}</div>`;
-}
+    const getDots = () => dotsEl ? dotsEl.querySelectorAll('.destaque-dot') : [];
 
-let bannerTimer = null;
-let bannerAtual = 0;
-
-function iniciarCarousel() {
-    const track = document.getElementById('bannerTrack');
-    const dots = document.querySelectorAll('.banner-dot');
-    const total = dots.length;
-    if (!track || total === 0) return;
-
-    function irPara(idx) {
-        bannerAtual = (idx + total) % total;
-        track.style.transform = `translateX(-${bannerAtual * 100}%)`;
-        dots.forEach((d, i) => d.classList.toggle('ativo', i === bannerAtual));
+    function irPara(n) {
+        atual = ((n % total) + total) % total;
+        slides.style.transform = `translateX(-${atual * 100}%)`;
+        getDots().forEach((d, i) => d.classList.toggle('ativo', i === atual));
     }
 
-    dots.forEach(d => d.addEventListener('click', () => {
-        clearInterval(bannerTimer);
-        irPara(parseInt(d.dataset.idx));
-        bannerTimer = setInterval(() => irPara(bannerAtual + 1), 4000);
-    }));
+    // Dots clicáveis
+    if (dotsEl) {
+        dotsEl.querySelectorAll('.destaque-dot').forEach(d => {
+            d.addEventListener('click', () => irPara(parseInt(d.getAttribute('data-idx'))));
+        });
+    }
 
-    // Swipe no mobile
-    let startX = 0;
-    track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    track.addEventListener('touchend', e => {
-        const diff = startX - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 40) {
-            clearInterval(bannerTimer);
-            irPara(bannerAtual + (diff > 0 ? 1 : -1));
-            bannerTimer = setInterval(() => irPara(bannerAtual + 1), 4000);
-        }
+    // Auto-play
+    let timer = setInterval(() => irPara(atual + 1), 4000);
+    slides.parentElement.addEventListener('mouseenter', () => clearInterval(timer));
+    slides.parentElement.addEventListener('mouseleave', () => {
+        timer = setInterval(() => irPara(atual + 1), 4000);
     });
 
-    bannerTimer = setInterval(() => irPara(bannerAtual + 1), 4000);
+    // Touch/swipe
+    let startX = 0;
+    slides.addEventListener('touchstart', e => startX = e.touches[0].clientX, { passive: true });
+    slides.addEventListener('touchend', e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) irPara(atual + (diff > 0 ? 1 : -1));
+    });
 }
-
 
 function renderizarCategoriasPills() {
     const container = document.getElementById('categorias-pills');
