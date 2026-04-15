@@ -205,6 +205,8 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     <button class="tab-btn" onclick="mostrarTab('whatsapp')">📱 WhatsApp</button>
 
     <button class="tab-btn" onclick="mostrarTab('aparencia')">🎨 Aparência</button>
+    <button class="tab-btn" onclick="mostrarTab('promocao')">🔥 Promoção</button>
+    <button class="tab-btn" onclick="mostrarTab('promocoes')">🔥 Promoções</button>
   </div>
 
   <!-- TAB: CARDÁPIO -->
@@ -283,6 +285,208 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     </div>
   </div>
 
+
+  <!-- TAB: PROMOÇÕES -->
+  <div id="tab-promocoes" class="tab-content">
+    <div class="card">
+      <h3>🔥 Promoção do Dia</h3>
+      <p style="color:var(--muted);font-size:.82em;margin:8px 0 16px">Aplica desconto automaticamente nos itens selecionados. Não acumula com o combo.</p>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <label class="toggle-ativo" title="Ativar promoção">
+          <input type="checkbox" id="promo-ativa" onchange="togglePromocao(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+        <span id="promo-status-label" style="color:var(--muted);font-size:.85em">Promoção desativada</span>
+      </div>
+
+      <div class="form-group">
+        <label>Título da promoção</label>
+        <input type="text" id="promo-titulo" value="🔥 Promoção do Dia" placeholder="Ex: 🔥 Promoção do Dia">
+      </div>
+
+      <div class="form-group">
+        <label>Desconto (%)</label>
+        <input type="number" id="promo-desconto" value="15" min="1" max="99" style="width:120px">
+      </div>
+
+      <div class="form-group">
+        <label>Aplicar em</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <input type="checkbox" id="promo-todos" checked onchange="togglePromocaoTodos(this.checked)" style="width:16px;height:16px">
+          <span style="font-size:.88em">Todos os itens do cardápio</span>
+        </div>
+        <div id="promo-cats" style="display:none;flex-direction:column;gap:6px;margin-top:8px"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de validade</label>
+        <select id="promo-tipo" onchange="mudarTipoValidade(this.value)"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%">
+          <option value="manual">Manual (ligar/desligar)</option>
+          <option value="horario">Por horário</option>
+          <option value="data">Por data</option>
+        </select>
+      </div>
+
+      <div id="promo-horario" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label>Início</label>
+            <input type="time" id="promo-hora-ini" value="11:00">
+          </div>
+          <div class="form-group">
+            <label>Fim</label>
+            <input type="time" id="promo-hora-fim" value="23:00">
+          </div>
+        </div>
+      </div>
+
+      <div id="promo-data" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label>Data início</label>
+            <input type="date" id="promo-data-ini">
+          </div>
+          <div class="form-group">
+            <label>Data fim</label>
+            <input type="date" id="promo-data-fim">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-salvar-secao" onclick="salvarPromocao()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar Promoção no GitHub
+      </button>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>🎯 Desconto do Combo</h3>
+      <p style="color:var(--muted);font-size:.82em;margin:8px 0 16px">Percentual aplicado quando o cliente monta um combo com itens de categorias diferentes.</p>
+      <div class="form-group">
+        <label>Desconto do combo (%)</label>
+        <input type="number" id="combo-desconto" value="10" min="1" max="99" style="width:120px">
+      </div>
+      <button class="btn-salvar-secao" onclick="salvarComboDesconto()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar Desconto do Combo
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB: PROMOÇÃO -->
+  <div id="tab-promocao" class="tab-content">
+    <div class="card">
+      <h3>🔥 Promoção do Dia</h3>
+      <p style="color:var(--muted);font-size:.82em;margin:8px 0 16px">Configure um desconto especial para todos os itens ou categorias específicas. Não se aplica ao Monte seu Combo.</p>
+
+      <div class="form-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <label style="font-size:.95em;font-weight:600">Promoção ativa</label>
+        <label class="toggle-ativo">
+          <input type="checkbox" id="promo-ativa" onchange="atualizarPreviewPromo()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>Título da promoção</label>
+        <input type="text" id="promo-titulo" placeholder="🔥 Promoção do Dia" oninput="atualizarPreviewPromo()">
+      </div>
+
+      <div class="form-group">
+        <label>Desconto (%)</label>
+        <div style="display:flex;align-items:center;gap:12px">
+          <input type="range" id="promo-desconto-range" min="5" max="80" step="5" value="20"
+            oninput="document.getElementById('promo-desconto-val').textContent=this.value+'%';document.getElementById('promo-desconto').value=this.value;atualizarPreviewPromo()"
+            style="flex:1">
+          <span id="promo-desconto-val" style="color:var(--green);font-weight:700;font-size:1.1em;min-width:48px">20%</span>
+          <input type="hidden" id="promo-desconto" value="20">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Aplicar em</label>
+        <select id="promo-categorias-tipo" onchange="toggleCatsSeletor()" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%">
+          <option value="todos">Todos os itens</option>
+          <option value="especificas">Categorias específicas</option>
+        </select>
+      </div>
+
+      <div id="promo-cats-seletor" style="display:none" class="form-group">
+        <label>Selecione as categorias</label>
+        <div id="promo-cats-lista" style="display:flex;flex-direction:column;gap:6px;margin-top:6px"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Validade</label>
+        <select id="promo-validade-tipo" onchange="toggleValidadeSeletor()" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%">
+          <option value="manual">Manual (ligar/desligar)</option>
+          <option value="horario">Por horário</option>
+          <option value="data">Por data</option>
+        </select>
+      </div>
+
+      <div id="promo-horario-wrap" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" class="form-group">
+          <div>
+            <label>Início</label>
+            <input type="time" id="promo-horario-ini" value="11:00" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%">
+          </div>
+          <div>
+            <label>Fim</label>
+            <input type="time" id="promo-horario-fim" value="14:00" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%">
+          </div>
+        </div>
+      </div>
+
+      <div id="promo-data-wrap" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" class="form-group">
+          <div>
+            <label>Data início</label>
+            <input type="date" id="promo-data-ini" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%">
+          </div>
+          <div>
+            <label>Data fim</label>
+            <input type="date" id="promo-data-fim" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%">
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div id="promo-preview" style="background:var(--surface2);border-radius:10px;padding:12px;margin:12px 0;display:none">
+        <div style="font-size:.8em;color:var(--muted);margin-bottom:6px">Preview no cardápio</div>
+        <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#1a0a00,#2a1500);border:1px solid rgba(255,100,0,.35);border-radius:10px;padding:10px 14px">
+          <span style="font-size:20px">🔥</span>
+          <div style="flex:1">
+            <div id="pv-titulo" style="color:#fff;font-size:13px;font-weight:700">Promoção do Dia</div>
+            <div id="pv-sub" style="color:rgba(255,255,255,.6);font-size:11px">20% OFF em todos os itens</div>
+          </div>
+          <div id="pv-badge" style="background:#ff5500;color:#fff;font-size:14px;font-weight:800;border-radius:8px;padding:5px 12px">-20%</div>
+        </div>
+      </div>
+
+      <button class="btn-salvar-secao" onclick="salvarPromocao()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar Promoção no GitHub
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>🎯 Desconto do Monte seu Combo</h3>
+      <p style="color:var(--muted);font-size:.82em;margin:8px 0 16px">Define a % de desconto quando o cliente combina itens de categorias diferentes.</p>
+      <div class="form-group">
+        <label>Desconto do combo (%)</label>
+        <div style="display:flex;align-items:center;gap:12px">
+          <input type="range" id="combo-desconto-range" min="5" max="50" step="5" value="10"
+            oninput="document.getElementById('combo-desconto-val').textContent=this.value+'%';document.getElementById('combo-desconto').value=this.value"
+            style="flex:1">
+          <span id="combo-desconto-val" style="color:var(--green);font-weight:700;font-size:1.1em;min-width:48px">10%</span>
+          <input type="hidden" id="combo-desconto" value="10">
+        </div>
+      </div>
+      <button class="btn-salvar-secao" onclick="salvarComboDesconto()">
+        <i class="fas fa-cloud-upload-alt"></i> Salvar Desconto do Combo
+      </button>
+    </div>
+  </div>
 
   <!-- TAB: APARÊNCIA -->
   <div id="tab-aparencia" class="tab-content">
@@ -625,7 +829,9 @@ async function carregarDados() {
     renderizarWhatsapp();
     await carregarTema();
     carregarIdentidade();
+    carregarPromocao();
     setStatus('Dados carregados com sucesso.', 'ok');
+    carregarPromocao();
     setTimeout(() => setStatus('',''), 3000);
   } catch(e) {
     setStatus('Erro ao carregar: ' + e.message, 'erro');
@@ -1149,6 +1355,9 @@ function mostrarTab(nome) {
   if (nome === 'aparencia') {
     renderizarManipuladorCores();
   }
+  if (nome === 'promocoes') {
+    carregarPromocao();
+  }
 }
 
 function setStatus(msg, tipo) {
@@ -1489,6 +1698,121 @@ async function salvarIdentidade() {
     } catch(e) { setStatus('Erro: '+e.message,'erro'); }
 }
 
+// ── FUNÇÕES DE PROMOÇÃO ─────────────────────────────────────
+
+function carregarPromocao() {
+  const cfg = configLanding;
+  const promo = cfg?.promocao || {};
+  const combo = cfg?.combo_desconto || 10;
+
+  const el = id => document.getElementById(id);
+
+  if (el('promo-ativa'))        el('promo-ativa').checked = promo.ativa || false;
+  if (el('promo-titulo'))       el('promo-titulo').value  = promo.titulo || '🔥 Promoção do Dia';
+  if (el('promo-desconto'))     el('promo-desconto').value = promo.desconto || 20;
+  if (el('promo-desconto-range')) el('promo-desconto-range').value = promo.desconto || 20;
+  if (el('promo-desconto-val')) el('promo-desconto-val').textContent = (promo.desconto || 20) + '%';
+  if (el('promo-validade-tipo')) el('promo-validade-tipo').value = promo.validade?.tipo || 'manual';
+  if (el('promo-horario-ini'))  el('promo-horario-ini').value = promo.validade?.horario_inicio || '11:00';
+  if (el('promo-horario-fim'))  el('promo-horario-fim').value = promo.validade?.horario_fim   || '14:00';
+  if (el('promo-data-ini'))     el('promo-data-ini').value = promo.validade?.data_inicio || '';
+  if (el('promo-data-fim'))     el('promo-data-fim').value = promo.validade?.data_fim    || '';
+
+  if (el('combo-desconto'))     el('combo-desconto').value = combo;
+  if (el('combo-desconto-range')) el('combo-desconto-range').value = combo;
+  if (el('combo-desconto-val')) el('combo-desconto-val').textContent = combo + '%';
+
+  // Categorias
+  const catsList = el('promo-cats-lista');
+  if (catsList) {
+    catsList.innerHTML = cardapioData
+      .filter(s => s.id !== 'adicionais-extras')
+      .map(s => {
+        const sel = (promo.categorias || []).includes(s.id);
+        return `<label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" value="${s.id}" ${sel ? 'checked' : ''} style="width:16px;height:16px">
+          <span style="color:var(--text);font-size:.9em">${s.nome}</span>
+        </label>`;
+      }).join('');
+  }
+
+  const tipo = promo.categorias?.length > 0 ? 'especificas' : 'todos';
+  if (el('promo-categorias-tipo')) el('promo-categorias-tipo').value = tipo;
+  toggleCatsSeletor();
+  toggleValidadeSeletor();
+  atualizarPreviewPromo();
+}
+
+function toggleCatsSeletor() {
+  const tipo = document.getElementById('promo-categorias-tipo')?.value;
+  const seletor = document.getElementById('promo-cats-seletor');
+  if (seletor) seletor.style.display = tipo === 'especificas' ? '' : 'none';
+}
+
+function toggleValidadeSeletor() {
+  const tipo = document.getElementById('promo-validade-tipo')?.value;
+  document.getElementById('promo-horario-wrap').style.display = tipo === 'horario' ? '' : 'none';
+  document.getElementById('promo-data-wrap').style.display    = tipo === 'data'    ? '' : 'none';
+}
+
+function atualizarPreviewPromo() {
+  const ativa = document.getElementById('promo-ativa')?.checked;
+  const preview = document.getElementById('promo-preview');
+  if (!preview) return;
+  preview.style.display = ativa ? '' : 'none';
+  const titulo = document.getElementById('promo-titulo')?.value || 'Promoção do Dia';
+  const desc = document.getElementById('promo-desconto')?.value || 20;
+  const pvTitulo = document.getElementById('pv-titulo');
+  const pvSub = document.getElementById('pv-sub');
+  const pvBadge = document.getElementById('pv-badge');
+  if (pvTitulo) pvTitulo.textContent = titulo;
+  if (pvSub)   pvSub.textContent   = `${desc}% OFF em todos os itens`;
+  if (pvBadge) pvBadge.textContent  = `-${desc}%`;
+}
+
+async function salvarPromocao() {
+  setStatus('Salvando promoção...', 'info');
+  try {
+    const cats = [];
+    document.querySelectorAll('#promo-cats-lista input:checked').forEach(cb => cats.push(cb.value));
+    const tipo = document.getElementById('promo-categorias-tipo')?.value;
+
+    configLanding.promocao = {
+      ativa:    document.getElementById('promo-ativa')?.checked || false,
+      titulo:   document.getElementById('promo-titulo')?.value  || '🔥 Promoção do Dia',
+      desconto: parseInt(document.getElementById('promo-desconto')?.value || 20),
+      categorias: tipo === 'especificas' ? cats : [],
+      validade: {
+        tipo:             document.getElementById('promo-validade-tipo')?.value || 'manual',
+        horario_inicio:   document.getElementById('promo-horario-ini')?.value  || '11:00',
+        horario_fim:      document.getElementById('promo-horario-fim')?.value  || '14:00',
+        data_inicio:      document.getElementById('promo-data-ini')?.value     || '',
+        data_fim:         document.getElementById('promo-data-fim')?.value     || '',
+      }
+    };
+
+    let atual;
+    try { atual = await ghGet('data/config.json'); shaConfig = atual.sha; } catch(e) {}
+    const res = await ghPut('data/config.json', JSON.stringify(configLanding, null, 4), shaConfig, 'Admin: promoção do dia');
+    shaConfig = res.content.sha;
+    setStatus('✅ Promoção salva! Aguarde ~1 min para atualizar.', 'ok');
+    setTimeout(() => setStatus('', ''), 6000);
+  } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
+}
+
+async function salvarComboDesconto() {
+  setStatus('Salvando desconto do combo...', 'info');
+  try {
+    configLanding.combo_desconto = parseInt(document.getElementById('combo-desconto')?.value || 10);
+    let atual;
+    try { atual = await ghGet('data/config.json'); shaConfig = atual.sha; } catch(e) {}
+    const res = await ghPut('data/config.json', JSON.stringify(configLanding, null, 4), shaConfig, 'Admin: desconto combo');
+    shaConfig = res.content.sha;
+    setStatus('✅ Desconto do combo salvo!', 'ok');
+    setTimeout(() => setStatus('', ''), 4000);
+  } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
+}
+
 async function salvarLanding() {
     // Token gerenciado pelo servidor Netlify — sem verificação no browser
 
@@ -1548,3 +1872,114 @@ function moverItem(secIdx, itemIdx, direcao) {
 
 // Fim do admin.js
 </script>
+// ── FUNÇÕES DE PROMOÇÃO ──────────────────────────────────────
+function carregarPromocao() {
+  const promo = configData?.promocao || {};
+  const combo = configData?.combo || {};
+
+  const ativa = document.getElementById('promo-ativa');
+  if (ativa) {
+    ativa.checked = promo.ativa || false;
+    togglePromocao(promo.ativa || false);
+  }
+  const titulo = document.getElementById('promo-titulo');
+  if (titulo) titulo.value = promo.titulo || '🔥 Promoção do Dia';
+  const desc = document.getElementById('promo-desconto');
+  if (desc) desc.value = promo.desconto || 15;
+  const todos = document.getElementById('promo-todos');
+  if (todos) {
+    todos.checked = promo.todos !== false;
+    togglePromocaoTodos(promo.todos !== false);
+  }
+  const tipo = document.getElementById('promo-tipo');
+  if (tipo) {
+    tipo.value = promo.validade?.tipo || 'manual';
+    mudarTipoValidade(tipo.value);
+  }
+  if (document.getElementById('promo-hora-ini')) document.getElementById('promo-hora-ini').value = promo.validade?.hora_inicio || '11:00';
+  if (document.getElementById('promo-hora-fim')) document.getElementById('promo-hora-fim').value = promo.validade?.hora_fim || '23:00';
+  if (document.getElementById('promo-data-ini')) document.getElementById('promo-data-ini').value = promo.validade?.data_inicio || '';
+  if (document.getElementById('promo-data-fim')) document.getElementById('promo-data-fim').value = promo.validade?.data_fim || '';
+
+  if (document.getElementById('combo-desconto')) document.getElementById('combo-desconto').value = combo.desconto || 10;
+
+  // Renderizar categorias
+  const catsDiv = document.getElementById('promo-cats');
+  if (catsDiv) {
+    catsDiv.innerHTML = cardapioData
+      .filter(s => s.id !== 'adicionais-extras')
+      .map(s => `
+        <label style="display:flex;align-items:center;gap:8px;font-size:.85em;cursor:pointer">
+          <input type="checkbox" value="${s.id}" ${(promo.categorias||[]).includes(s.id)?'checked':''}
+            style="width:15px;height:15px">
+          ${s.nome}
+        </label>`).join('');
+  }
+}
+
+function togglePromocao(ativa) {
+  const label = document.getElementById('promo-status-label');
+  if (label) label.textContent = ativa ? '🔥 Promoção ATIVA' : 'Promoção desativada';
+  if (label) label.style.color = ativa ? '#ff6600' : 'var(--muted)';
+}
+
+function togglePromocaoTodos(todos) {
+  const div = document.getElementById('promo-cats');
+  if (div) div.style.display = todos ? 'none' : 'flex';
+}
+
+function mudarTipoValidade(tipo) {
+  document.getElementById('promo-horario').style.display = tipo === 'horario' ? 'block' : 'none';
+  document.getElementById('promo-data').style.display = tipo === 'data' ? 'block' : 'none';
+}
+
+async function salvarPromocao() {
+  const cats = [...document.querySelectorAll('#promo-cats input:checked')].map(i => i.value);
+  const todos = document.getElementById('promo-todos').checked;
+  const tipo = document.getElementById('promo-tipo').value;
+
+  if (!configData) configData = {};
+  configData.promocao = {
+    ativa: document.getElementById('promo-ativa').checked,
+    titulo: document.getElementById('promo-titulo').value.trim(),
+    desconto: parseInt(document.getElementById('promo-desconto').value) || 15,
+    todos,
+    categorias: todos ? [] : cats,
+    validade: {
+      tipo,
+      hora_inicio: document.getElementById('promo-hora-ini')?.value || '',
+      hora_fim: document.getElementById('promo-hora-fim')?.value || '',
+      data_inicio: document.getElementById('promo-data-ini')?.value || '',
+      data_fim: document.getElementById('promo-data-fim')?.value || '',
+    }
+  };
+
+  setStatus('Salvando promoção...', 'info');
+  try {
+    const atual = await ghGet('data/config.json');
+    shaConfig = atual.sha;
+    const res = await ghPut('data/config.json', JSON.stringify(configData, null, 4), shaConfig, 'Admin: promoção do dia');
+    shaConfig = res.content.sha;
+    setStatus('✅ Promoção salva! Aguarde ~1 min para atualizar.', 'ok');
+    setTimeout(() => setStatus('', ''), 6000);
+  } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
+}
+
+async function salvarComboDesconto() {
+  if (!configData) configData = {};
+  configData.combo = { desconto: parseInt(document.getElementById('combo-desconto').value) || 10 };
+
+  setStatus('Salvando desconto do combo...', 'info');
+  try {
+    const atual = await ghGet('data/config.json');
+    shaConfig = atual.sha;
+    const res = await ghPut('data/config.json', JSON.stringify(configData, null, 4), shaConfig, 'Admin: desconto combo');
+    shaConfig = res.content.sha;
+    setStatus('✅ Desconto do combo salvo!', 'ok');
+    setTimeout(() => setStatus('', ''), 5000);
+  } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
+}
+
+// ============================
+// FIM DO PAINEL ADMIN
+// ============================
