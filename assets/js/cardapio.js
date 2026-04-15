@@ -306,7 +306,7 @@ function renderizarCardapio() {
     // ── BANNER DE PROMOÇÃO DO DIA ───────────────────────────────
     renderizarBannerPromocao();
 
-    // ── BANNERS COMBO + BATATA ───────────────────────────────────
+    // ── BANNERS COMBO + BATATA ──────────────────────────────────
     renderizarBannersEspeciais();
 
     // ── GRADE COMPLETA — TODOS OS ITENS POR SEÇÃO ───────────────
@@ -403,10 +403,6 @@ function renderizarBannersEspeciais() {
     const container = document.getElementById('main-content-container');
     if (!container) return;
 
-    // Inserir banners antes do primeiro section
-    const firstSection = container.querySelector('section');
-    if (!firstSection) return;
-
     // Remover banners anteriores se existirem
     const anterior = document.getElementById('banners-especiais');
     if (anterior) anterior.remove();
@@ -435,7 +431,7 @@ function renderizarBannersEspeciais() {
             <button class="batata-banner-cta">Personalizar →</button>
         </div>
     `;
-    container.insertBefore(div, firstSection);
+    container.appendChild(div);
 }
 
 // ── MODAL COMBO INTELIGENTE ──────────────────────────────────
@@ -810,9 +806,13 @@ function inicializarCarrossel(secaoId, total) {
 }
 
 function renderizarCategoriasPills() {
-    const container = document.getElementById('categorias-pills');
+    // Suporta tanto a navbar nova (#navbar-pills-container) quanto a antiga (#categorias-pills)
+    const container = document.getElementById('navbar-pills-container')
+                   || document.getElementById('categorias-pills');
     if (!container) return;
     container.innerHTML = '';
+
+    const offset = 70;
 
     cardapioData.forEach(sec => {
         if (sec.id === 'adicionais-extras') return;
@@ -826,32 +826,35 @@ function renderizarCategoriasPills() {
             pill.classList.add('ativo');
             const section = document.getElementById(sec.id);
             if (section) {
-                const offset = 120;
                 window.scrollTo({ top: section.offsetTop - offset, behavior: 'smooth' });
             }
         });
         container.appendChild(pill);
     });
 
-    // Primeiro pill ativo
     const first = container.querySelector('.cat-pill');
     if (first) first.classList.add('ativo');
 
     // Scroll spy
+    let spyAtivo = false;
     window.addEventListener('scroll', () => {
-        const sections = cardapioData
-            .filter(s => s.id !== 'adicionais-extras')
-            .map(s => document.getElementById(s.id))
-            .filter(Boolean);
+        if (spyAtivo) return;
+        spyAtivo = true;
+        requestAnimationFrame(() => {
+            const sections = cardapioData
+                .filter(s => s.id !== 'adicionais-extras')
+                .map(s => document.getElementById(s.id))
+                .filter(Boolean);
 
-        let current = sections[0]?.id || '';
-        sections.forEach(sec => {
-            if (sec.offsetTop - 140 <= window.scrollY) current = sec.id;
-        });
+            let current = sections[0]?.id || '';
+            sections.forEach(sec => {
+                if (sec.offsetTop - (offset + 10) <= window.scrollY) current = sec.id;
+            });
 
-        container.querySelectorAll('.cat-pill').forEach(pill => {
-            const ativo = pill.getAttribute('href') === '#' + current;
-            pill.classList.toggle('ativo', ativo);
+            container.querySelectorAll('.cat-pill').forEach(pill => {
+                pill.classList.toggle('ativo', pill.getAttribute('href') === '#' + current);
+            });
+            spyAtivo = false;
         });
     }, { passive: true });
 }
