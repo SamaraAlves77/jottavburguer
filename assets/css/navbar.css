@@ -211,3 +211,54 @@
     .navbar-content-wrapper { padding: 0 10px; }
     .logo img { height: 30px; }
 }
+
+/* ── PILLS INTEGRADAS NA NAVBAR ── */
+.navbar-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 20px;
+    height: 60px;
+}
+
+.logo { flex-shrink: 0; }
+
+.navbar-pills {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 12px;
+    -ms-overflow-style: none;
+}
+.navbar-pills::-webkit-scrollbar { display: none; }
+
+.navbar-pills .cat-pill {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: none;
+    color: rgba(255,255,255,.6);
+    font-size: 0.82em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.navbar-pills .cat-pill:hover,
+.navbar-pills .cat-pill.ativo {
+    background: var(--primary-color, #45a135);
+    border-color: var(--primary-color, #45a135);
+    color: #fff;
+}
+
+/* Mobile: pills ficam abaixo da navbar */
+@media (max-width: 600px) {
+    .navbar-content-wrapper { height: 52px; padding: 0 14px; }
+    .navbar-pills { display: none; }
+}
