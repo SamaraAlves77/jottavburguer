@@ -1,29 +1,34 @@
-/* navbar.css — Redesign 2025 */
+/* ════════════════════════════════════════
+   NAVBAR — Minimalista com pills integradas
+════════════════════════════════════════ */
+
+:root {
+    --nav-height: 56px;
+}
 
 .navbar {
-    background-color: var(--bg-navbar, #111);
-    padding: 8px 0;
-    box-shadow: 0 1px 12px rgba(0,0,0,.5);
     position: fixed;
-    top: 0; left: 0;
+    top: 0; left: 0; right: 0;
+    height: var(--nav-height);
+    background: rgba(22,22,22,.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    z-index: 9000;
     width: 100%;
-    z-index: 9999;
-    transition: box-shadow .3s;
 }
-.navbar.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,.7); }
 
 .navbar-content-wrapper {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    height: 100%;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 0 20px;
-    gap: 20px;
-    height: 52px;
+    padding: 0 14px;
+    gap: 12px;
 }
 
-/* LOGO */
+/* Logo */
 .logo {
     display: flex;
     align-items: center;
@@ -31,245 +36,114 @@
     text-decoration: none;
 }
 .logo img {
-    height: 40px;
-    width: auto;
-    object-fit: contain;
-    display: block;
-    transition: transform .2s;
+    height: 34px;
+    width: 34px;
     border-radius: 50%;
-}
-.logo img:hover { transform: scale(1.05); }
-
-/* NAV LINKS — desktop */
-.nav-links {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-grow: 1;
-    justify-content: center;
-    margin: 0;
-    white-space: nowrap;
-}
-.nav-links a {
-    color: var(--text-nav, #fff);
-    text-decoration: none;
-    font-size: .9rem;
-    font-weight: 600;
-    opacity: .85;
-    transition: opacity .25s, color .25s, transform .2s;
-    position: relative;
-    display: inline-block;
-}
-.nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -3px; left: 0;
-    width: 0; height: 2px;
-    background: var(--primary-color, #45a135);
-    border-radius: 2px;
-    transition: width .3s cubic-bezier(.34,1.56,.64,1);
-}
-.nav-links a:hover,
-.nav-links a.nav-ativo {
-    opacity: 1;
-    color: var(--primary-color, #45a135);
-    transform: translateY(-1px);
-    text-decoration: none;
-}
-.nav-links a:hover::after,
-.nav-links a.nav-ativo::after { width: 100%; }
-
-/* AÇÕES */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-}
-.carrinho-btn {
-    background: none;
-    border: none;
-    color: var(--text-nav, #fff);
-    font-size: 1.3em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px;
-    opacity: .85;
-    transition: opacity .2s;
-}
-.carrinho-btn:hover { opacity: 1; }
-#contador-carrinho {
-    background: var(--primary-color, #45a135);
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: .65em;
-    font-weight: 700;
-    color: #fff;
-    min-width: 18px;
-    text-align: center;
+    object-fit: cover;
 }
 
-/* HAMBURGER */
-.hamburger-menu-btn {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 38px; height: 38px;
-    background: none;
-    border: 1px solid rgba(255,255,255,.15);
-    border-radius: 8px;
-    color: #fff;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: .2s;
-}
-.hamburger-menu-btn:hover {
-    border-color: var(--primary-color, #45a135);
-    color: var(--primary-color, #45a135);
-}
-
-/* ── TABLET (≤900px) ── */
-@media (max-width: 900px) {
-    .logo img { height: 36px; }
-    .nav-links { gap: 16px; }
-    .nav-links a { font-size: .85rem; }
-}
-
-/* ── MOBILE (≤768px) — menu dropdown ── */
-@media (max-width: 768px) {
-    .hamburger-menu-btn { display: flex; }
-
-    .nav-links {
-        display: none;
-        position: fixed;
-        top: 52px; left: 0; right: 0;
-        background: #111;
-        border-bottom: 1px solid #222;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 8px 16px 14px;
-        gap: 2px;
-        z-index: 9998;
-        box-shadow: 0 8px 24px rgba(0,0,0,.6);
-        animation: slideDown .2s ease;
-    }
-    .nav-links.active { display: flex; }
-
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-8px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .nav-links li { width: 100%; list-style: none; }
-    .nav-links a {
-        display: block;
-        padding: 11px 14px;
-        font-size: .95rem;
-        border-radius: 8px;
-        color: var(--text-nav, #fff);
-        transform: none !important;
-    }
-    .nav-links a:hover,
-    .nav-links a.nav-ativo {
-        background: rgba(69,161,53,.12);
-        color: var(--primary-color, #45a135);
-        transform: none !important;
-    }
-    .nav-links a::after { display: none; }
-}
-
-/* ── MOBILE PEQUENO (≤600px) ── */
-@media (max-width: 600px) {
-    .navbar-content-wrapper { padding: 0 12px; height: 48px; }
-    .logo img { height: 36px; }
-    .nav-links { top: 48px; }
-}
-
-/* ── MUITO PEQUENO (≤380px) ── */
-@media (max-width: 380px) {
-    .logo img { height: 32px; }
-    .hamburger-menu-btn { width: 34px; height: 34px; font-size: 1em; }
-}
-
-/* ── NAVBAR RESPONSIVA ── */
-
-/* Desktop: links visíveis */
-.nav-links { display: flex; }
-
-/* Tablet/Mobile: esconder links, as pills fazem a navegação */
-@media (max-width: 768px) {
-    .nav-links { display: none; }
-    .navbar-content-wrapper { padding: 0 12px; }
-}
-
-/* Navbar mais compacta no mobile */
-@media (max-width: 480px) {
-    .navbar { padding: 6px 0; }
-    .navbar-content-wrapper { padding: 0 10px; }
-    .logo img { height: 30px; }
-}
-
-/* ── PILLS INTEGRADAS NA NAVBAR ── */
-.navbar-content-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: 0 20px;
-    height: 60px;
-}
-
-.logo { flex-shrink: 0; }
-
+/* Pills integradas na navbar — estilo WhatsApp */
 .navbar-pills {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     overflow-x: auto;
     scrollbar-width: none;
-    padding: 0 12px;
-    -ms-overflow-style: none;
+    padding: 0 8px;
 }
 .navbar-pills::-webkit-scrollbar { display: none; }
 
 .navbar-pills .cat-pill {
-    padding: 6px 16px;
+    display: inline-block;
+    padding: 5px 14px;
     border-radius: 20px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: none;
-    color: rgba(255,255,255,.6);
-    font-size: 0.82em;
+    border: 1px solid rgba(255,255,255,.1);
+    background: transparent;
+    color: rgba(255,255,255,.5);
+    font-size: 0.8em;
     font-weight: 600;
     cursor: pointer;
-    transition: .2s;
+    transition: .18s ease;
     white-space: nowrap;
     text-decoration: none;
     flex-shrink: 0;
+    letter-spacing: .2px;
 }
-.navbar-pills .cat-pill:hover,
+.navbar-pills .cat-pill:hover {
+    border-color: rgba(255,255,255,.25);
+    color: rgba(255,255,255,.8);
+}
 .navbar-pills .cat-pill.ativo {
-    background: var(--primary-color, #45a135);
-    border-color: var(--primary-color, #45a135);
+    background: #45a135;
+    border-color: #45a135;
     color: #fff;
 }
 
-/* Pills sempre visíveis e horizontais em TODOS os tamanhos */
-@media (max-width: 768px) {
-    .navbar-content-wrapper { height: 54px; padding: 0 12px; gap: 8px; }
-    .navbar-pills { padding: 0 6px; gap: 4px; }
-    .navbar-pills .cat-pill { padding: 5px 11px; font-size: 0.75em; }
+/* Ações (carrinho) */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
-@media (max-width: 480px) {
-    .navbar-content-wrapper { height: 50px; padding: 0 10px; }
-    .navbar-pills { padding: 0 4px; gap: 3px; }
+.carrinho-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 50%;
+    color: rgba(255,255,255,.8);
+    cursor: pointer;
+    position: relative;
+    transition: .18s ease;
+    font-size: 15px;
+}
+.carrinho-btn:hover { background: rgba(255,255,255,.12); }
+
+#contador-carrinho {
+    position: absolute;
+    top: -4px; right: -4px;
+    background: #45a135;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    min-width: 16px; height: 16px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+    border: 1.5px solid #161616;
+}
+
+/* Hamburger — oculto por padrão */
+.hamburger-menu-btn { display: none; }
+
+/* Desktop: nav-links (se existirem) ocultos — pills fazem a navegação */
+.nav-links { display: none; }
+
+/* ── RESPONSIVE ── */
+
+/* Mobile muito pequeno — pills menores */
+@media (max-width: 374px) {
+    .navbar-content-wrapper { padding: 0 10px; gap: 8px; }
     .navbar-pills .cat-pill { padding: 4px 9px; font-size: 0.7em; }
+    .logo img { height: 30px; width: 30px; }
 }
 
-@media (max-width: 360px) {
-    .navbar-pills .cat-pill { padding: 4px 7px; font-size: 0.68em; }
+/* Mobile médio */
+@media (max-width: 480px) {
+    .navbar-pills { padding: 0 4px; gap: 3px; }
+    .navbar-pills .cat-pill { padding: 4px 10px; font-size: 0.74em; }
+}
+
+/* Tablet e acima */
+@media (min-width: 769px) {
+    :root { --nav-height: 60px; }
+    .logo img { height: 38px; width: 38px; }
+    .navbar-pills .cat-pill { padding: 6px 16px; font-size: 0.82em; }
+    .carrinho-btn { width: 40px; height: 40px; }
 }
