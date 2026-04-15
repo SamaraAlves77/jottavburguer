@@ -49,7 +49,7 @@
                 "descricao": "Pão, carne de 120g, requeijão e farofa de bacon.",
                 "preco": 22.99,
                 "imagem": "burguer_do_xerife.jpeg",
-                "destaque": false,
+                "destaque": true,
                 "badge": "",
                 "ordem": 4
             },
@@ -77,7 +77,7 @@
                 "id": 8,
                 "nome": "Calabresa Básico",
                 "descricao": "Pão, molho da casa, calabresa e queijo muçarela.",
-                "preco": 15.0,
+                "preco": 15,
                 "imagem": "calabresa_basico.jpeg",
                 "destaque": false,
                 "badge": "",
@@ -105,7 +105,7 @@
                 "descricao": "1 Jotta Classic + batata frita + refrigerante lata.",
                 "preco": 41.99,
                 "imagem": "combo_do_chef_individual.png",
-                "destaque": false,
+                "destaque": true,
                 "badge": "",
                 "ordem": 1
             },
@@ -229,7 +229,7 @@
                 "nome": "Batata + Molho + Bacon",
                 "descricao": "Batata frita, bacon crocante e molho.",
                 "preco": 17.99,
-                "destaque": false,
+                "destaque": true,
                 "badge": "",
                 "ordem": 1
             },
@@ -261,7 +261,7 @@
                 "id": 25,
                 "nome": "Coca-Cola Lata",
                 "descricao": "Refrigerante lata 350ml de Coca-Cola.",
-                "preco": 7.0,
+                "preco": 7,
                 "imagem": "cocalata.png",
                 "destaque": false,
                 "badge": "",
@@ -271,7 +271,7 @@
                 "id": 26,
                 "nome": "Guaraná Lata",
                 "descricao": "Refrigerante lata 350ml de Guaraná Antarctica.",
-                "preco": 6.0,
+                "preco": 6,
                 "imagem": "guaranalata.png",
                 "destaque": false,
                 "badge": "",
@@ -281,7 +281,7 @@
                 "id": 27,
                 "nome": "Guaraná 1L",
                 "descricao": "Refrigerante Guaraná Antarctica de 1 litro.",
-                "preco": 9.0,
+                "preco": 9,
                 "imagem": "guarana1l.jpg",
                 "destaque": false,
                 "badge": "",
@@ -291,7 +291,7 @@
                 "id": 28,
                 "nome": "Pepsi 1L",
                 "descricao": "Refrigerante Pepsi de 1 litro.",
-                "preco": 9.0,
+                "preco": 9,
                 "imagem": "pepsi.png",
                 "destaque": false,
                 "badge": "",
@@ -306,7 +306,7 @@
             {
                 "id": 29,
                 "nome": "Requeijão",
-                "preco": 4.0,
+                "preco": 4,
                 "destaque": false,
                 "badge": "",
                 "ordem": 0
@@ -314,7 +314,7 @@
             {
                 "id": 30,
                 "nome": "Queijo Muçarela",
-                "preco": 4.0,
+                "preco": 4,
                 "destaque": false,
                 "badge": "",
                 "ordem": 1
@@ -322,7 +322,7 @@
             {
                 "id": 31,
                 "nome": "Bacon",
-                "preco": 4.0,
+                "preco": 4,
                 "destaque": false,
                 "badge": "",
                 "ordem": 2
@@ -330,7 +330,7 @@
             {
                 "id": 32,
                 "nome": "Farofa de Bacon",
-                "preco": 3.0,
+                "preco": 3,
                 "destaque": false,
                 "badge": "",
                 "ordem": 3
@@ -338,7 +338,7 @@
             {
                 "id": 33,
                 "nome": "Molho Barbecue",
-                "preco": 2.0,
+                "preco": 2,
                 "destaque": false,
                 "badge": "",
                 "ordem": 4
@@ -346,7 +346,7 @@
             {
                 "id": 34,
                 "nome": "Molho da Casa",
-                "preco": 2.0,
+                "preco": 2,
                 "destaque": false,
                 "badge": "",
                 "ordem": 5
@@ -354,7 +354,7 @@
             {
                 "id": 35,
                 "nome": "Calabresa",
-                "preco": 5.0,
+                "preco": 5,
                 "destaque": false,
                 "badge": "",
                 "ordem": 6
