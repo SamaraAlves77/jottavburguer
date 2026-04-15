@@ -69,6 +69,8 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .btn-icon{padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:0.85em;transition:.2s}
 .btn-icon:hover{border-color:var(--green);color:var(--green)}
 .btn-icon.danger:hover{border-color:#e53935;color:#e53935}
+.btn-icon.destaque-on{background:rgba(255,200,0,.15);color:#f0b922;border-color:rgba(255,200,0,.5);box-shadow:0 0 0 2px rgba(255,200,0,.15)}
+.btn-icon.destaque-on:hover{background:rgba(255,200,0,.25);border-color:#f0b922;color:#f0b922}
 .toggle-ativo{width:36px;height:20px;position:relative;cursor:pointer;flex-shrink:0}
 .toggle-ativo input{opacity:0;width:0;height:0}
 .toggle-slider{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:20px;transition:.2s}
@@ -207,6 +209,19 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 
   <!-- TAB: CARDÁPIO -->
   <div id="tab-cardapio" class="tab-content ativo">
+
+    <!-- PAINEL DE DESTAQUES ATIVOS -->
+    <div class="card" style="margin-bottom:16px">
+      <h3 style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+        <span>⭐ Destaques do Carrossel</span>
+        <span style="font-size:.75em;color:var(--muted);font-weight:400">Máx. 3 por seção</span>
+      </h3>
+      <p style="color:var(--muted);font-size:.8em;margin-bottom:12px">Itens marcados como ⭐ aparecem no banner rotativo. Clique em ⭐ em qualquer item abaixo para adicionar ou remover.</p>
+      <div id="lista-destaques-ativos" style="display:flex;flex-direction:column;gap:8px">
+        <div style="color:var(--muted);font-size:.85em">Carregando destaques...</div>
+      </div>
+    </div>
+
     <div class="card">
       <h3><i class="fas fa-list"></i> Seções</h3>
       <div class="section-pills" id="section-pills"></div>
@@ -604,6 +619,7 @@ async function carregarDados() {
 
     renderizarSecoes();
     renderizarItens();
+    renderizarDestaques();
     renderizarAdicionais();
     renderizarPagamento();
     renderizarWhatsapp();
@@ -619,6 +635,52 @@ async function carregarDados() {
 // =============================================================
 // TAB CARDÁPIO
 // =============================================================
+function renderizarDestaques() {
+  const painel = document.getElementById('lista-destaques-ativos');
+  if (!painel) return;
+
+  const todos = cardapioData.flatMap(s =>
+    s.itens
+      .filter(i => i.destaque === true)
+      .map(i => ({ ...i, secaoNome: s.nome, secaoId: s.id, secaoIdx: cardapioData.indexOf(s) }))
+  );
+
+  if (todos.length === 0) {
+    painel.innerHTML = '<div style="color:var(--muted);font-size:.85em;padding:8px 0">Nenhum destaque marcado. Clique em ⭐ em qualquer item para adicioná-lo ao carrossel.</div>';
+    return;
+  }
+
+  painel.innerHTML = todos.map(item => {
+    const preco = (item.preco || 0).toFixed(2).replace('.', ',');
+    const fotoSrc = item.imagem ? `imagens/${item.imagem}` : '';
+    const itemIdx = cardapioData[item.secaoIdx].itens.indexOf(
+      cardapioData[item.secaoIdx].itens.find(i => i.id === item.id)
+    );
+    return `
+    <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:10px;padding:10px;border:1px solid rgba(255,200,0,.2)">
+      ${fotoSrc ? `<img src="${fotoSrc}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;background:#1a1a1a" onerror="this.style.display='none'">` : '<div style="width:48px;height:48px;border-radius:8px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#444">🍔</div>'}
+      <div style="flex:1;min-width:0">
+        <div style="color:#f0f0f0;font-size:.9em;font-weight:600">${item.nome}</div>
+        <div style="color:var(--muted);font-size:.78em">${item.secaoNome} • R$ ${preco}</div>
+        ${item.badge ? `<div style="color:#f0b922;font-size:.75em;margin-top:2px">${item.badge}</div>` : ''}
+      </div>
+      <button onclick="removerDestaque(${item.secaoIdx}, ${itemIdx})" 
+        style="background:rgba(229,57,53,.12);border:1px solid rgba(229,57,53,.3);border-radius:8px;color:#e53935;padding:5px 10px;font-size:.78em;font-weight:700;cursor:pointer">
+        Remover ✕
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function removerDestaque(secIdx, itemIdx) {
+  if (!cardapioData[secIdx] || !cardapioData[secIdx].itens[itemIdx]) return;
+  cardapioData[secIdx].itens[itemIdx].destaque = false;
+  cardapioData[secIdx].itens[itemIdx].badge = '';
+  renderizarDestaques();
+  renderizarItens();
+  setStatus('⭐ Destaque removido — clique em Salvar para confirmar.', 'info');
+}
+
 function renderizarSecoes() {
   const el = document.getElementById('section-pills');
   el.innerHTML = '';
