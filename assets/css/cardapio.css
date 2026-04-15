@@ -19,7 +19,7 @@ body {
     color: var(--text-card-title);
     line-height: 1.6;
     scroll-behavior: smooth;
-    padding-top: 54px;
+    padding-top: 60px;
 }
 
 a { color: var(--primary-color); text-decoration: none; }
@@ -27,17 +27,25 @@ a { color: var(--primary-color); text-decoration: none; }
 /* ── PILLS DE CATEGORIA (sticky) ── */
 .categorias-sticky {
     position: sticky;
-    top: 58px;
-    z-index: 500; /* bem abaixo da navbar */
+    top: 52px;
+    z-index: 500;
     background: var(--bg-page);
-    padding: 10px 20px;
+    padding: 8px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.06);
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    /* No desktop as pills estão na navbar — ocultar */
+    display: none;
 }
 .categorias-sticky::-webkit-scrollbar { display: none; }
-.categorias-pills { display: flex; gap: 8px; white-space: nowrap; justify-content: center; flex-wrap: wrap; }
+.categorias-pills { display: flex; gap: 6px; white-space: nowrap; }
+
+/* No mobile mostra a barra de pills separada */
+@media (max-width: 600px) {
+    .categorias-sticky { display: block; }
+    body { padding-top: 52px; }
+}
 .cat-pill {
     padding: 7px 18px;
     border-radius: 20px;
@@ -82,7 +90,7 @@ a { color: var(--primary-color); text-decoration: none; }
 /* ── GRID ── */
 .cardapio-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
     gap: 16px;
 }
 
@@ -791,12 +799,12 @@ footer {
 
 /* ── DESKTOP (1025px–1399px) ── */
 @media (max-width: 1399px) and (min-width: 1025px) {
-    .cardapio-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .cardapio-grid { grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 16px; }
 }
 
 /* ── TABLET LANDSCAPE (769px–1024px) ── */
 @media (max-width: 1024px) {
-    .cardapio-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .cardapio-grid { grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 14px; }
     #main-content-container { padding: 16px 14px 80px; }
     .destaque-slide { height: 155px; }
 }
@@ -804,7 +812,7 @@ footer {
 /* ── TABLET PORTRAIT (481px–768px) ── */
 @media (max-width: 768px) {
     body { padding-top: 56px; }
-    .cardapio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .cardapio-grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); gap: 10px; }
     #main-content-container { padding: 12px 10px 80px; }
     .section-title { font-size: 1.1em; margin-bottom: 12px; }
     .destaque-slide { height: 145px; }
@@ -831,7 +839,7 @@ footer {
 
 /* ── MOBILE SMALL (até 420px) ── */
 @media (max-width: 420px) {
-    .cardapio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .cardapio-grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); gap: 8px; }
     #main-content-container { padding: 10px 8px 80px; }
     .destaque-slide { height: 125px; }
     .destaque-foto { width: 38%; min-width: 38%; }
