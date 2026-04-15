@@ -8,56 +8,80 @@
                 "nome": "Smash Original",
                 "descricao": "Pão, carne 80g prensada na chapa, queijo muçarela, cebola caramelizada, alface, tomate e molho da casa.",
                 "preco": 18.99,
-                "imagem": "smash_original.jpeg"
+                "imagem": "smash_original.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 0
             },
             {
                 "id": 2,
                 "nome": "Smash Duplo",
                 "descricao": "Pão, 2 carnes 80g prensadas na chapa, 2 queijos muçarela, cebola caramelizada, alface, tomate e molho da casa.",
                 "preco": 24.99,
-                "imagem": "smash_duplo.jpeg"
+                "imagem": "smash_duplo.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 1
             },
             {
                 "id": 3,
                 "nome": "Jotta Básico",
                 "descricao": "Pão, carne 80g prensada na chapa com cebola, queijo muçarela e molho da casa.",
                 "preco": 14.99,
-                "imagem": "smash_original.jpeg"
+                "imagem": "smash_original.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 2
             },
             {
                 "id": 4,
                 "nome": "Jotta Classic",
                 "descricao": "Pão, carne 120g, molho barbecue, tomate, alface, bacon e queijo muçarela.",
                 "preco": 25.99,
-                "imagem": "jotta_classic.jpeg"
+                "imagem": "jotta_classic.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 3
             },
             {
                 "id": 5,
                 "nome": "Burguer do Xerife",
                 "descricao": "Pão, carne de 120g, requeijão e farofa de bacon.",
                 "preco": 22.99,
-                "imagem": "burguer_do_xerife.jpeg"
+                "imagem": "burguer_do_xerife.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 4
             },
             {
                 "id": 6,
                 "nome": "Duplo Brutão",
                 "descricao": "Pão, 2 carnes de 120g, requeijão, molho da casa, 2 fatias de bacon.",
                 "preco": 37.99,
-                "imagem": "duplo_brutao.jpeg"
+                "imagem": "duplo_brutao.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 5
             },
             {
                 "id": 7,
                 "nome": "Calabresa Prime",
                 "descricao": "Pão, carne de 120g, molho da casa, alface, tomate, calabresa, queijo muçarela, cebola caramelizada.",
                 "preco": 26.99,
-                "imagem": "calabresa_prime.jpeg"
+                "imagem": "calabresa_prime.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 6
             },
             {
                 "id": 8,
                 "nome": "Calabresa Básico",
                 "descricao": "Pão, molho da casa, calabresa e queijo muçarela.",
-                "preco": 15,
-                "imagem": "calabresa_basico.jpeg"
+                "preco": 15.0,
+                "imagem": "calabresa_basico.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 7
             }
         ]
     },
@@ -70,84 +94,120 @@
                 "nome": "Combo Econômico Individual",
                 "descricao": "1 Smash Original + batata frita + refrigerante lata.",
                 "preco": 31.99,
-                "imagem": "combo_economico_smash.jpeg"
+                "imagem": "combo_economico_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 0
             },
             {
                 "id": 10,
                 "nome": "Combo do Chef Individual",
                 "descricao": "1 Jotta Classic + batata frita + refrigerante lata.",
                 "preco": 41.99,
-                "imagem": "combo_do_chef_individual.png"
+                "imagem": "combo_do_chef_individual.png",
+                "destaque": false,
+                "badge": "",
+                "ordem": 1
             },
             {
                 "id": 11,
                 "nome": "Combo Smash Duplo Individual",
                 "descricao": "1 Smash Duplo + batata frita + refrigerante lata.",
                 "preco": 37.99,
-                "imagem": "combo_smashduplo_individual.png"
+                "imagem": "combo_smashduplo_individual.png",
+                "destaque": false,
+                "badge": "",
+                "ordem": 2
             },
             {
                 "id": 12,
                 "nome": "Combo Premium Individual",
                 "descricao": "1 Duplo Brutão + batata frita + refrigerante lata.",
                 "preco": 53.99,
-                "imagem": "combo_do_chef_individual.png"
+                "imagem": "combo_do_chef_individual.png",
+                "destaque": false,
+                "badge": "",
+                "ordem": 3
             },
             {
                 "id": 13,
                 "nome": "Combo Econômico Casal",
                 "descricao": "2 Smash Original + batata frita + refrigerante 1L.",
                 "preco": 49.99,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 4
             },
             {
                 "id": 14,
                 "nome": "Combo do Chef Casal",
                 "descricao": "2 Jotta Classic + batata frita + refrigerante 1L.",
                 "preco": 63.99,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 5
             },
             {
                 "id": 15,
                 "nome": "Combo Smash Duplo Casal",
                 "descricao": "2 Smash Duplo + batata frita + refrigerante 1L.",
                 "preco": 61.99,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 6
             },
             {
                 "id": 16,
                 "nome": "Combo Premium Casal",
                 "descricao": "2 Duplo Brutão + batata frita + refrigerante 1L.",
                 "preco": 87.99,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 7
             },
             {
                 "id": 17,
                 "nome": "Combo Econômico Família",
                 "descricao": "4 Smash Original + batata frita + refrigerante 1L.",
                 "preco": 87.99,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 8
             },
             {
                 "id": 18,
                 "nome": "Combo do Chef Família",
                 "descricao": "4 Jotta Classic + batata frita + refrigerante 1L.",
                 "preco": 115.99,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 9
             },
             {
                 "id": 19,
                 "nome": "Combo Smash Duplo Família",
                 "descricao": "4 Smash Duplo + batata frita + refrigerante 1L.",
                 "preco": 111.99,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 10
             },
             {
                 "id": 20,
                 "nome": "Combo Premium Família",
                 "descricao": "4 Duplo Brutão + batata frita + refrigerante 1L.",
                 "preco": 154.9,
-                "imagem": "combo_economico_casal_smash.jpeg"
+                "imagem": "combo_economico_casal_smash.jpeg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 11
             }
         ]
     },
@@ -159,25 +219,37 @@
                 "id": 21,
                 "nome": "Batata Frita",
                 "descricao": "Batata frita acompanhada de molho da casa.",
-                "preco": 11.99
+                "preco": 11.99,
+                "destaque": false,
+                "badge": "",
+                "ordem": 0
             },
             {
                 "id": 22,
                 "nome": "Batata + Molho + Bacon",
                 "descricao": "Batata frita, bacon crocante e molho.",
-                "preco": 17.99
+                "preco": 17.99,
+                "destaque": false,
+                "badge": "",
+                "ordem": 1
             },
             {
                 "id": 23,
                 "nome": "Batata + Queijo Muçarela Gratinado + Bacon em Cubos",
                 "descricao": "Batata frita coberta por queijo muçarela gratinado no maçarico e bacon crocante em cubos.",
-                "preco": 19.99
+                "preco": 19.99,
+                "destaque": false,
+                "badge": "",
+                "ordem": 2
             },
             {
                 "id": 24,
                 "nome": "Batata + Queijo Muçarela Gratinado + Bacon + Calabresa",
                 "descricao": "Batata frita coberta por queijo muçarela gratinado no maçarico, bacon crocante em cubos e calabresa em tirinhas.",
-                "preco": 24.99
+                "preco": 24.99,
+                "destaque": false,
+                "badge": "",
+                "ordem": 3
             }
         ]
     },
@@ -189,30 +261,41 @@
                 "id": 25,
                 "nome": "Coca-Cola Lata",
                 "descricao": "Refrigerante lata 350ml de Coca-Cola.",
-                "preco": 7,
-                "imagem": "cocalata.png"
+                "preco": 7.0,
+                "imagem": "cocalata.png",
+                "destaque": false,
+                "badge": "",
+                "ordem": 0
             },
             {
                 "id": 26,
                 "nome": "Guaraná Lata",
                 "descricao": "Refrigerante lata 350ml de Guaraná Antarctica.",
-                "preco": 6,
-                "imagem": "guaranalata.png"
+                "preco": 6.0,
+                "imagem": "guaranalata.png",
+                "destaque": false,
+                "badge": "",
+                "ordem": 1
             },
             {
                 "id": 27,
                 "nome": "Guaraná 1L",
                 "descricao": "Refrigerante Guaraná Antarctica de 1 litro.",
-                "preco": 9,
-                "imagem": "guarana1l.jpg"
+                "preco": 9.0,
+                "imagem": "guarana1l.jpg",
+                "destaque": false,
+                "badge": "",
+                "ordem": 2
             },
             {
                 "id": 28,
                 "nome": "Pepsi 1L",
                 "descricao": "Refrigerante Pepsi de 1 litro.",
-                "preco": 9,
+                "preco": 9.0,
                 "imagem": "pepsi.png",
-                "ativo": false
+                "destaque": false,
+                "badge": "",
+                "ordem": 3
             }
         ]
     },
@@ -223,37 +306,58 @@
             {
                 "id": 29,
                 "nome": "Requeijão",
-                "preco": 4
+                "preco": 4.0,
+                "destaque": false,
+                "badge": "",
+                "ordem": 0
             },
             {
                 "id": 30,
                 "nome": "Queijo Muçarela",
-                "preco": 4
+                "preco": 4.0,
+                "destaque": false,
+                "badge": "",
+                "ordem": 1
             },
             {
                 "id": 31,
                 "nome": "Bacon",
-                "preco": 4
+                "preco": 4.0,
+                "destaque": false,
+                "badge": "",
+                "ordem": 2
             },
             {
                 "id": 32,
                 "nome": "Farofa de Bacon",
-                "preco": 3
+                "preco": 3.0,
+                "destaque": false,
+                "badge": "",
+                "ordem": 3
             },
             {
                 "id": 33,
                 "nome": "Molho Barbecue",
-                "preco": 2
+                "preco": 2.0,
+                "destaque": false,
+                "badge": "",
+                "ordem": 4
             },
             {
                 "id": 34,
                 "nome": "Molho da Casa",
-                "preco": 2
+                "preco": 2.0,
+                "destaque": false,
+                "badge": "",
+                "ordem": 5
             },
             {
                 "id": 35,
                 "nome": "Calabresa",
-                "preco": 5
+                "preco": 5.0,
+                "destaque": false,
+                "badge": "",
+                "ordem": 6
             }
         ]
     }
