@@ -186,66 +186,76 @@ function renderizarCardapio() {
     if (!container) return;
     container.innerHTML = '';
 
+    // ── CARROSSEL GLOBAL DE DESTAQUES (topo único) ──────────────
+    const todosDestaques = cardapioData.flatMap(secao =>
+        secao.itens
+            .filter(i => i.ativo !== false && i.destaque === true)
+            .map(i => ({ ...i, secaoId: secao.id, secaoNome: secao.nome }))
+    );
+
+    if (todosDestaques.length > 0) {
+        const carWrap = document.createElement('div');
+        carWrap.className = 'destaque-wrap';
+        carWrap.innerHTML = `
+            <div class="destaque-track">
+                <div class="destaque-slides" id="slides-global">
+                    ${todosDestaques.map(item => {
+                        const preco = (item.preco || 0).toFixed(2).replace('.', ',');
+                        const badge = item.badge || item.secaoNome;
+                        const fotoSrc = item.imagem ? `imagens/${item.imagem}` : 'assets/img/hamburguer.png';
+                        return `
+                        <div class="destaque-slide">
+                            <div class="destaque-foto">
+                                <img src="${fotoSrc}" alt="${item.nome}" loading="lazy"
+                                    onerror="this.src='assets/img/hamburguer.png';this.style.objectFit='contain';this.style.padding='20px';this.style.opacity='.4'">
+                                <div class="destaque-foto-fade"></div>
+                            </div>
+                            <div class="destaque-body">
+                                ${badge ? `<span class="destaque-badge">${badge}</span>` : ''}
+                                <h3 class="destaque-nome">${item.nome}</h3>
+                                <p class="destaque-desc">${item.descricao || ''}</p>
+                                <div class="destaque-footer">
+                                    <span class="destaque-preco">R$ ${preco}</span>
+                                    <button class="card-btn btn-adicionar destaque-btn"
+                                        data-item-id="${item.id}" data-categoria-id="${item.secaoId}">
+                                        Adicionar 🛒
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+            ${todosDestaques.length > 1 ? `
+            <div class="destaque-dots" id="dots-global">
+                ${todosDestaques.map((_, i) => `
+                    <div class="destaque-dot ${i===0?'ativo':''}" data-idx="${i}" data-secao="global"></div>
+                `).join('')}
+            </div>` : ''}
+        `;
+        container.appendChild(carWrap);
+        if (todosDestaques.length > 1) inicializarCarrossel('global', todosDestaques.length);
+    }
+
+    // ── BANNERS COMBO + BATATA ───────────────────────────────────
+    renderizarBannersEspeciais();
+
+    // ── GRADE COMPLETA — TODOS OS ITENS POR SEÇÃO ───────────────
     cardapioData.forEach(secao => {
         if (secao.id === 'adicionais-extras') return;
 
-        // Separar destaques dos itens normais
-        const itensAtivos     = secao.itens.filter(i => i.ativo !== false);
-        const itensDestaque   = itensAtivos.filter(i => i.destaque === true).slice(0, 3);
-        const itensNormais    = itensAtivos.filter(i => i.destaque !== true);
+        const itensAtivos = secao.itens.filter(i => i.ativo !== false);
+        if (itensAtivos.length === 0) return;
 
         const section = document.createElement('section');
         section.id = secao.id;
         section.classList.add('menu-section');
 
-        let html = `<h2 class="section-title">${secao.nome}</h2>`;
-
-        // ── CARROSSEL DE DESTAQUES ──────────────────────────────
-        if (itensDestaque.length > 0) {
-            html += `<div class="destaque-wrap">
-                <div class="destaque-track">
-                    <div class="destaque-slides" id="slides-${secao.id}">
-                        ${itensDestaque.map((item, idx) => {
-                            const preco = item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00';
-                            const badge = item.badge || '';
-                            const isCustomizavel = CATEGORIAS_CUSTOMIZAVEIS.includes(secao.id);
-                            const fotoSrc = item.imagem ? `imagens/${item.imagem}` : 'assets/img/hamburguer.png';
-                            return `
-                            <div class="destaque-slide">
-                                <div class="destaque-foto">
-                                    <img src="${fotoSrc}" alt="${item.nome}" loading="lazy"
-                                         onerror="this.src='assets/img/hamburguer.png';this.style.objectFit='contain';this.style.padding='20px';this.style.opacity='.4'">
-                                    <div class="destaque-foto-fade"></div>
-                                </div>
-                                <div class="destaque-body">
-                                    ${badge ? `<span class="destaque-badge">${badge}</span>` : ''}
-                                    <h3 class="destaque-nome">${item.nome}</h3>
-                                    <p class="destaque-desc">${item.descricao || ''}</p>
-                                    <div class="destaque-footer">
-                                        <span class="destaque-preco">R$ ${preco}</span>
-                                        <button class="card-btn btn-adicionar destaque-btn"
-                                            data-item-id="${item.id}" data-categoria-id="${secao.id}">
-                                            Adicionar 🛒
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>`;
-                        }).join('')}
-                    </div>
-                </div>
-                ${itensDestaque.length > 1 ? `
-                <div class="destaque-dots" id="dots-${secao.id}">
-                    ${itensDestaque.map((_, i) => `<div class="destaque-dot ${i===0?'ativo':''}" data-idx="${i}" data-secao="${secao.id}"></div>`).join('')}
-                </div>` : ''}
-            </div>`;
-        }
-
-        // ── GRADE DE ITENS NORMAIS ──────────────────────────────
-        if (itensNormais.length > 0) {
-            html += `<div class="cardapio-grid">
-                ${itensNormais.map(item => {
-                    const preco = item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00';
-                    const isCustomizavel = CATEGORIAS_CUSTOMIZAVEIS.includes(secao.id);
+        section.innerHTML = `
+            <h2 class="section-title">${secao.nome}</h2>
+            <div class="cardapio-grid">
+                ${itensAtivos.map(item => {
+                    const preco = (item.preco || 0).toFixed(2).replace('.', ',');
                     return `
                     <div class="item-card" data-item-id="${item.id}" data-categoria-id="${secao.id}">
                         <div class="card-img-wrapper">${gerarImagemCard(item)}</div>
@@ -263,15 +273,8 @@ function renderizarCardapio() {
                     </div>`;
                 }).join('')}
             </div>`;
-        }
 
-        section.innerHTML = html;
         container.appendChild(section);
-
-        // Inicializar carrossel se houver destaques
-        if (itensDestaque.length > 1) {
-            inicializarCarrossel(secao.id, itensDestaque.length);
-        }
     });
 
     document.querySelectorAll('.btn-adicionar').forEach(btn => {
@@ -279,7 +282,6 @@ function renderizarCardapio() {
     });
 
     renderizarCategoriasPills();
-    renderizarBannersEspeciais();
 }
 
 // ── BANNERS ESPECIAIS (Combo + Batata) ──────────────────────
