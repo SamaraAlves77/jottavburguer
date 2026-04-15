@@ -80,8 +80,8 @@ a { color: var(--primary-color); text-decoration: none; }
 /* ── GRID ── */
 .cardapio-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
 }
 
 /* ── CARD ── */
@@ -252,6 +252,155 @@ footer {
     border-top: 1px solid rgba(255,255,255,0.06);
     color: #555;
     font-size: 0.85em;
+}
+
+
+/* ── CARROSSEL DE DESTAQUES ── */
+.destaque-wrap {
+    margin-bottom: 28px;
+}
+
+.destaque-track {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.destaque-slides {
+    display: flex;
+    transition: transform .5s cubic-bezier(.4,0,.2,1);
+}
+
+.destaque-slide {
+    min-width: 100%;
+    height: 170px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #1a1a1a;
+}
+
+.destaque-foto {
+    width: 45%;
+    min-width: 45%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.destaque-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s;
+}
+
+.destaque-slide:hover .destaque-foto img {
+    transform: scale(1.04);
+}
+
+.destaque-foto-fade {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 60px;
+    background: linear-gradient(to right, transparent, #1a1a1a);
+    pointer-events: none;
+}
+
+.destaque-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px 16px 16px 10px;
+    gap: 5px;
+}
+
+.destaque-badge {
+    display: inline-block;
+    background: rgba(69,161,53,.2);
+    color: #5DBF4A;
+    border: 1px solid rgba(69,161,53,.35);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.72em;
+    font-weight: 700;
+    letter-spacing: .4px;
+    width: fit-content;
+    margin-bottom: 2px;
+}
+
+.destaque-nome {
+    color: #fff;
+    font-size: 1.05em;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.destaque-desc {
+    color: rgba(255,255,255,.55);
+    font-size: 0.75em;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+
+.destaque-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.destaque-preco {
+    color: var(--text-price);
+    font-size: 1.15em;
+    font-weight: 800;
+}
+
+.destaque-btn {
+    font-size: 0.75em !important;
+    padding: 6px 12px !important;
+}
+
+/* Dots */
+.destaque-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.destaque-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.destaque-dot.ativo {
+    background: var(--primary-color);
+    width: 20px;
+    border-radius: 3px;
+}
+
+/* Responsive carrossel */
+@media (max-width: 480px) {
+    .destaque-slide { height: 150px; }
+    .destaque-nome { font-size: .95em; }
+    .destaque-preco { font-size: 1em; }
+    .destaque-foto { width: 42%; min-width: 42%; }
 }
 
 /* ── RESPONSIVE ── */
