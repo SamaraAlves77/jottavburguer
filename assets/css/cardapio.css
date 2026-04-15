@@ -61,31 +61,29 @@ a { color: var(--primary-color); text-decoration: none; }
 
 /* ── CONTEÚDO PRINCIPAL ── */
 #main-content-container {
-    padding: 24px 20px 40px;
+    padding: 20px 16px 80px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.menu-section { margin-bottom: 48px; }
+.menu-section { margin-bottom: 36px; }
 
 .section-title {
     color: var(--primary-color);
     text-align: left;
-    margin-bottom: 20px;
-    font-size: 1.5em;
-    font-weight: 800;
-    letter-spacing: -0.3px;
+    margin-bottom: 14px;
+    font-size: 1.1em;
+    font-weight: 700;
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    opacity: .85;
 }
 
 /* ── GRID ── */
 .cardapio-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-}
-
-@media (max-width: 1100px) {
-    .cardapio-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
 }
 
 @media (max-width: 768px) {
@@ -109,16 +107,27 @@ a { color: var(--primary-color); text-decoration: none; }
 }
 
 .item-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(0,0,0,.4);
+    border-color: #333;
+}
+@media (hover: hover) {
+    .item-card:hover { transform: translateY(-3px); }
 }
 
 .card-img-wrapper {
     position: relative;
     width: 100%;
-    height: 140px;
+    height: 0;
+    padding-bottom: 65%;
     overflow: hidden;
     background: #1a1a1a;
+}
+
+.card-img-wrapper img,
+.card-img-wrapper .sem-imagem {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
 }
 
 .card-img-wrapper img {
@@ -188,13 +197,14 @@ a { color: var(--primary-color); text-decoration: none; }
     background: var(--primary-color);
     color: #fff;
     border: none;
-    border-radius: 7px;
-    padding: 5px 12px;
-    font-size: 0.78em;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 0.8em;
     font-weight: 700;
     cursor: pointer;
     transition: background .2s, transform .1s;
     white-space: nowrap;
+    min-height: 34px;
 }
 
 .card-btn:hover { background: var(--accent-color); transform: scale(1.03); }
@@ -765,16 +775,70 @@ footer {
 .item-card.em-promocao:hover {
     border-color: rgba(255,85,0,.5);
 }
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-    #main-content-container { padding: 16px 12px 40px; }
-    .section-title { font-size: 1.25em; }
-    .card-img-wrapper { height: 140px; }
-    .card-nome { font-size: 0.9em; }
-    .card-btn { padding: 6px 10px; font-size: 0.78em; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — todos os breakpoints
+═══════════════════════════════════════════════ */
+
+/* ── LARGE DESKTOP (1400px+) ── */
+@media (min-width: 1400px) {
+    #main-content-container { padding: 24px 24px 80px; }
+    .cardapio-grid { gap: 20px; }
 }
 
+/* ── DESKTOP (1025px–1399px) ── */
+@media (max-width: 1399px) and (min-width: 1025px) {
+    .cardapio-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+}
+
+/* ── TABLET LANDSCAPE (769px–1024px) ── */
+@media (max-width: 1024px) {
+    .cardapio-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    #main-content-container { padding: 16px 14px 80px; }
+    .destaque-slide { height: 155px; }
+}
+
+/* ── TABLET PORTRAIT (481px–768px) ── */
+@media (max-width: 768px) {
+    body { padding-top: 56px; }
+    .cardapio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    #main-content-container { padding: 12px 10px 80px; }
+    .section-title { font-size: 1.1em; margin-bottom: 12px; }
+    .destaque-slide { height: 145px; }
+    .destaque-nome { font-size: .95em; }
+    .destaque-preco { font-size: 1em; }
+    .destaque-foto { width: 40%; min-width: 40%; }
+    .card-body { padding: 8px 10px 0; }
+    .card-footer { padding: 7px 10px; }
+    .card-btn { padding: 6px 10px; font-size: 0.76em; min-height: 30px; }
+    .combo-banner, .batata-banner { padding: 10px 12px; }
+    .combo-ico, .batata-ico { width: 36px; height: 36px; font-size: 16px; }
+    .combo-banner-title { font-size: 13px; }
+}
+
+/* ── MOBILE LARGE (421px–480px) ── */
+@media (max-width: 480px) {
+    .cardapio-grid { gap: 8px; }
+    .card-nome { font-size: 0.82em; }
+    .card-preco { font-size: 0.92em; }
+    .destaque-slide { height: 135px; }
+    .destaque-nome { font-size: .9em; }
+    .combo-banner-cta, .batata-banner-cta { display: none; }
+}
+
+/* ── MOBILE SMALL (até 420px) ── */
 @media (max-width: 420px) {
-    .card-img-wrapper { height: 120px; }
-    .card-preco { font-size: 1em; }
+    .cardapio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    #main-content-container { padding: 10px 8px 80px; }
+    .destaque-slide { height: 125px; }
+    .destaque-foto { width: 38%; min-width: 38%; }
+    .destaque-body { padding: 10px 10px 10px 6px; }
+    .destaque-preco { font-size: .9em; }
+    .section-title { font-size: 1em; }
+    .cat-pill { padding: 5px 12px; font-size: 0.78em; }
+}
+
+/* ── PILLS STICKY corrigida para cada breakpoint ── */
+@media (max-width: 768px) {
+    .categorias-sticky { top: 56px; padding: 8px 10px; }
 }
