@@ -1055,14 +1055,14 @@ function mostrarUpsell(categoriaId) {
                     const catId = sec?.id || '';
                     const fotoSrc = item.imagem ? 'imagens/' + item.imagem : 'assets/img/hamburguer.png';
                     const preco = (item.preco||0).toFixed(2).replace('.', ',');
-                    return '<div class="upsell-item">' +
-                        '<img src="' + fotoSrc + '" alt="' + item.nome + '" onerror="this.src='assets/img/hamburguer.png'">' +
-                        '<div class="upsell-item-body">' +
-                            '<div class="upsell-item-nome">' + item.nome + '</div>' +
-                            '<div class="upsell-item-preco">R$ ' + preco + '</div>' +
-                        '</div>' +
-                        '<button class="upsell-item-btn btn-adicionar" data-item-id="' + item.id + '" data-categoria-id="' + catId + '">Adicionar</button>' +
-                    '</div>';
+                    return `<div class="upsell-item">
+                        <img src="${fotoSrc}" alt="${item.nome}" onerror="this.src='assets/img/hamburguer.png'">
+                        <div class="upsell-item-body">
+                            <div class="upsell-item-nome">${item.nome}</div>
+                            <div class="upsell-item-preco">R$ ${preco}</div>
+                        </div>
+                        <button class="upsell-item-btn btn-adicionar" data-item-id="${item.id}" data-categoria-id="${catId}">Adicionar</button>
+                    </div>`;
                 }).join('')}
             </div>
             <button class="upsell-fechar" onclick="fecharUpsell()">Não, obrigado</button>
