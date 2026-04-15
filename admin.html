@@ -526,7 +526,7 @@ function authHeaders() {
 }
 
 async function ghGet(caminho) {
-  const r = await fetch('/.netlify/functions/github', {
+  const r = await fetch('/api/github', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -541,7 +541,7 @@ async function ghGet(caminho) {
 async function ghPut(caminho, conteudo, sha, msg) {
   const payload = { message: msg || `Admin: ${caminho}`, content: b64Encode(conteudo) };
   if (sha) payload.sha = sha;
-  const r = await fetch('/.netlify/functions/github', {
+  const r = await fetch('/api/github', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -559,7 +559,7 @@ async function ghUploadImagem(nome, base64) {
   try { sha = (await ghGet(`imagens/${nome}`)).sha; } catch(e){}
   const body = { message: `Admin: imagem ${nome}`, content: base64 };
   if (sha) body.sha = sha;
-  const r = await fetch('/.netlify/functions/github', {
+  const r = await fetch('/api/github', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -1026,7 +1026,7 @@ async function testarConexao() {
   // Token gerenciado pelo servidor Netlify
   document.getElementById('status-conexao').innerHTML = '<span style="color:var(--muted)">Testando...</span>';
   try {
-    const r = await fetch('/.netlify/functions/github', {
+    const r = await fetch('/api/github', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ caminho: `${GITHUB_OWNER}/${GITHUB_REPO}`, metodo: 'GET' })
@@ -1051,7 +1051,7 @@ async function conectarServidor() {
   setStatus('Conectando ao servidor...', 'info');
   try {
     // Testa a função serverless — sem precisar de token no browser
-    const r = await fetch('/.netlify/functions/github', {
+    const r = await fetch('/api/github', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
