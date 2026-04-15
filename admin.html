@@ -392,6 +392,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
         <p id="upload-nome" class="upload-nome"></p>
       </div>
       <div class="form-group" style="margin-top:8px">
+        <label>Badge do destaque <span style="color:var(--muted);font-size:.78em">(ex: 🔥 Mais pedido)</span></label>
+        <input type="text" id="edit-badge" placeholder="🔥 Mais pedido" style="background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;width:100%;font-size:.9em">
+      </div>
+      <div class="form-group" style="margin-top:8px">
         <label>Nome do arquivo (atual)</label>
         <input type="text" id="edit-imagem-nome" placeholder="Ex: smash_duplo.jpeg">
       </div>
@@ -651,6 +655,11 @@ function renderizarItens() {
         <input type="checkbox" ${item.ativo !== false ? 'checked' : ''} data-sec="${secaoAtual}" data-idx="${i}" onchange="toggleAtivo(this)">
         <span class="toggle-slider"></span>
       </label>
+      <button class="btn-icon ${item.destaque ? 'destaque-on' : ''}" title="Destaque no carrossel (máx 3)"
+        data-sec="${secaoAtual}" data-idx="${i}"
+        onclick="toggleDestaque(this)">⭐</button>
+      <button class="btn-icon" onclick="moverItem(${secaoAtual},${i},-1)" title="Mover para cima">↑</button>
+      <button class="btn-icon" onclick="moverItem(${secaoAtual},${i},1)" title="Mover para baixo">↓</button>
       <button class="btn-icon" onclick="abrirModalEditarItem(${i})" title="Editar"><i class="fas fa-edit"></i></button>
       <button class="btn-icon danger" onclick="excluirItem(${i})" title="Excluir"><i class="fas fa-trash"></i></button>
     `;
@@ -754,6 +763,8 @@ function abrirModalEditarItem(idx) {
   document.getElementById('edit-preco').value = item.preco || '';
   document.getElementById('edit-descricao').value = item.descricao || '';
   document.getElementById('edit-imagem-nome').value = item.imagem || '';
+  const badgeEl = document.getElementById('edit-badge');
+  if (badgeEl) badgeEl.value = item.badge || '';
   const prev = document.getElementById('upload-preview');
   if (item.imagem) { prev.src = `imagens/${item.imagem}`; prev.style.display = 'block'; }
   else prev.style.display = 'none';
@@ -809,10 +820,10 @@ async function salvarItemModal() {
     const itens = cardapioData[secaoAtual].itens;
     if (itemEditandoIndex === -1) {
       const maxId = cardapioData.flatMap(s=>s.itens).reduce((m,i)=>Math.max(m,i.id||0),0);
-      itens.push({ id: maxId+1, nome, preco, descricao, imagem: imgNome || undefined, ativo });
+      itens.push({ id: maxId+1, nome, preco, descricao, imagem: imgNome || undefined, ativo, badge: badge || '', destaque: false, ordem: itens.length });
     } else {
       const item = itens[itemEditandoIndex];
-      Object.assign(item, { nome, preco, descricao, ativo });
+      Object.assign(item, { nome, preco, descricao, ativo, badge: badge || '' });
       if (imgNome) item.imagem = imgNome;
     }
 
@@ -1439,3 +1450,39 @@ const _origCarregarDados = window.carregarDados;
 </script>
 </body>
 </html>
+
+<script>
+function toggleDestaque(btn) {
+  const secIdx = parseInt(btn.getAttribute('data-sec'));
+  const itemIdx = parseInt(btn.getAttribute('data-idx'));
+  const item = cardapioData[secIdx]?.itens[itemIdx];
+  if (!item) return;
+
+  const totalDestaques = cardapioData.flatMap(s => s.itens).filter(i => i.destaque).length;
+
+  if (!item.destaque && totalDestaques >= 3) {
+    setStatus('Máximo de 3 destaques permitidos. Remova um antes de adicionar.', 'erro');
+    setTimeout(() => setStatus('', ''), 4000);
+    return;
+  }
+
+  item.destaque = !item.destaque;
+  btn.classList.toggle('destaque-on', item.destaque);
+
+  const count = cardapioData.flatMap(s => s.itens).filter(i => i.destaque).length;
+  setStatus(`⭐ ${item.nome} ${item.destaque ? 'adicionado ao' : 'removido do'} carrossel. (${count}/3) — Salve para aplicar.`, 'info');
+}
+
+function moverItem(secIdx, itemIdx, direcao) {
+  const itens = cardapioData[secIdx]?.itens;
+  if (!itens) return;
+  const novoIdx = itemIdx + direcao;
+  if (novoIdx < 0 || novoIdx >= itens.length) return;
+  [itens[itemIdx], itens[novoIdx]] = [itens[novoIdx], itens[itemIdx]];
+  itens.forEach((item, i) => item.ordem = i);
+  renderizarItens();
+  setStatus('Ordem atualizada — clique em Salvar para confirmar.', 'info');
+}
+
+// Fim do admin.js
+</script>
