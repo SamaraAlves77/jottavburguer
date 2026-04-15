@@ -229,7 +229,7 @@
                 "nome": "Batata + Molho + Bacon",
                 "descricao": "Batata frita, bacon crocante e molho.",
                 "preco": 17.99,
-                "destaque": true,
+                "destaque": false,
                 "badge": "",
                 "ordem": 1
             },
@@ -263,7 +263,7 @@
                 "descricao": "Refrigerante lata 350ml de Coca-Cola.",
                 "preco": 7,
                 "imagem": "cocalata.png",
-                "destaque": false,
+                "destaque": true,
                 "badge": "",
                 "ordem": 0
             },
