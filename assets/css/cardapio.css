@@ -80,8 +80,20 @@ a { color: var(--primary-color); text-decoration: none; }
 /* ── GRID ── */
 .cardapio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+@media (max-width: 1100px) {
+    .cardapio-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+}
+
+@media (max-width: 768px) {
+    .cardapio-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+
+@media (max-width: 420px) {
+    .cardapio-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
 }
 
 /* ── CARD ── */
@@ -404,20 +416,15 @@ footer {
 }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 1024px) {
-    .cardapio-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
-}
-
 @media (max-width: 768px) {
-    .cardapio-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     #main-content-container { padding: 16px 12px 40px; }
     .section-title { font-size: 1.25em; }
-    .card-img-wrapper { height: 150px; }
+    .card-img-wrapper { height: 140px; }
     .card-nome { font-size: 0.9em; }
-    .card-btn { padding: 6px 12px; font-size: 0.78em; }
+    .card-btn { padding: 6px 10px; font-size: 0.78em; }
 }
 
-@media (max-width: 400px) {
-    .cardapio-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .card-img-wrapper { height: 130px; }
+@media (max-width: 420px) {
+    .card-img-wrapper { height: 120px; }
+    .card-preco { font-size: 1em; }
 }
