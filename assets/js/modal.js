@@ -283,6 +283,9 @@ function finalizarPedido() {
 // =======================================================
 
 function init() {
+    // Garantir que carrinho existe antes de usar
+    if (typeof carrinho === 'undefined') window.carrinho = [];
+
     carrinhoModal = document.getElementById('carrinho-modal');
     fecharModalBtn = carrinhoModal ? carrinhoModal.querySelector('.fechar-modal') : null;
     carrinhoItensContainer = document.getElementById('carrinho-itens');
