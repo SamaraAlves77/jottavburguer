@@ -334,9 +334,11 @@ function renderizarCardapio() {
                                <span class="card-preco preco-promocao">R$ ${precoFinal}</span>
                            </div>`
                         : `<span class="card-preco">R$ ${precoOriginal}</span>`;
+                    const badgeGrade = item.destaque && item.badge ? item.badge : '';
                     return `
-                    <div class="item-card ${emPromo ? 'em-promocao' : ''}" data-item-id="${item.id}" data-categoria-id="${secao.id}">
-                        <div class="card-img-wrapper">
+                    <div class="item-card ${emPromo ? 'em-promocao' : ''} ${badgeGrade ? 'destaque-grade' : ''}"
+                        data-item-id="${item.id}" data-categoria-id="${secao.id}">
+                        <div class="card-img-wrapper" data-badge="${badgeGrade}">
                             ${gerarImagemCard(item)}
                             ${emPromo ? `<div class="promo-tag">-${infoPromo.desconto}%</div>` : ''}
                         </div>
@@ -1014,6 +1016,71 @@ function handleAdicionarAoCarrinho(event) {
     }
 }
 
+// ── UPSELL ──────────────────────────────────────────────────
+const UPSELL_MAP = {
+    'hamburgueres-artesanais': ['acompanhamentos', 'bebidas'],
+    'combos-e-familia':        ['bebidas'],
+    'acompanhamentos':         ['bebidas'],
+    'bebidas':                 ['acompanhamentos'],
+};
+
+function mostrarUpsell(categoriaId) {
+    const sugestoes = UPSELL_MAP[categoriaId] || [];
+    if (!sugestoes.length) return;
+
+    const itens = sugestoes.flatMap(catId => {
+        const sec = cardapioData.find(s => s.id === catId);
+        return (sec?.itens || []).filter(i => i.ativo !== false).slice(0, 2);
+    }).slice(0, 4);
+
+    if (!itens.length) return;
+
+    document.getElementById('upsell-overlay')?.remove();
+
+    const titles = {
+        'acompanhamentos': 'Adicione um acompanhamento 🍟',
+        'bebidas': 'Vai uma bebida? 🥤',
+    };
+    const titulo = titles[sugestoes[0]] || 'Quer adicionar mais alguma coisa?';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'upsell-overlay';
+    overlay.id = 'upsell-overlay';
+    overlay.innerHTML = `
+        <div class="upsell-box">
+            <div class="upsell-titulo">${titulo}</div>
+            <div class="upsell-itens">
+                ${itens.map(item => {
+                    const sec = cardapioData.find(s => s.itens.some(i => i.id === item.id));
+                    const catId = sec?.id || '';
+                    const fotoSrc = item.imagem ? 'imagens/' + item.imagem : 'assets/img/hamburguer.png';
+                    const preco = (item.preco||0).toFixed(2).replace('.', ',');
+                    return '<div class="upsell-item">' +
+                        '<img src="' + fotoSrc + '" alt="' + item.nome + '" onerror="this.src='assets/img/hamburguer.png'">' +
+                        '<div class="upsell-item-body">' +
+                            '<div class="upsell-item-nome">' + item.nome + '</div>' +
+                            '<div class="upsell-item-preco">R$ ' + preco + '</div>' +
+                        '</div>' +
+                        '<button class="upsell-item-btn btn-adicionar" data-item-id="' + item.id + '" data-categoria-id="' + catId + '">Adicionar</button>' +
+                    '</div>';
+                }).join('')}
+            </div>
+            <button class="upsell-fechar" onclick="fecharUpsell()">Não, obrigado</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) fecharUpsell(); });
+    overlay.querySelectorAll('.btn-adicionar').forEach(btn => btn.addEventListener('click', e => {
+        handleAdicionarAoCarrinho(e);
+        fecharUpsell();
+    }));
+    setTimeout(fecharUpsell, 6000);
+}
+
+function fecharUpsell() {
+    document.getElementById('upsell-overlay')?.remove();
+}
+
 function adicionarItemSimplesAoCarrinho(item, categoriaId) {
     const existingItem = carrinho.find(c => c.id === item.id && !c.adicionais);
     const precoPromo = getPrecoComPromocao(item, categoriaId);
@@ -1030,6 +1097,7 @@ function adicionarItemSimplesAoCarrinho(item, categoriaId) {
         });
     }
     salvarCarrinhoLocal();
+    setTimeout(() => mostrarUpsell(categoriaId), 700);
     if (typeof updateContadorCarrinho === 'function') updateContadorCarrinho();
 }
 
