@@ -1,61 +1,65 @@
-const https = require('https');
+// functions/api/github.js
+// Cloudflare Pages Function — proxy seguro para API do GitHub
 
-exports.handler = async function(event) {
+export async function onRequest(context) {
+  const { request, env } = context;
+
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers, body: '' };
+  if (request.method === 'OPTIONS') {
+    return new Response('', { status: 204, headers });
   }
 
-  const token = process.env.GITHUB_TOKEN;
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Método não permitido' }), { status: 405, headers });
+  }
+
+  const token = env.GITHUB_TOKEN;
   if (!token) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'GITHUB_TOKEN não configurado' })
-    };
+    return new Response(JSON.stringify({ error: 'GITHUB_TOKEN não configurado' }), { status: 500, headers });
   }
 
-  const { caminho, metodo = 'GET', payload = null } = JSON.parse(event.body || '{}');
+  let body;
+  try {
+    body = await request.json();
+  } catch(e) {
+    return new Response(JSON.stringify({ error: 'Body inválido' }), { status: 400, headers });
+  }
 
-  return new Promise((resolve) => {
-    const options = {
-      hostname: 'api.github.com',
-      path: `/repos/${caminho}`,
-      method: metodo,
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Netlify-Function',
-        'Content-Type': 'application/json'
-      }
-    };
+  const { caminho, metodo = 'GET', payload = null } = body;
 
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', c => data += c);
-      res.on('end', () => {
-        resolve({
-          statusCode: res.statusCode,
-          headers,
-          body: data
-        });
-      });
-    });
+  if (!caminho) {
+    return new Response(JSON.stringify({ error: 'caminho obrigatório' }), { status: 400, headers });
+  }
 
-    req.on('error', (e) => {
-      resolve({ statusCode: 500, headers, body: JSON.stringify({ error: e.message }) });
-    });
+  const url = `https://api.github.com/repos/${caminho}`;
 
-    if (payload && metodo !== 'GET') {
-      req.write(JSON.stringify(payload));
-    }
+  const reqHeaders = {
+    'Authorization': `token ${token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'Cloudflare-Pages-Function',
+    'Content-Type': 'application/json',
+  };
 
-    req.end();
-  });
-};
+  const fetchOptions = {
+    method: metodo,
+    headers: reqHeaders,
+  };
+
+  if (payload && metodo !== 'GET') {
+    fetchOptions.body = JSON.stringify(payload);
+  }
+
+  try {
+    const resp = await fetch(url, fetchOptions);
+    const data = await resp.json();
+    return new Response(JSON.stringify(data), { status: resp.status, headers });
+  } catch(e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+  }
+}
