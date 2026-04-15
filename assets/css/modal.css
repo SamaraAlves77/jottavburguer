@@ -279,30 +279,37 @@
 
 /* RESPONSIVIDADE */
 @media (max-width: 600px) {
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
     .modal-content {
-        margin: 10px auto;
-        max-height: calc(100vh - 20px);
-        padding: 15px;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+        max-height: 92vh;
     }
+}
 
-    .carrinho-itens {
-        max-height: 30vh;
-    }
+/* ═══════════════════════════════════════
+   MODAL — RESPONSIVO COMPLETO
+═══════════════════════════════════════ */
 
-    .carrinho-finalizar input,
-    .carrinho-finalizar select,
-    .carrinho-finalizar textarea {
-        padding: 10px;
-        margin-bottom: 10px;
+@media (max-width: 768px) {
+    .modal-overlay { padding: 0; align-items: flex-end; }
+    .modal-box {
+        border-radius: 20px 20px 0 0;
+        max-height: 92vh;
+        width: 100%;
+        max-width: 100%;
     }
+    .modal-footer {
+        padding: 12px 16px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+}
 
-    #customizacao-modal .adicionais-opcoes {
-        max-height: 35vh;
-        padding-right: 0;
-    }
-
-    #customizacao-modal .adicional-option {
-        margin-bottom: 6px;
-        padding: 10px;
-    }
+@media (max-width: 420px) {
+    .modal-box { max-height: 95vh; }
 }
