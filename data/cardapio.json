@@ -295,7 +295,8 @@
                 "imagem": "pepsi.png",
                 "destaque": false,
                 "badge": "",
-                "ordem": 3
+                "ordem": 3,
+                "ativo": false
             }
         ]
     },
