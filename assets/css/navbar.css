@@ -3,7 +3,7 @@
 ════════════════════════════════════════ */
 
 :root {
-    --nav-height: 56px;
+    --nav-height: 56px; /* mobile */
 }
 
 .navbar {
