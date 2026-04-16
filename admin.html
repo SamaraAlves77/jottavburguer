@@ -930,60 +930,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 // =============================================================
 // GITHUB API
 // =============================================================
-function authHeaders() {
-  return {
-    'Authorization': `token ${githubToken}`,
-    'Accept': 'application/vnd.github.v3+json',
-    'Content-Type': 'application/json'
-  };
-}
-
-async function ghGet(caminho) {
-  const r = await fetch('/api/github', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      caminho: `${GITHUB_OWNER}/${GITHUB_REPO}/contents/${caminho}`,
-      metodo: 'GET'
-    })
-  });
-  if (!r.ok) throw new Error(`${r.status} ao ler ${caminho}`);
-  return r.json();
-}
-
-async function ghPut(caminho, conteudo, sha, msg) {
-  const payload = { message: msg || `Admin: ${caminho}`, content: b64Encode(conteudo) };
-  if (sha) payload.sha = sha;
-  const r = await fetch('/api/github', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      caminho: `${GITHUB_OWNER}/${GITHUB_REPO}/contents/${caminho}`,
-      metodo: 'PUT',
-      payload
-    })
-  });
-  if (!r.ok) throw new Error(`${r.status} ao salvar ${caminho}`);
-  return r.json();
-}
-
-async function ghUploadImagem(nome, base64) {
-  let sha = null;
-  try { sha = (await ghGet(`imagens/${nome}`)).sha; } catch(e){}
-  const body = { message: `Admin: imagem ${nome}`, content: base64 };
-  if (sha) body.sha = sha;
-  const r = await fetch('/api/github', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      caminho: `${GITHUB_OWNER}/${GITHUB_REPO}/contents/imagens/${nome}`,
-      metodo: 'PUT',
-      payload: body
-    })
-  });
-  if (!r.ok) throw new Error(`Erro no upload: ${await r.text()}`);
-  return r.json();
-}
 
 function b64Encode(str) {
   return btoa(unescape(encodeURIComponent(str)));
@@ -995,6 +941,46 @@ function b64Decode(str) {
 // =============================================================
 // CARREGAR DADOS
 // =============================================================
+
+async function ghGet(caminho) {
+  const r = await fetch('/api/github', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ caminho: `SamaraAlves77/jottavburguer/contents/${caminho}`, metodo: 'GET' })
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.message || 'Erro ao buscar ' + caminho);
+  return data;
+}
+
+async function ghPut(caminho, conteudo, sha, mensagem = 'Admin: atualização') {
+  const payload = {
+    message: mensagem,
+    content: b64Encode(conteudo),
+    ...(sha ? { sha } : {})
+  };
+  const r = await fetch('/api/github', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ caminho: `SamaraAlves77/jottavburguer/contents/${caminho}`, metodo: 'PUT', payload })
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.message || 'Erro ao salvar ' + caminho);
+  return data;
+}
+
+async function salvarCardapioAdmin() {
+  setStatus('Salvando cardápio...', 'info');
+  try {
+    let atual;
+    try { atual = await ghGet('data/cardapio.json'); shaCardapio = atual.sha; } catch(e) {}
+    const res = await ghPut('data/cardapio.json', JSON.stringify(cardapioData, null, 4), shaCardapio, 'Admin: cardápio atualizado');
+    shaCardapio = res.content.sha;
+    setStatus('✅ Cardápio salvo! Aguarde ~1 min para atualizar.', 'ok');
+    setTimeout(() => setStatus('', ''), 6000);
+  } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
+}
+
 async function carregarDados() {
   setStatus('Carregando dados...', 'info');
   try {
@@ -1466,79 +1452,8 @@ async function salvarConfig() {
 // =============================================================
 // GITHUB TOKEN
 // =============================================================
-function salvarToken() {
-  const t = document.getElementById('token-input').value.trim();
-  if (!t) { setStatus('Cole o token antes de salvar.', 'erro'); return; }
-  githubToken = t;
 
-  // Salva em 3 lugares para máxima persistência
-  try { localStorage.setItem('ghToken', t); } catch(e) {}
-  try { sessionStorage.setItem('ghToken', t); } catch(e) {}
-  // Cookie com 365 dias (funciona mesmo quando localStorage é limpo)
-  document.cookie = `ghToken=${encodeURIComponent(t)};max-age=31536000;path=/;SameSite=Strict`;
 
-  testarConexao();
-}
-
-function getCookieToken() {
-  const match = document.cookie.match(/(?:^|;\s*)ghToken=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : null;
-}
-
-async function testarConexao() {
-  // Token gerenciado pelo servidor Netlify
-  document.getElementById('status-conexao').innerHTML = '<span style="color:var(--muted)">Testando...</span>';
-  try {
-    const r = await fetch('/api/github', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ caminho: `${GITHUB_OWNER}/${GITHUB_REPO}`, metodo: 'GET' })
-    });
-    if (r.ok) {
-      document.getElementById('status-conexao').innerHTML = `<span class="badge-conectado"><i class="fas fa-check-circle"></i> Conectado ao repositório ${GITHUB_REPO}</span>`;
-      await carregarDados();
-      await carregarTema();
-    } else {
-      document.getElementById('status-conexao').innerHTML = `<span style="color:#e53935">Erro ${r.status}. Verifique o token.</span>`;
-    }
-  } catch(e) {
-    document.getElementById('status-conexao').innerHTML = `<span style="color:#e53935">Falha na conexão: ${e.message}</span>`;
-  }
-}
-
-async function verificarConexao() {
-  await conectarServidor();
-}
-
-async function conectarServidor() {
-  setStatus('Conectando ao servidor...', 'info');
-  try {
-    // Testa a função serverless — sem precisar de token no browser
-    const r = await fetch('/api/github', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        caminho: `${GITHUB_OWNER}/${GITHUB_REPO}`,
-        metodo: 'GET'
-      })
-    });
-    if (r.ok) {
-      const statusEl = document.getElementById('status-conexao');
-      if (statusEl) statusEl.innerHTML = '<span class="badge-conectado"><i class="fas fa-check-circle"></i> Conectado ao GitHub via servidor</span>';
-      await carregarDados();
-      await carregarTema();
-      carregarIdentidade();
-    } else {
-      setStatus('Erro ao conectar ao servidor. Verifique o token no Netlify.', 'erro');
-    }
-  } catch(e) {
-    setStatus('Função serverless não encontrada. Verifique netlify/functions/github.js', 'erro');
-  }
-}
-
-// =============================================================
-// UTILITÁRIOS
-// =============================================================
 function mostrarTab(nome) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('ativo'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
