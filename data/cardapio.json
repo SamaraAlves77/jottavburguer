@@ -263,7 +263,7 @@
                 "descricao": "Refrigerante lata 350ml de Coca-Cola.",
                 "preco": 7,
                 "imagem": "cocalata.png",
-                "destaque": true,
+                "destaque": false,
                 "badge": "",
                 "ordem": 0
             },
@@ -273,7 +273,7 @@
                 "descricao": "Refrigerante lata 350ml de Guaraná Antarctica.",
                 "preco": 6,
                 "imagem": "guaranalata.png",
-                "destaque": false,
+                "destaque": true,
                 "badge": "",
                 "ordem": 1
             },
