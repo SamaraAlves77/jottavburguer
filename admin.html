@@ -1953,11 +1953,9 @@ async function salvarLanding() {
 
 // Sobrescrever carregarDados para também popular configLanding
 const _origCarregarDados = window.carregarDados;
-</script>
-</body>
-</html>
 
-<script>
+
+
 function toggleDestaque(btn) {
   const secIdx = parseInt(btn.getAttribute('data-sec'));
   const itemIdx = parseInt(btn.getAttribute('data-idx'));
@@ -1991,7 +1989,8 @@ function moverItem(secIdx, itemIdx, direcao) {
 }
 
 // Fim do admin.js
-</script>
+
+
 // ── FUNÇÕES DE PROMOÇÃO ──────────────────────────────────────
 function carregarPromocao() {
   const promo = configData?.promocao || {};
@@ -2103,3 +2102,7 @@ async function salvarComboDesconto() {
 // ============================
 // FIM DO PAINEL ADMIN
 // ============================
+
+</script>
+</body>
+</html>
