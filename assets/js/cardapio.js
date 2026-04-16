@@ -9,6 +9,35 @@ let adicionaisGlobais = [];
 let itemEmCustomizacao = null;
 const CATEGORIAS_CUSTOMIZAVEIS = ['hamburgueres-artesanais', 'acompanhamentos'];
 
+// ── ANALYTICS / WEBHOOK EVENTS (pronto para n8n) ────────────
+const SESSION_ID = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+const RESTAURANT_ID = 'jottav-burguer';
+
+function emitirEvento(eventName, produto, opcoes = []) {
+    const payload = {
+        event: eventName,
+        timestamp: new Date().toISOString(),
+        session_id: SESSION_ID,
+        restaurant_id: RESTAURANT_ID,
+        product: {
+            id: produto.id,
+            name: produto.nome,
+            category: produto._categoriaId || '',
+            price: produto.preco || 0,
+            options: opcoes,
+            quantity: produto.quantidade || 1
+        },
+        cart: {
+            items: carrinho.reduce((s, i) => s + (i.quantidade || 1), 0),
+            total: carrinho.reduce((s, i) => s + (i.precoTotal || i.preco || 0), 0)
+        }
+    };
+    // Evento DOM — capturável por qualquer listener externo
+    window.dispatchEvent(new CustomEvent('tootus_event', { detail: payload }));
+    // Log para debug
+    if (window.location.hostname === 'localhost') console.log('[Tootus Event]', payload);
+}
+
 // Variáveis do Painel de Admin
 const SENHA_ADMIN = "jottav2025";
 let editorCardapioTabela;
@@ -170,7 +199,18 @@ async function carregarCardapio() {
     if (!window.siteConfig) {
         try {
             const r = await fetch('data/config.json', { cache: 'no-store' });
-            if (r.ok) window.siteConfig = await r.json();
+            if (r.ok) {
+                window.siteConfig = await r.json();
+                // Alias: modal.js lê .whatsapp, config tem .whatsapp_msg
+                // Criar ponte para não quebrar nenhum dos dois
+                if (window.siteConfig.whatsapp_msg && !window.siteConfig.whatsapp) {
+                    window.siteConfig.whatsapp = window.siteConfig.whatsapp_msg;
+                }
+                // Alias: modal.js lê .negocio para cidade/estado
+                if (window.siteConfig.negocio && !window.siteConfig.estabelecimento) {
+                    window.siteConfig.estabelecimento = window.siteConfig.negocio;
+                }
+            }
         } catch(e) { window.siteConfig = {}; }
     }
     // Verificar se promoção está ativa e válida
@@ -1016,7 +1056,7 @@ function handleAdicionarAoCarrinho(event) {
     }
 }
 
-// ── UPSELL ──────────────────────────────────────────────────
+// ── UPSELL — BOTTOM SHEET ───────────────────────────────────
 const UPSELL_MAP = {
     'hamburgueres-artesanais': ['acompanhamentos', 'bebidas'],
     'combos-e-familia':        ['bebidas'],
@@ -1024,7 +1064,13 @@ const UPSELL_MAP = {
     'bebidas':                 ['acompanhamentos'],
 };
 
-function mostrarUpsell(categoriaId) {
+const UPSELL_MENSAGENS = {
+    'acompanhamentos': (nome) => `Seu ${nome} combina com batata crocante 🍟`,
+    'bebidas': (nome) => `Complete o pedido com uma bebida gelada 🥤`,
+    'hamburgueres-artesanais': () => `Aproveite e monte um combo 🍔`,
+};
+
+function mostrarUpsell(categoriaId, nomeItem) {
     const sugestoes = UPSELL_MAP[categoriaId] || [];
     if (!sugestoes.length) return;
 
@@ -1035,50 +1081,81 @@ function mostrarUpsell(categoriaId) {
 
     if (!itens.length) return;
 
-    document.getElementById('upsell-overlay')?.remove();
+    document.getElementById('upsell-sheet')?.remove();
+    const msgFn = UPSELL_MENSAGENS[sugestoes[0]] || (() => 'Quer adicionar mais alguma coisa?');
+    const titulo = msgFn(nomeItem || '');
 
-    const titles = {
-        'acompanhamentos': 'Adicione um acompanhamento 🍟',
-        'bebidas': 'Vai uma bebida? 🥤',
-    };
-    const titulo = titles[sugestoes[0]] || 'Quer adicionar mais alguma coisa?';
-
-    const overlay = document.createElement('div');
-    overlay.className = 'upsell-overlay';
-    overlay.id = 'upsell-overlay';
-    overlay.innerHTML = `
-        <div class="upsell-box">
-            <div class="upsell-titulo">${titulo}</div>
+    const sheet = document.createElement('div');
+    sheet.id = 'upsell-sheet';
+    sheet.innerHTML = `
+        <div class="upsell-backdrop" onclick="fecharUpsell()"></div>
+        <div class="upsell-gaveta" id="upsell-gaveta">
+            <div class="upsell-handle"></div>
+            <div class="upsell-header">
+                <span class="upsell-titulo">${titulo}</span>
+                <button class="upsell-close" onclick="fecharUpsell()">✕</button>
+            </div>
             <div class="upsell-itens">
                 ${itens.map(item => {
                     const sec = cardapioData.find(s => s.itens.some(i => i.id === item.id));
                     const catId = sec?.id || '';
-                    const fotoSrc = item.imagem ? 'imagens/' + item.imagem : 'assets/img/hamburguer.png';
+                    const fotoSrc = item.imagem ? `imagens/${item.imagem}` : 'assets/img/hamburguer.png';
                     const preco = (item.preco||0).toFixed(2).replace('.', ',');
-                    return `<div class="upsell-item">
-                        <img src="${fotoSrc}" alt="${item.nome}" onerror="this.src='assets/img/hamburguer.png'">
+                    return `
+                    <div class="upsell-item">
+                        <img src="${fotoSrc}" alt="${item.nome}"
+                            onerror="this.src='assets/img/hamburguer.png'">
                         <div class="upsell-item-body">
                             <div class="upsell-item-nome">${item.nome}</div>
-                            <div class="upsell-item-preco">R$ ${preco}</div>
+                            <div class="upsell-item-preco">+ R$ ${preco}</div>
                         </div>
-                        <button class="upsell-item-btn btn-adicionar" data-item-id="${item.id}" data-categoria-id="${catId}">Adicionar</button>
+                        <button class="upsell-item-btn btn-adicionar"
+                            data-item-id="${item.id}"
+                            data-categoria-id="${catId}">
+                            Adicionar
+                        </button>
                     </div>`;
                 }).join('')}
             </div>
             <button class="upsell-fechar" onclick="fecharUpsell()">Não, obrigado</button>
         </div>
     `;
-    document.body.appendChild(overlay);
-    overlay.addEventListener('click', e => { if (e.target === overlay) fecharUpsell(); });
-    overlay.querySelectorAll('.btn-adicionar').forEach(btn => btn.addEventListener('click', e => {
-        handleAdicionarAoCarrinho(e);
-        fecharUpsell();
-    }));
-    setTimeout(fecharUpsell, 6000);
+
+    document.body.appendChild(sheet);
+
+    // Animar entrada
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            document.getElementById('upsell-gaveta')?.classList.add('aberta');
+        });
+    });
+
+    sheet.querySelectorAll('.btn-adicionar').forEach(btn => {
+        btn.addEventListener('click', e => {
+            handleAdicionarAoCarrinho(e);
+            fecharUpsell();
+        });
+    });
+
+    // Auto-fechar após 7s
+    sheet._timer = setTimeout(fecharUpsell, 7000);
+
+    // Swipe para fechar
+    let startY = 0;
+    const gaveta = document.getElementById('upsell-gaveta');
+    gaveta?.addEventListener('touchstart', e => startY = e.touches[0].clientY, { passive: true });
+    gaveta?.addEventListener('touchend', e => {
+        if (e.changedTouches[0].clientY - startY > 60) fecharUpsell();
+    });
 }
 
 function fecharUpsell() {
-    document.getElementById('upsell-overlay')?.remove();
+    const sheet = document.getElementById('upsell-sheet');
+    if (!sheet) return;
+    clearTimeout(sheet._timer);
+    const gaveta = document.getElementById('upsell-gaveta');
+    gaveta?.classList.remove('aberta');
+    setTimeout(() => sheet.remove(), 320);
 }
 
 function adicionarItemSimplesAoCarrinho(item, categoriaId) {
@@ -1097,8 +1174,30 @@ function adicionarItemSimplesAoCarrinho(item, categoriaId) {
         });
     }
     salvarCarrinhoLocal();
-    setTimeout(() => mostrarUpsell(categoriaId), 700);
+
+    // Evento para n8n/webhooks
+    emitirEvento('add_to_cart', { ...item, _categoriaId: categoriaId });
+
+    // Feedback visual no botão
+    const btn = document.querySelector(
+        `.btn-adicionar[data-item-id="${item.id}"][data-categoria-id="${categoriaId}"]`
+    );
+    if (btn && !btn.dataset.feedback) {
+        btn.dataset.feedback = '1';
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Adicionado';
+        btn.style.background = '#2d7a20';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.style.background = '';
+            btn.disabled = false;
+            delete btn.dataset.feedback;
+        }, 1500);
+    }
+
     if (typeof updateContadorCarrinho === 'function') updateContadorCarrinho();
+    setTimeout(() => mostrarUpsell(categoriaId, item.nome), 900);
 }
 
 // ── PROMOÇÃO DO DIA ──────────────────────────────────────────
