@@ -80,29 +80,6 @@ function rebindAdminElements() {
     }
 }
 
-function verificarAcessoAdmin() {
-    if (window.location.pathname.endsWith('admin_jottav_burguer.html')) {
-        const painel = document.getElementById('painel-admin-container');
-        const negado = document.getElementById('acesso-negado');
-        editorCardapioTabela = document.getElementById('editor-cardapio-tabela');
-        btnSalvarCardapio = document.getElementById('btn-salvar-cardapio');
-
-        rebindAdminElements();
-
-        if (sessionStorage.getItem('adminAutenticado') === 'true') {
-            negado.style.display = 'none';
-            painel.style.display = 'block';
-            carregarCardapioAdmin();
-            btnSalvarCardapio?.addEventListener('click', salvarCardapioAdmin);
-        } else {
-            painel.style.display = 'none';
-            negado.style.display = 'block';
-            document.getElementById('btn-login-admin')?.addEventListener('click', solicitarLogin);
-        }
-
-        document.getElementById('btn-logout-admin')?.addEventListener('click', fazerLogout);
-    }
-}
 
 function solicitarLogin() {
     const senha = prompt("Por favor, digite a senha de administrador:");
@@ -125,29 +102,8 @@ function fazerLogout() {
 // FUNÇÕES DE MANIPULAÇÃO DO LOCAL STORAGE
 // =======================================================
 
-function salvarCardapioNoLocalStorage(data) {
-    try {
-        localStorage.setItem('cardapioJottaV', JSON.stringify(data));
-    } catch (e) {
-        console.error("Erro ao salvar cardápio no Local Storage:", e);
-    }
-}
 
-function carregarCardapioDoLocalStorage() {
-    try {
-        const data = localStorage.getItem('cardapioJottaV');
-        return data ? JSON.parse(data) : null;
-    } catch (e) {
-        console.error("Erro ao carregar cardápio do Local Storage:", e);
-        return null;
-    }
-}
 
-// =======================================================
-// FUNÇÕES DE CARREGAMENTO E RENDERIZAÇÃO DO CARDÁPIO
-// =======================================================
-
-// ── PROMOÇÃO DO DIA ─────────────────────────────────────────
 function verificarPromocaoAtiva(promocao) {
     if (!promocao || !promocao.ativa) return false;
 
@@ -214,7 +170,8 @@ async function carregarCardapio() {
         } catch(e) { window.siteConfig = {}; }
     }
     // Verificar se promoção está ativa e válida
-    window.promocaoAtiva = verificarPromocao(window.siteConfig?.promocao);
+    const _promo = window.siteConfig?.promocao;
+    window.promocaoAtiva = verificarPromocaoAtiva(_promo) ? _promo : null;
     try {
         // cache: 'no-store' força busca real ignorando cache do browser E do CDN
         const response = await fetch('data/cardapio.json', {
@@ -1160,8 +1117,8 @@ function fecharUpsell() {
 
 function adicionarItemSimplesAoCarrinho(item, categoriaId) {
     const existingItem = carrinho.find(c => c.id === item.id && !c.adicionais);
-    const precoPromo = getPrecoComPromocao(item, categoriaId);
-    const precoFinal = precoPromo || item.preco;
+    const _infoPromo = calcularPrecoComPromocao(item, categoriaId);
+    const precoFinal = _infoPromo.preco;
 
     if (existingItem) {
         existingItem.quantidade++;
@@ -1201,41 +1158,8 @@ function adicionarItemSimplesAoCarrinho(item, categoriaId) {
 }
 
 // ── PROMOÇÃO DO DIA ──────────────────────────────────────────
-function verificarPromocao(promo) {
-    if (!promo || !promo.ativa) return null;
 
-    const agora = new Date();
-    const tipo = promo.validade?.tipo || 'manual';
 
-    if (tipo === 'data') {
-        const ini = promo.validade.data_inicio ? new Date(promo.validade.data_inicio) : null;
-        const fim = promo.validade.data_fim ? new Date(promo.validade.data_fim + 'T23:59:59') : null;
-        if (ini && agora < ini) return null;
-        if (fim && agora > fim) return null;
-    }
-
-    if (tipo === 'horario') {
-        const [hIni, mIni] = (promo.validade.hora_inicio || '00:00').split(':').map(Number);
-        const [hFim, mFim] = (promo.validade.hora_fim || '23:59').split(':').map(Number);
-        const minAgora = agora.getHours() * 60 + agora.getMinutes();
-        const minIni = hIni * 60 + mIni;
-        const minFim = hFim * 60 + mFim;
-        if (minAgora < minIni || minAgora > minFim) return null;
-    }
-
-    return promo; // ativa e dentro da validade
-}
-
-function getPrecoComPromocao(item, categoriaId) {
-    const promo = window.promocaoAtiva;
-    if (!promo) return null;
-
-    const aplicar = promo.todos || (promo.categorias || []).includes(categoriaId);
-    if (!aplicar) return null;
-
-    const desconto = (promo.desconto || 0) / 100;
-    return item.preco * (1 - desconto);
-}
 
 function salvarCarrinhoLocal() {
     try { localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho)); } catch(e) {}
