@@ -981,6 +981,54 @@ async function salvarCardapioAdmin() {
   } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
 }
 
+async function conectarServidor() {
+  setStatus('Conectando...', 'info');
+  try {
+    const r = await fetch('/api/github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caminho: 'SamaraAlves77/jottavburguer/contents/data/config.json', metodo: 'GET' })
+    });
+    if (r.ok) {
+      setStatus('✅ Conectado ao servidor!', 'ok');
+      setTimeout(() => setStatus('', ''), 3000);
+      await carregarDados();
+    } else {
+      setStatus('Erro de conexão com o servidor.', 'erro');
+    }
+  } catch(e) {
+    setStatus('Erro: ' + e.message, 'erro');
+  }
+}
+
+async function ghUploadImagem(nomeArquivo, base64Data) {
+  const caminho = `imagens/${nomeArquivo}`;
+  let sha = null;
+  try {
+    const existente = await ghGet(`SamaraAlves77/jottavburguer/contents/${caminho}`);
+    sha = existente.sha;
+  } catch(e) { /* arquivo novo */ }
+
+  const payload = {
+    message: `Admin: upload imagem ${nomeArquivo}`,
+    content: base64Data,
+    ...(sha ? { sha } : {})
+  };
+
+  const r = await fetch('/api/github', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      caminho: `SamaraAlves77/jottavburguer/contents/${caminho}`,
+      metodo: 'PUT',
+      payload
+    })
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.message || 'Erro no upload');
+  return data;
+}
+
 async function carregarDados() {
   setStatus('Carregando dados...', 'info');
   try {
@@ -1566,77 +1614,7 @@ function sincronizarCorTexto(idColor, idText, cssVar, valor) {
     }
 }
 
-function atualizarPrevia() {
-    const p = temaAtual;
-    const primary  = p['--primary-color']  || '#45a135';
-    const accent   = p['--accent-color']   || '#FF6B35';
-    const bgLand   = p['--bg-landing']     || '#F5EFE0';
-    const landLeft = p['--landing-left']   || '#950606';
-    const bgPage   = p['--bg-page']        || '#1C1C1C';
-    const bgCard   = p['--bg-card']        || '#262626';
-    const bgNav    = p['--bg-navbar']      || '#111111';
-    const priceClr = p['--text-price']     || '#5DBF4A';
-    const navTxt   = p['--text-nav']       || '#FFFFFF';
 
-    const prev = document.getElementById('aparencia-preview');
-    if (!prev) return;
-
-    prev.innerHTML = `
-    <div style="font-family:'Plus Jakarta Sans',sans-serif">
-
-      <!-- NAVBAR -->
-      <div style="background:${bgNav};padding:10px 20px;display:flex;align-items:center;justify-content:space-between">
-        <span style="color:${primary};font-weight:800;font-size:.9em">🍔 JottaV Burguer</span>
-        <div style="display:flex;gap:16px">
-          <span style="color:${navTxt};font-size:.75em">Início</span>
-          <span style="color:${navTxt};font-size:.75em">Hambúrgueres</span>
-          <span style="color:${navTxt};font-size:.75em">Combos</span>
-        </div>
-        <span style="color:${navTxt};font-size:.85em">🛒 <span style="background:red;color:#fff;border-radius:50%;padding:1px 5px;font-size:.7em">2</span></span>
-      </div>
-
-      <!-- PILLS -->
-      <div style="background:${bgPage};padding:8px 16px;display:flex;gap:8px;overflow:hidden">
-        <span style="background:${primary};color:#fff;padding:4px 12px;border-radius:20px;font-size:.72em;font-weight:700">Hambúrgueres</span>
-        <span style="border:1px solid rgba(255,255,255,.2);color:#888;padding:4px 12px;border-radius:20px;font-size:.72em">Combos</span>
-        <span style="border:1px solid rgba(255,255,255,.2);color:#888;padding:4px 12px;border-radius:20px;font-size:.72em">Batatas</span>
-        <span style="border:1px solid rgba(255,255,255,.2);color:#888;padding:4px 12px;border-radius:20px;font-size:.72em">Bebidas</span>
-      </div>
-
-      <!-- CARDS -->
-      <div style="background:${bgPage};padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-        ${['Smash Original','Jotta Classic','Duplo Brutão'].map((nome,i) => `
-        <div style="background:${bgCard};border-radius:12px;overflow:hidden">
-          <div style="height:90px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#444;font-size:1.6em">🍔</div>
-          <div style="padding:10px">
-            <div style="color:#fff;font-weight:700;font-size:.82em;margin-bottom:3px">${nome}</div>
-            <div style="color:#888;font-size:.7em;margin-bottom:8px">Ingredientes do hambúrguer artesanal...</div>
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <span style="color:${priceClr};font-weight:800;font-size:.9em">R$ ${['18,99','25,99','37,99'][i]}</span>
-              <button style="background:${primary};color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:.7em;font-weight:700;cursor:pointer">+ Adicionar</button>
-            </div>
-          </div>
-        </div>`).join('')}
-      </div>
-
-      <!-- LANDING PAGE MINI -->
-      <div style="background:${bgLand};padding:12px 16px">
-        <p style="color:#666;font-size:.72em;margin-bottom:8px;font-weight:600">PRÉVIA — LANDING PAGE</p>
-        <div style="display:flex;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.2);max-width:400px">
-          <div style="flex:1;background:${landLeft};padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
-            <div style="width:50px;height:50px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4em">🍔</div>
-            <p style="color:#fff;font-size:.72em;font-weight:700;text-align:center">O verdadeiro sabor artesanal!</p>
-          </div>
-          <div style="flex:1;background:#fff;padding:12px;display:flex;flex-direction:column;gap:8px">
-            <div style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366);color:#fff;padding:8px;border-radius:8px;font-size:.72em;font-weight:700;text-align:center">📸 Instagram</div>
-            <div style="background:#25D366;color:#fff;padding:8px;border-radius:8px;font-size:.72em;font-weight:700;text-align:center">💬 WhatsApp</div>
-            <div style="background:#1C1C1C;color:#fff;padding:8px;border-radius:8px;font-size:.72em;font-weight:700;text-align:center">📋 Cardápio</div>
-          </div>
-        </div>
-      </div>
-
-    </div>`;
-}
 
 async function carregarTema() {
     // Garante padrões primeiro
@@ -1992,49 +1970,7 @@ function moverItem(secIdx, itemIdx, direcao) {
 
 
 // ── FUNÇÕES DE PROMOÇÃO ──────────────────────────────────────
-function carregarPromocao() {
-  const promo = configData?.promocao || {};
-  const combo = configData?.combo || {};
 
-  const ativa = document.getElementById('promo-ativa');
-  if (ativa) {
-    ativa.checked = promo.ativa || false;
-    togglePromocao(promo.ativa || false);
-  }
-  const titulo = document.getElementById('promo-titulo');
-  if (titulo) titulo.value = promo.titulo || '🔥 Promoção do Dia';
-  const desc = document.getElementById('promo-desconto');
-  if (desc) desc.value = promo.desconto || 15;
-  const todos = document.getElementById('promo-todos');
-  if (todos) {
-    todos.checked = promo.todos !== false;
-    togglePromocaoTodos(promo.todos !== false);
-  }
-  const tipo = document.getElementById('promo-tipo');
-  if (tipo) {
-    tipo.value = promo.validade?.tipo || 'manual';
-    mudarTipoValidade(tipo.value);
-  }
-  if (document.getElementById('promo-hora-ini')) document.getElementById('promo-hora-ini').value = promo.validade?.hora_inicio || '11:00';
-  if (document.getElementById('promo-hora-fim')) document.getElementById('promo-hora-fim').value = promo.validade?.hora_fim || '23:00';
-  if (document.getElementById('promo-data-ini')) document.getElementById('promo-data-ini').value = promo.validade?.data_inicio || '';
-  if (document.getElementById('promo-data-fim')) document.getElementById('promo-data-fim').value = promo.validade?.data_fim || '';
-
-  if (document.getElementById('combo-desconto')) document.getElementById('combo-desconto').value = combo.desconto || 10;
-
-  // Renderizar categorias
-  const catsDiv = document.getElementById('promo-cats');
-  if (catsDiv) {
-    catsDiv.innerHTML = cardapioData
-      .filter(s => s.id !== 'adicionais-extras')
-      .map(s => `
-        <label style="display:flex;align-items:center;gap:8px;font-size:.85em;cursor:pointer">
-          <input type="checkbox" value="${s.id}" ${(promo.categorias||[]).includes(s.id)?'checked':''}
-            style="width:15px;height:15px">
-          ${s.nome}
-        </label>`).join('');
-  }
-}
 
 function togglePromocao(ativa) {
   const label = document.getElementById('promo-status-label');
@@ -2052,52 +1988,9 @@ function mudarTipoValidade(tipo) {
   document.getElementById('promo-data').style.display = tipo === 'data' ? 'block' : 'none';
 }
 
-async function salvarPromocao() {
-  const cats = [...document.querySelectorAll('#promo-cats input:checked')].map(i => i.value);
-  const todos = document.getElementById('promo-todos').checked;
-  const tipo = document.getElementById('promo-tipo').value;
 
-  if (!configData) configData = {};
-  configData.promocao = {
-    ativa: document.getElementById('promo-ativa').checked,
-    titulo: document.getElementById('promo-titulo').value.trim(),
-    desconto: parseInt(document.getElementById('promo-desconto').value) || 15,
-    todos,
-    categorias: todos ? [] : cats,
-    validade: {
-      tipo,
-      hora_inicio: document.getElementById('promo-hora-ini')?.value || '',
-      hora_fim: document.getElementById('promo-hora-fim')?.value || '',
-      data_inicio: document.getElementById('promo-data-ini')?.value || '',
-      data_fim: document.getElementById('promo-data-fim')?.value || '',
-    }
-  };
 
-  setStatus('Salvando promoção...', 'info');
-  try {
-    const atual = await ghGet('data/config.json');
-    shaConfig = atual.sha;
-    const res = await ghPut('data/config.json', JSON.stringify(configData, null, 4), shaConfig, 'Admin: promoção do dia');
-    shaConfig = res.content.sha;
-    setStatus('✅ Promoção salva! Aguarde ~1 min para atualizar.', 'ok');
-    setTimeout(() => setStatus('', ''), 6000);
-  } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
-}
 
-async function salvarComboDesconto() {
-  if (!configData) configData = {};
-  configData.combo = { desconto: parseInt(document.getElementById('combo-desconto').value) || 10 };
-
-  setStatus('Salvando desconto do combo...', 'info');
-  try {
-    const atual = await ghGet('data/config.json');
-    shaConfig = atual.sha;
-    const res = await ghPut('data/config.json', JSON.stringify(configData, null, 4), shaConfig, 'Admin: desconto combo');
-    shaConfig = res.content.sha;
-    setStatus('✅ Desconto do combo salvo!', 'ok');
-    setTimeout(() => setStatus('', ''), 5000);
-  } catch(e) { setStatus('Erro: ' + e.message, 'erro'); }
-}
 
 // ============================
 // FIM DO PAINEL ADMIN
