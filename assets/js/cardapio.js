@@ -1126,7 +1126,7 @@ function adicionarItemSimplesAoCarrinho(item, categoriaId) {
         carrinho.push({
             ...item,
             preco: precoFinal,
-            precoOriginal: precoPromo ? item.preco : null,
+            precoOriginal: _infoPromo.emPromocao ? item.preco : null,
             quantidade: 1
         });
     }
