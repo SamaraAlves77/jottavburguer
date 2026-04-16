@@ -4,13 +4,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
+/* Tokens herdados de tema.css */
 :root {
-    --primary-color:  #45a135;
-    --accent-color:   #FF6B35;
-    --bg-landing:     #F5EFE0;
-    --landing-left:   #950606;
-    --shadow:         rgba(0,0,0,0.15);
-    --font-main:      'Plus Jakarta Sans', sans-serif;
+    --shadow: rgba(0,0,0,0.15);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
