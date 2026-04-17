@@ -14,6 +14,7 @@
 <body>
     <div id="navbar-container"></div>
 
+    <!-- Pills fallback (desktop usa navbar, mobile usa bottom-nav) -->
     <div class="categorias-sticky">
         <div class="categorias-pills" id="categorias-pills"></div>
     </div>
@@ -24,6 +25,12 @@
 
     <div id="notificacao" class="notificacao">Item adicionado ao carrinho!</div>
 
+    <!-- Bottom Navigation Bar (mobile) -->
+    <nav class="bottom-nav" id="bottom-nav">
+        <!-- Injetado pelo JS via renderizarBottomNav() -->
+    </nav>
+
+    <!-- FAB mantido para desktop (hidden no mobile via CSS) -->
     <button class="carrinho-fab" id="fab-carrinho">
         <i class="fas fa-shopping-cart"></i>
         <span id="fab-contador-carrinho">0</span>
