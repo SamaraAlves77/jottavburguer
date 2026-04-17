@@ -36,6 +36,11 @@ function updateContadorCarrinho() {
     const totalItens = (carrinho || []).reduce((acc, item) => acc + (item.quantidade || 0), 0);
     if (contadorCarrinho) contadorCarrinho.textContent = totalItens;
     if (fabContadorCarrinho) fabContadorCarrinho.textContent = totalItens;
+    const bottomBadge = document.getElementById('bottom-nav-badge');
+    if (bottomBadge) {
+        bottomBadge.textContent = totalItens;
+        bottomBadge.style.display = totalItens > 0 ? 'flex' : 'none';
+    }
 }
 
 function renderizarCarrinho() {
