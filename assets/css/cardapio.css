@@ -761,6 +761,209 @@ footer {
 ══════════════════════════════════════ */
 
 /* ── <375px ── */
+
+/* ══════════════════════════════════════
+   SEPARADORES DE SEÇÃO
+══════════════════════════════════════ */
+.secao-sep {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 24px 0 12px;
+}
+.secao-sep:first-child { padding-top: 8px; }
+.secao-sep-linha {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,.06);
+}
+.secao-sep-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted, #606060);
+    white-space: nowrap;
+}
+.secao-sep-count {
+    font-size: 9px;
+    color: #3a3a3a;
+    background: var(--bg-layer2, #252525);
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════
+   BOTTOM NAVIGATION BAR
+══════════════════════════════════════ */
+.bottom-nav {
+    display: none; /* oculto no desktop */
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(20,20,20,.97);
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 6px 0 max(8px, env(safe-area-inset-bottom));
+    z-index: 900;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: .18s ease;
+}
+.bottom-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 20px; height: 2px;
+    background: var(--green, #45a135);
+    border-radius: 0 0 2px 2px;
+    opacity: 0;
+    transition: opacity .18s;
+}
+.bottom-nav-item.ativo::before { opacity: 1; }
+
+.bottom-nav-icon {
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    color: #444;
+    transition: color .18s;
+}
+.bottom-nav-item.ativo .bottom-nav-icon { color: var(--green, #45a135); }
+
+.bottom-nav-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #444;
+    transition: color .18s;
+    letter-spacing: .2px;
+}
+.bottom-nav-item.ativo .bottom-nav-label { color: var(--green, #45a135); }
+
+/* Badge do carrinho */
+.bottom-nav-badge {
+    position: absolute;
+    top: -3px; right: -5px;
+    width: 14px; height: 14px;
+    background: var(--green, #45a135);
+    border-radius: 50%;
+    border: 1.5px solid #161616;
+    font-size: 8px;
+    color: #fff;
+    font-weight: 800;
+    display: none; /* mostra só quando tem itens */
+    align-items: center;
+    justify-content: center;
+}
+
+/* ══════════════════════════════════════
+   CARDS HORIZONTAIS — MOBILE
+   Só ativo em telas pequenas
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+    /* Bottom nav visível */
+    .bottom-nav { display: flex; }
+
+    /* FAB oculto no mobile — bottom nav faz esse papel */
+    .carrinho-fab { display: none !important; }
+
+    /* Padding extra no rodapé para não cobrir bottom nav */
+    body { padding-bottom: 58px; }
+    #main-content-container { padding-bottom: 70px; }
+
+    /* Pills da navbar ocultas — bottom nav assume */
+    .navbar-pills { display: none !important; }
+
+    /* Cardapio-grid vira lista horizontal */
+    .cardapio-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    /* Card horizontal */
+    .item-card {
+        flex-direction: row !important;
+        height: 80px;
+        border-radius: 12px;
+    }
+
+    /* Foto à esquerda — tamanho fixo */
+    .card-img-wrapper {
+        width: 80px !important;
+        min-width: 80px !important;
+        height: 80px !important;
+        padding-bottom: 0 !important;
+        flex-shrink: 0;
+        border-radius: 11px 0 0 11px;
+    }
+    .card-img-wrapper img,
+    .card-img-wrapper .sem-imagem {
+        position: relative !important;
+        top: auto !important; left: auto !important;
+    }
+
+    /* Corpo do card */
+    .card-body {
+        padding: 9px 10px 0 !important;
+        flex: 1;
+        min-width: 0;
+        justify-content: space-between;
+        gap: 2px !important;
+    }
+
+    .card-nome {
+        font-size: 12px !important;
+        -webkit-line-clamp: 2 !important;
+        white-space: normal !important;
+        overflow: hidden;
+        display: -webkit-box;
+    }
+    .card-desc { display: none !important; }
+
+    /* Footer: preço + botão lado a lado */
+    .card-footer {
+        padding: 0 10px 9px !important;
+        border-top: none !important;
+        margin-top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .card-preco { font-size: 13px !important; }
+    .card-btn {
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+        min-height: 30px !important;
+    }
+
+    /* Seção sep */
+    .secao-sep { padding: 20px 0 10px; }
+}
+
+@media (max-width: 374px) {
+    .bottom-nav-label { font-size: 8px; }
+    .card-img-wrapper {
+        width: 70px !important;
+        min-width: 70px !important;
+        height: 70px !important;
+    }
+    .item-card { height: 70px; }
+}
 @media (max-width: 374px) {
     .cardapio-grid { grid-template-columns: 1fr; gap: 8px; }
     .card-footer {
