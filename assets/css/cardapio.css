@@ -795,6 +795,169 @@ footer {
     font-weight: 600;
 }
 
+
+/* ══════════════════════════════════════
+   LISTA DE ITENS (Bebidas + Acompanhamentos)
+   Cards horizontais sempre — grade e mobile
+══════════════════════════════════════ */
+.cardapio-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item-card-lista {
+    flex-direction: row !important;
+    height: 80px;
+    border-radius: 12px;
+}
+
+.item-card-lista .card-img-wrapper {
+    width: 80px !important;
+    min-width: 80px !important;
+    height: 80px !important;
+    padding-bottom: 0 !important;
+    flex-shrink: 0;
+    border-radius: 11px 0 0 11px;
+}
+
+.item-card-lista .card-img-wrapper img,
+.item-card-lista .card-img-wrapper .sem-imagem {
+    position: relative !important;
+    top: auto !important; left: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.item-card-lista .card-body {
+    padding: 9px 10px 0 !important;
+    flex: 1;
+    justify-content: space-between;
+    gap: 2px !important;
+}
+
+.item-card-lista .card-nome {
+    font-size: 12px !important;
+    white-space: normal !important;
+    -webkit-line-clamp: 2 !important;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.item-card-lista .card-footer {
+    padding: 0 10px 9px !important;
+    border-top: none !important;
+    margin-top: 0 !important;
+}
+
+/* ══════════════════════════════════════
+   SIDEBAR DESKTOP — Categorias
+══════════════════════════════════════ */
+.cardapio-sidebar {
+    display: none; /* só desktop */
+}
+
+@media (min-width: 769px) {
+    /* Layout com sidebar */
+    body.tem-sidebar #main-content-container {
+        max-width: none;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .cardapio-layout {
+        display: flex;
+        max-width: 1100px;
+        margin: 0 auto;
+        min-height: 100vh;
+    }
+
+    .cardapio-sidebar {
+        display: flex;
+        flex-direction: column;
+        width: 160px;
+        min-width: 160px;
+        position: sticky;
+        top: 60px;
+        height: calc(100vh - 60px);
+        background: rgba(17,17,17,.95);
+        border-right: 1px solid rgba(255,255,255,.06);
+        padding: 8px 0;
+        overflow-y: auto;
+        scrollbar-width: none;
+        flex-shrink: 0;
+    }
+    .cardapio-sidebar::-webkit-scrollbar { display: none; }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        cursor: pointer;
+        border-left: 2px solid transparent;
+        transition: .18s ease;
+        text-decoration: none;
+    }
+    .sidebar-item:hover { background: rgba(255,255,255,.03); }
+    .sidebar-item.ativo {
+        background: rgba(69,161,53,.1);
+        border-left-color: #45a135;
+    }
+    .sidebar-item-icon {
+        color: #444;
+        flex-shrink: 0;
+        transition: color .18s;
+    }
+    .sidebar-item.ativo .sidebar-item-icon { color: #45a135; }
+    .sidebar-item-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #555;
+        transition: color .18s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .sidebar-item.ativo .sidebar-item-label { color: #45a135; }
+
+    .sidebar-cart-btn {
+        margin: auto 12px 12px;
+        background: rgba(69,161,53,.12);
+        border: 1px solid rgba(69,161,53,.25);
+        border-radius: 10px;
+        color: #45a135;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: .18s;
+    }
+    .sidebar-cart-btn:hover { background: rgba(69,161,53,.2); }
+    .sidebar-cart-count {
+        background: #45a135;
+        color: #fff;
+        border-radius: 10px;
+        padding: 1px 6px;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .cardapio-main {
+        flex: 1;
+        min-width: 0;
+        padding: 0 20px;
+    }
+
+    /* Pills da navbar ocultas no desktop quando tem sidebar */
+    .navbar-pills { display: none !important; }
+}
+
 /* ══════════════════════════════════════
    BOTTOM NAVIGATION BAR
 ══════════════════════════════════════ */
