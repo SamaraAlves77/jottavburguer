@@ -324,21 +324,22 @@ function renderizarCardapio() {
                 <span class="secao-sep-count">${itensAtivos.length}</span>
                 <div class="secao-sep-linha"></div>
             </div>
-            <div class="cardapio-grid">
+            <div class="${['acompanhamentos','bebidas'].includes(secao.id) ? 'cardapio-lista' : 'cardapio-grid'}">
                 ${itensAtivos.map(item => {
                     const infoPromo = calcularPrecoComPromocao(item, secao.id);
                     const precoOriginal = (item.preco || 0).toFixed(2).replace('.', ',');
                     const precoFinal = infoPromo.preco.toFixed(2).replace('.', ',');
                     const emPromo = infoPromo.emPromocao;
+                    const badgeGrade = item.destaque && item.badge ? item.badge : '';
+                    const isLista = ['acompanhamentos','bebidas'].includes(secao.id);
                     const precoHtml = emPromo
                         ? `<div class="preco-promo-wrap">
                                <span class="card-preco-original">R$ ${precoOriginal}</span>
                                <span class="card-preco preco-promocao">R$ ${precoFinal}</span>
                            </div>`
                         : `<span class="card-preco">R$ ${precoOriginal}</span>`;
-                    const badgeGrade = item.destaque && item.badge ? item.badge : '';
                     return `
-                    <div class="item-card ${emPromo ? 'em-promocao' : ''} ${badgeGrade ? 'destaque-grade' : ''}"
+                    <div class="item-card ${isLista ? 'item-card-lista' : ''} ${emPromo ? 'em-promocao' : ''} ${badgeGrade ? 'destaque-grade' : ''}"
                         data-item-id="${item.id}" data-categoria-id="${secao.id}">
                         <div class="card-img-wrapper" data-badge="${badgeGrade}">
                             ${gerarImagemCard(item)}
@@ -369,6 +370,7 @@ function renderizarCardapio() {
 
     renderizarCategoriasPills();
     renderizarBottomNav();
+    renderizarSidebar();
 }
 
 // ── BANNERS ESPECIAIS (Combo + Batata) ──────────────────────
@@ -869,6 +871,46 @@ function renderizarCategoriasPills() {
     }, { passive: true });
 }
 
+
+function renderizarSidebar() {
+    const sidebar = document.getElementById('cardapio-sidebar');
+    if (!sidebar) return;
+
+    const secoes = cardapioData.filter(s => s.id !== 'adicionais-extras');
+    const offset = 70;
+
+    sidebar.innerHTML = secoes.map((sec, i) => `
+        <a class="sidebar-item ${i === 0 ? 'ativo' : ''}" href="#${sec.id}"
+            data-secao="${sec.id}"
+            onclick="event.preventDefault(); irParaSecao('${sec.id}')">
+            <span class="sidebar-item-icon">${iconePorCategoria(sec.id)}</span>
+            <span class="sidebar-item-label">${nomeAbreviado(sec.nome)}</span>
+        </a>
+    `).join('') + `
+        <button class="sidebar-cart-btn" id="sidebar-cart-btn"
+            onclick="document.getElementById('carrinho-btn')?.click()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6"/>
+            </svg>
+            Carrinho
+            <span class="sidebar-cart-count" id="sidebar-cart-count">0</span>
+        </button>
+    `;
+
+    // Scroll spy para sidebar
+    window.addEventListener('scroll', () => {
+        const sections = secoes.map(s => document.getElementById(s.id)).filter(Boolean);
+        let current = sections[0]?.id || '';
+        sections.forEach(sec => {
+            if (sec.offsetTop - 80 <= window.scrollY) current = sec.id;
+        });
+        sidebar.querySelectorAll('.sidebar-item').forEach(item => {
+            item.classList.toggle('ativo', item.getAttribute('data-secao') === current);
+        });
+    }, { passive: true });
+}
+
 function renderizarBottomNav() {
     const nav = document.getElementById('bottom-nav');
     if (!nav) return;
@@ -903,15 +945,17 @@ function renderizarBottomNav() {
 function irParaSecao(secaoId) {
     const section = document.getElementById(secaoId);
     if (!section) return;
-    // Offset considera navbar + bottom nav
     const offset = 70;
     window.scrollTo({ top: section.offsetTop - offset, behavior: 'smooth' });
-    // Atualizar estado ativo
+    // Atualizar todos os navegadores (pills, bottom bar, sidebar)
     document.querySelectorAll('.bottom-nav-item[data-secao]').forEach(item => {
         item.classList.toggle('ativo', item.getAttribute('data-secao') === secaoId);
     });
     document.querySelectorAll('.cat-pill').forEach(pill => {
         pill.classList.toggle('ativo', pill.getAttribute('href') === '#' + secaoId);
+    });
+    document.querySelectorAll('.sidebar-item[data-secao]').forEach(item => {
+        item.classList.toggle('ativo', item.getAttribute('data-secao') === secaoId);
     });
 }
 
