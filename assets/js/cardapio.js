@@ -318,7 +318,12 @@ function renderizarCardapio() {
         section.classList.add('menu-section');
 
         section.innerHTML = `
-            <h2 class="section-title">${secao.nome}</h2>
+            <div class="secao-sep">
+                <div class="secao-sep-linha"></div>
+                <span class="secao-sep-label">${secao.nome}</span>
+                <span class="secao-sep-count">${itensAtivos.length}</span>
+                <div class="secao-sep-linha"></div>
+            </div>
             <div class="cardapio-grid">
                 ${itensAtivos.map(item => {
                     const infoPromo = calcularPrecoComPromocao(item, secao.id);
@@ -363,6 +368,7 @@ function renderizarCardapio() {
     });
 
     renderizarCategoriasPills();
+    renderizarBottomNav();
 }
 
 // ── BANNERS ESPECIAIS (Combo + Batata) ──────────────────────
@@ -805,7 +811,7 @@ function inicializarCarrossel(secaoId, total) {
 }
 
 function renderizarCategoriasPills() {
-    // Suporta tanto a navbar nova (#navbar-pills-container) quanto a antiga (#categorias-pills)
+    // Desktop: injeta na navbar. Mobile: oculta (bottom-nav assume)
     const container = document.getElementById('navbar-pills-container')
                    || document.getElementById('categorias-pills');
     if (!container) return;
@@ -821,7 +827,7 @@ function renderizarCategoriasPills() {
         pill.textContent = sec.nome;
         pill.addEventListener('click', (e) => {
             e.preventDefault();
-            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('ativo'));
+            document.querySelectorAll('.cat-pill, .bottom-nav-item').forEach(p => p.classList.remove('ativo'));
             pill.classList.add('ativo');
             const section = document.getElementById(sec.id);
             if (section) {
@@ -834,7 +840,7 @@ function renderizarCategoriasPills() {
     const first = container.querySelector('.cat-pill');
     if (first) first.classList.add('ativo');
 
-    // Scroll spy
+    // Scroll spy compartilhado
     let spyAtivo = false;
     window.addEventListener('scroll', () => {
         if (spyAtivo) return;
@@ -850,12 +856,83 @@ function renderizarCategoriasPills() {
                 if (sec.offsetTop - (offset + 10) <= window.scrollY) current = sec.id;
             });
 
+            // Atualizar pills da navbar
             container.querySelectorAll('.cat-pill').forEach(pill => {
                 pill.classList.toggle('ativo', pill.getAttribute('href') === '#' + current);
+            });
+            // Atualizar bottom nav
+            document.querySelectorAll('.bottom-nav-item[data-secao]').forEach(item => {
+                item.classList.toggle('ativo', item.getAttribute('data-secao') === current);
             });
             spyAtivo = false;
         });
     }, { passive: true });
+}
+
+function renderizarBottomNav() {
+    const nav = document.getElementById('bottom-nav');
+    if (!nav) return;
+
+    const secoes = cardapioData.filter(s => s.id !== 'adicionais-extras');
+    // Máximo 4 itens de categoria + 1 carrinho = 5 total
+    const secoesNav = secoes.slice(0, 4);
+
+    const offset = 70;
+
+    nav.innerHTML = secoesNav.map((sec, i) => `
+        <button class="bottom-nav-item ${i === 0 ? 'ativo' : ''}" data-secao="${sec.id}"
+            onclick="irParaSecao('${sec.id}')">
+            <div class="bottom-nav-icon">${iconePorCategoria(sec.id)}</div>
+            <span class="bottom-nav-label">${nomeAbreviado(sec.nome)}</span>
+        </button>
+    `).join('') + `
+        <button class="bottom-nav-item bottom-nav-cart" id="bottom-nav-cart-btn"
+            onclick="document.getElementById('carrinho-btn')?.click() || document.getElementById('fab-carrinho')?.click()">
+            <div class="bottom-nav-icon" style="position:relative">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6"/>
+                </svg>
+                <span class="bottom-nav-badge" id="bottom-nav-badge">0</span>
+            </div>
+            <span class="bottom-nav-label">Carrinho</span>
+        </button>
+    `;
+}
+
+function irParaSecao(secaoId) {
+    const section = document.getElementById(secaoId);
+    if (!section) return;
+    // Offset considera navbar + bottom nav
+    const offset = 70;
+    window.scrollTo({ top: section.offsetTop - offset, behavior: 'smooth' });
+    // Atualizar estado ativo
+    document.querySelectorAll('.bottom-nav-item[data-secao]').forEach(item => {
+        item.classList.toggle('ativo', item.getAttribute('data-secao') === secaoId);
+    });
+    document.querySelectorAll('.cat-pill').forEach(pill => {
+        pill.classList.toggle('ativo', pill.getAttribute('href') === '#' + secaoId);
+    });
+}
+
+function iconePorCategoria(id) {
+    const icons = {
+        'hamburgueres-artesanais': `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>`,
+        'combos-e-familia': `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`,
+        'acompanhamentos': `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l1 10H5L6 3z"/><path d="M5 13c0 5 2 7 7 7s7-2 7-7"/></svg>`,
+        'bebidas': `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2h10l1 8H6L7 2z"/><path d="M6 10h12"/><path d="M8 14h8"/><path d="M9 18h6"/></svg>`,
+    };
+    return icons[id] || `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/></svg>`;
+}
+
+function nomeAbreviado(nome) {
+    const abrevs = {
+        'Hambúrgueres Artesanais': 'Burgers',
+        'Combos': 'Combos',
+        'Acompanhamentos': 'Acomp.',
+        'Bebidas': 'Bebidas',
+    };
+    return abrevs[nome] || nome.split(' ')[0];
 }
 
 // =======================================================
