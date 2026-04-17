@@ -99,7 +99,7 @@ a { color: var(--green); text-decoration: none; }
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--bg-layer1);
-    /* Proporção fixa 16:7 — sem altura variável */
+    /* Mobile: proporção fixa para não ter saltos */
     position: relative;
     padding-bottom: 43.75%;
     height: 0;
@@ -118,6 +118,19 @@ a { color: var(--green); text-decoration: none; }
     height: 100%;
     display: flex;
     overflow: hidden;
+}
+
+/* Desktop: altura fixa — não usar padding-bottom */
+@media (min-width: 769px) {
+    .destaque-track {
+        padding-bottom: 0;
+        height: 155px;
+    }
+    .destaque-slides {
+        position: relative;
+        height: 155px;
+    }
+    .destaque-slide { height: 155px; }
 }
 
 .destaque-foto {
@@ -1050,72 +1063,72 @@ footer {
     /* Pills da navbar ocultas — bottom nav assume */
     .navbar-pills { display: none !important; }
 
-    /* Cardapio-grid vira lista horizontal */
+    /* Grade hambúrgueres/combos: 2 colunas no mobile */
     .cardapio-grid {
-        display: flex !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        display: grid !important;
+    }
+
+    /* Cards da grade — proporção menor no mobile */
+    .cardapio-grid .item-card {
         flex-direction: column !important;
-        gap: 8px !important;
+        height: auto !important;
     }
-
-    /* Card horizontal */
-    .item-card {
+    .cardapio-grid .card-img-wrapper {
+        width: 100% !important;
+        min-width: unset !important;
+        height: 0 !important;
+        padding-bottom: 58% !important;
+        border-radius: 11px 11px 0 0 !important;
+    }
+    .cardapio-grid .card-img-wrapper img,
+    .cardapio-grid .card-img-wrapper .sem-imagem {
+        position: absolute !important;
+        top: 0 !important; left: 0 !important;
+        width: 100% !important; height: 100% !important;
+    }
+    .cardapio-grid .card-footer {
         flex-direction: row !important;
-        height: 80px;
-        border-radius: 12px;
+        padding: 7px 10px !important;
+        border-top: 1px solid rgba(255,255,255,.05) !important;
+    }
+    .cardapio-grid .card-btn {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
     }
 
-    /* Foto à esquerda — tamanho fixo */
-    .card-img-wrapper {
-        width: 80px !important;
-        min-width: 80px !important;
-        height: 80px !important;
-        padding-bottom: 0 !important;
-        flex-shrink: 0;
-        border-radius: 11px 0 0 11px;
+    /* Lista bebidas/acompanhamentos — linha no mobile */
+    .cardapio-lista { gap: 8px !important; }
+    .item-card-lista {
+        flex-direction: row !important;
+        height: 76px !important;
     }
-    .card-img-wrapper img,
-    .card-img-wrapper .sem-imagem {
+    .item-card-lista .card-img-wrapper {
+        width: 76px !important;
+        min-width: 76px !important;
+        height: 76px !important;
+        padding-bottom: 0 !important;
+        border-radius: 11px 0 0 11px !important;
+    }
+    .item-card-lista .card-img-wrapper img,
+    .item-card-lista .card-img-wrapper .sem-imagem {
         position: relative !important;
         top: auto !important; left: auto !important;
+        width: 100% !important; height: 100% !important;
     }
-
-    /* Corpo do card */
-    .card-body {
-        padding: 9px 10px 0 !important;
-        flex: 1;
-        min-width: 0;
-        justify-content: space-between;
-        gap: 2px !important;
-    }
-
-    .card-nome {
-        font-size: 12px !important;
-        -webkit-line-clamp: 2 !important;
-        white-space: normal !important;
-        overflow: hidden;
-        display: -webkit-box;
-    }
-    .card-desc { display: none !important; }
-
-    /* Footer: preço + botão lado a lado */
-    .card-footer {
+    .item-card-lista .card-footer {
         padding: 0 10px 9px !important;
         border-top: none !important;
         margin-top: 0 !important;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
     }
-    .card-preco { font-size: 13px !important; }
-    .card-btn {
-        padding: 6px 12px !important;
-        font-size: 11px !important;
-        min-height: 30px !important;
-    }
+    .item-card-lista .card-desc { display: none !important; }
 
-    /* Seção sep */
+    /* Separadores */
     .secao-sep { padding: 20px 0 10px; }
+
+    /* Padding geral */
+    #main-content-container { padding: 12px 12px 70px; }
 }
 
 @media (max-width: 374px) {
