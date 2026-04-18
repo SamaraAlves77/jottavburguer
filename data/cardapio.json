@@ -286,17 +286,6 @@
                 "destaque": false,
                 "badge": "",
                 "ordem": 2
-            },
-            {
-                "id": 28,
-                "nome": "Pepsi 1L",
-                "descricao": "Refrigerante Pepsi de 1 litro.",
-                "preco": 9,
-                "imagem": "pepsi.png",
-                "destaque": false,
-                "badge": "",
-                "ordem": 3,
-                "ativo": true
             }
         ]
     },
