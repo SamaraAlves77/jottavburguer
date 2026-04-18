@@ -1,9 +1,9 @@
 /* ════════════════════════════════════════
-   NAVBAR — Refinado (premium + respiração)
+   NAVBAR — versão PRO (refinada)
 ════════════════════════════════════════ */
 
 :root {
-    --nav-height: 56px;
+    --nav-height: 58px;
 }
 
 /* NAVBAR BASE */
@@ -11,9 +11,11 @@
     position: fixed;
     top: 0; left: 0; right: 0;
     height: var(--nav-height);
-
-    background: rgba(20,20,20,.85);
+    
+    /* 🔥 profundidade premium */
+    background: linear-gradient(180deg, #1b1b1b, #141414);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 
     border-bottom: 1px solid rgba(255,255,255,.06);
     z-index: 9000;
@@ -26,7 +28,6 @@
     height: 100%;
     max-width: 1100px;
     margin: 0 auto;
-
     padding: 0 16px;
     gap: 14px;
 }
@@ -36,183 +37,137 @@
     height: 36px;
     width: 36px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
-/* ═════════════════════════════
-   PILLS (melhoradas)
-═════════════════════════════ */
-
+/* PILLS (CENTRALIZADAS) */
 .navbar-pills {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-
     gap: 6px;
     overflow-x: auto;
+    scrollbar-width: none;
     padding: 0 6px;
 }
+.navbar-pills::-webkit-scrollbar { display: none; }
 
-/* PILL BASE */
 .navbar-pills .cat-pill {
     padding: 6px 14px;
-    border-radius: 18px;
-
+    border-radius: 20px;
     border: 1px solid rgba(255,255,255,.08);
-
     background: rgba(255,255,255,.02);
-    color: rgba(255,255,255,.65);
-
+    color: rgba(255,255,255,.6);
     font-size: 0.78em;
     font-weight: 600;
-
+    cursor: pointer;
     transition: .2s ease;
+    white-space: nowrap;
 }
 
 /* HOVER */
 .navbar-pills .cat-pill:hover {
-    background: rgba(255,255,255,.05);
+    border-color: rgba(255,255,255,.2);
     color: #fff;
 }
 
-/* ATIVO — glow suave */
+/* ATIVO 🔥 */
 .navbar-pills .cat-pill.ativo {
-    background: var(--green);
-    color: #fff;
+    background: rgba(69,161,53,.18);
+    border-color: rgba(69,161,53,.4);
+    color: #6fcf5a;
 
-    box-shadow: 0 0 0 2px rgba(69,161,53,.25);
+    /* glow leve */
+    box-shadow: 0 0 8px rgba(69,161,53,.25);
 }
 
-/* ═════════════════════════════
-   CARRINHO
-═════════════════════════════ */
+/* ÁREA DIREITA */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+/* BOTÃO CARRINHO (DESTACADO) */
 .carrinho-btn {
-    width: 38px;
-    height: 38px;
-
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.12);
-
-    border-radius: 50%;
-
-    transition: .2s;
-}
-
-.carrinho-btn:hover {
-    background: rgba(255,255,255,.12);
-}
-
-/* Badge melhor */
-#contador-carrinho {
-    top: -5px;
-    right: -5px;
-
-    background: var(--green);
-    font-size: 9px;
-
-    box-shadow: 0 0 0 2px #161616;
-}
-
-/* ══════════════════════════════════════
-   BOTTOM NAV — CORRIGIDO (aqui tava feio)
-══════════════════════════════════════ */
-
-.bottom-nav {
-    display: none;
-
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-
-    background: rgba(18,18,18,.92);
-    backdrop-filter: blur(12px);
-
-    border-top: 1px solid rgba(255,255,255,.06);
-
-    padding: 6px 4px max(10px, env(safe-area-inset-bottom));
-
-    z-index: 900;
-}
-
-/* ITEM */
-.bottom-nav-item {
-    flex: 1;
+    width: 42px;
+    height: 42px;
 
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 
-    gap: 2px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
 
-    padding: 6px 0;
-
-    border-radius: 10px;
+    /* 🔥 destaque real */
+    background: rgba(69,161,53,.12);
+    border: 1px solid rgba(69,161,53,.35);
+    color: #6fcf5a;
 
     transition: .2s ease;
+    font-size: 16px;
 }
 
-/* ÍCONE */
-.bottom-nav-icon {
-    font-size: 18px;
-    color: #555;
-
-    transition: .2s;
+/* HOVER */
+.carrinho-btn:hover {
+    background: rgba(69,161,53,.2);
+    transform: scale(1.05);
 }
-
-/* TEXTO */
-.bottom-nav-label {
-    font-size: 10px;
-    color: #555;
-}
-
-/* ATIVO — MUITO MELHOR AGORA */
-.bottom-nav-item.ativo {
-    background: rgba(69,161,53,.12);
-}
-
-.bottom-nav-item.ativo .bottom-nav-icon {
-    color: var(--green);
-    transform: translateY(-1px);
-}
-
-.bottom-nav-item.ativo .bottom-nav-label {
-    color: var(--green);
-}
-
-/* INDICADOR (linha removida — tava feia) */
 
 /* BADGE */
-.bottom-nav-badge {
-    top: 2px;
-    right: 18%;
+#contador-carrinho {
+    position: absolute;
+    top: -5px; right: -5px;
 
-    background: var(--green);
-    font-size: 9px;
+    background: #45a135;
+    color: #fff;
 
-    box-shadow: 0 0 0 2px #161616;
+    font-size: 10px;
+    font-weight: 800;
+
+    min-width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #141414;
 }
 
-/* ═════════════════════════════
-   MOBILE
-═════════════════════════════ */
-
-@media (max-width: 768px) {
-
-    .bottom-nav {
-        display: flex;
+/* MOBILE AJUSTES */
+@media (max-width: 480px) {
+    .navbar-content-wrapper {
+        padding: 0 12px;
+        gap: 10px;
     }
 
-    .navbar-pills {
-        display: none !important;
+    .navbar-pills .cat-pill {
+        padding: 5px 10px;
+        font-size: 0.72em;
     }
 
-    body {
-        padding-bottom: 65px;
+    .carrinho-btn {
+        width: 38px;
+        height: 38px;
     }
 }
 
-/* TABLET */
+/* DESKTOP */
 @media (min-width: 769px) {
-    :root { --nav-height: 60px; }
+    :root { --nav-height: 62px; }
+
+    .navbar-pills .cat-pill {
+        padding: 7px 16px;
+        font-size: 0.82em;
+    }
+
+    .carrinho-btn {
+        width: 44px;
+        height: 44px;
+    }
 }
