@@ -544,7 +544,7 @@ a { color: hsl(var(--price)); text-decoration: none; }
     position: fixed;
     bottom: 20px;
     right: 16px;
-    width: 52px; height: 52px;
+    width: 52px; height: 52px; /* desktop */
     background: hsl(var(--primary));
     color: #fff;
     border: none;
@@ -1029,6 +1029,17 @@ footer {
 }
 .bottom-nav-item.ativo .bottom-nav-label { color: hsl(var(--primary)); }
 
+/* Dot indicador abaixo do label */
+.bottom-nav-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    margin-top: 1px;
+    opacity: 0;
+    transition: opacity .18s;
+}
+.bottom-nav-item.ativo .bottom-nav-dot { opacity: 1; }
+
 /* Badge do carrinho */
 .bottom-nav-badge {
     position: absolute;
@@ -1063,14 +1074,14 @@ footer {
     /* Pills da navbar ocultas — bottom nav assume */
     .navbar-pills { display: none !important; }
 
-    /* Grade hambúrgueres/combos: 2 colunas no mobile */
+    /* Grade hambúrgueres/combos: 1 coluna no mobile (blueprint v2) */
     .cardapio-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
         display: grid !important;
     }
 
-    /* Cards da grade — proporção menor no mobile */
+    /* Cards verticais no mobile */
     .cardapio-grid .item-card {
         flex-direction: column !important;
         height: auto !important;
@@ -1079,7 +1090,7 @@ footer {
         width: 100% !important;
         min-width: unset !important;
         height: 0 !important;
-        padding-bottom: 58% !important;
+        padding-bottom: 56.25% !important; /* 16:9 no mobile */
         border-radius: 11px 11px 0 0 !important;
     }
     .cardapio-grid .card-img-wrapper img,
@@ -1090,12 +1101,12 @@ footer {
     }
     .cardapio-grid .card-footer {
         flex-direction: row !important;
-        padding: 7px 10px !important;
-        border-top: 1px solid rgba(255,255,255,.05) !important;
+        padding: 8px 12px !important;
+        border-top: 1px solid hsl(var(--border) / .4) !important;
     }
     .cardapio-grid .card-btn {
-        padding: 6px 10px !important;
-        font-size: 11px !important;
+        padding: 6px 12px !important;
+        font-size: 12px !important;
     }
 
     /* Lista bebidas/acompanhamentos — linha no mobile */
@@ -1122,7 +1133,7 @@ footer {
         border-top: none !important;
         margin-top: 0 !important;
     }
-    .item-card-lista .card-desc { display: none !important; }
+    .item-card-lista .card-desc { font-size: 10px !important; -webkit-line-clamp: 2 !important; }
 
     /* Separadores */
     .secao-sep { padding: 20px 0 10px; }
