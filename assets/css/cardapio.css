@@ -865,25 +865,33 @@ footer {
 }
 
 /* ══════════════════════════════════════
-   SIDEBAR DESKTOP — Categorias
+   LAYOUT PRINCIPAL (todas as telas)
 ══════════════════════════════════════ */
-.cardapio-sidebar {
-    display: none; /* só desktop */
+.cardapio-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
 }
 
-@media (min-width: 769px) {
-    /* Layout com sidebar */
-    body.tem-sidebar #main-content-container {
-        max-width: none;
-        padding-left: 0;
-        padding-right: 0;
-    }
+/* Sidebar oculta por padrão — só aparece no desktop */
+.cardapio-sidebar { display: none; }
 
+/* Conteúdo principal ocupa tudo no mobile */
+.cardapio-main {
+    flex: 1;
+    min-width: 0;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 12px;
+}
+
+/* ══════════════════════════════════════
+   SIDEBAR DESKTOP
+══════════════════════════════════════ */
+@media (min-width: 769px) {
     .cardapio-layout {
-        display: flex;
-        max-width: 1280px;
-        margin: 0 auto;
-        min-height: 100vh;
+        max-width: 100%;
     }
 
     .cardapio-sidebar {
@@ -903,6 +911,12 @@ footer {
     }
     .cardapio-sidebar::-webkit-scrollbar { display: none; }
 
+    .cardapio-main {
+        padding: 0 20px;
+        max-width: none;
+        margin: 0;
+    }
+
     .sidebar-item {
         display: flex;
         align-items: center;
@@ -918,12 +932,8 @@ footer {
         background: hsl(var(--primary) / .1);
         border-left-color: hsl(var(--primary));
     }
-    .sidebar-item-icon {
-        color: #444;
-        flex-shrink: 0;
-        transition: color .18s;
-    }
-    .sidebar-item.ativo .sidebar-item-icon { color: #45a135; }
+    .sidebar-item-icon { color: #444; flex-shrink: 0; transition: color .18s; }
+    .sidebar-item.ativo .sidebar-item-icon { color: hsl(var(--primary)); }
     .sidebar-item-label {
         font-size: 12px;
         font-weight: 500;
@@ -938,10 +948,10 @@ footer {
 
     .sidebar-cart-btn {
         margin: auto 12px 12px;
-        background: rgba(69,161,53,.12);
-        border: 1px solid rgba(69,161,53,.25);
+        background: hsl(var(--primary) / .1);
+        border: 1px solid hsl(var(--primary) / .25);
         border-radius: 10px;
-        color: #45a135;
+        color: hsl(var(--primary));
         font-size: 11px;
         font-weight: 700;
         padding: 10px;
@@ -952,23 +962,17 @@ footer {
         gap: 6px;
         transition: .18s;
     }
-    .sidebar-cart-btn:hover { background: rgba(69,161,53,.2); }
+    .sidebar-cart-btn:hover { background: hsl(var(--primary) / .2); }
     .sidebar-cart-count {
-        background: #45a135;
-        color: #fff;
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
         border-radius: 10px;
         padding: 1px 6px;
         font-size: 10px;
         font-weight: 800;
     }
 
-    .cardapio-main {
-        flex: 1;
-        min-width: 0;
-        padding: 0 20px;
-    }
-
-    /* Pills da navbar ocultas no desktop quando tem sidebar */
+    /* Pills da navbar ocultas — sidebar navega */
     .navbar-pills { display: none !important; }
 }
 
