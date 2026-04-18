@@ -1,0 +1,106 @@
+/* ═══════════════════════════════════════════════════
+   JOTTAV BURGUER — DESIGN SYSTEM v2.0
+   Tokens HSL completos + Inter font
+═══════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* === FUNDOS === */
+  --background:        220 15% 8%;
+  --card:              220 15% 11%;
+  --muted:             220 12% 14%;
+  --secondary:         220 15% 16%;
+  --surface-elevated:  220 15% 13%;
+  --surface-overlay:   220 15% 10%;
+
+  /* === SIDEBAR === */
+  --sidebar-background: 220 15% 6%;
+  --sidebar-accent:     220 15% 12%;
+
+  /* === TEXTOS === */
+  --foreground:          0 0% 96%;
+  --muted-foreground:    220 10% 55%;
+  --card-foreground:     0 0% 96%;
+  --secondary-foreground:0 0% 85%;
+  --sidebar-foreground:  0 0% 85%;
+
+  /* === PRIMÁRIO (Verde) === */
+  --primary:             142 70% 45%;
+  --primary-foreground:  0 0% 100%;
+  --ring:                142 70% 45%;
+  --price:               142 70% 45%;
+
+  /* === ACCENT (Âmbar) === */
+  --accent:              35 95% 55%;
+  --accent-foreground:   0 0% 100%;
+
+  /* === DESTRUTIVO === */
+  --destructive:         0 72% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* === BORDAS === */
+  --border:              220 12% 18%;
+  --input:               220 12% 18%;
+
+  /* === POPOVER === */
+  --popover:             220 15% 11%;
+  --popover-foreground:  0 0% 96%;
+
+  /* === LAYOUT === */
+  --radius:              0.75rem;
+  --nav-height:          58px;
+  --nav-height-desktop:  62px;
+  --bottombar-height:    64px;
+  --sidebar-width:       224px;
+
+  /* === SEMÂNTICOS === */
+  --success: 142 70% 45%;
+  --warning:  35 95% 55%;
+
+  /* === COMPAT (legado) === */
+  --green:      hsl(142 70% 45%);
+  --green-hover:hsl(142 70% 38%);
+  --green-dim:  hsl(142 70% 45% / .12);
+  --bg-base:    hsl(220 15% 8%);
+  --bg-layer1:  hsl(220 15% 11%);
+  --bg-layer2:  hsl(220 15% 14%);
+  --bg-layer3:  hsl(220 15% 16%);
+  --border-soft:hsl(220 12% 18% / .5);
+  --border-mid: hsl(220 12% 18%);
+  --text-primary:   hsl(0 0% 96%);
+  --text-secondary: hsl(220 10% 55%);
+  --text-muted:     hsl(220 10% 40%);
+  --orange:         hsl(35 95% 55%);
+  --radius-sm:  8px;
+  --radius-md:  var(--radius);
+  --radius-lg:  16px;
+  --radius-xl:  22px;
+  --transition: .18s ease;
+  --shadow-card:  0 2px 12px hsl(220 15% 4% / .4);
+  --shadow-float: 0 4px 24px hsl(142 70% 45% / .25);
+  --price-color: hsl(var(--price));
+}
+
+/* Base */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar global */
+* { scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent; }
+*::-webkit-scrollbar { width: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 2px; }
+
+/* Tipografia */
+h1,h2,h3,h4,h5,h6 { color: hsl(var(--foreground)); font-family: 'Inter', sans-serif; }
+a { color: hsl(var(--primary)); text-decoration: none; }
