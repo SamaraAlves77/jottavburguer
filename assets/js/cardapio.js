@@ -915,29 +915,32 @@ function renderizarBottomNav() {
     const nav = document.getElementById('bottom-nav');
     if (!nav) return;
 
-    const secoes = cardapioData.filter(s => s.id !== 'adicionais-extras');
-    // Máximo 4 itens de categoria + 1 carrinho = 5 total
-    const secoesNav = secoes.slice(0, 4);
-
-    const offset = 70;
-
-    nav.innerHTML = secoesNav.map((sec, i) => `
-        <button class="bottom-nav-item ${i === 0 ? 'ativo' : ''}" data-secao="${sec.id}"
-            onclick="irParaSecao('${sec.id}')">
-            <div class="bottom-nav-icon">${iconePorCategoria(sec.id)}</div>
-            <span class="bottom-nav-label">${nomeAbreviado(sec.nome)}</span>
+    nav.innerHTML = `
+        <button class="bottom-nav-item ativo" id="bnav-inicio"
+            onclick="window.location.href='index.html'">
+            <div class="bottom-nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+            </div>
+            <span class="bottom-nav-label">Início</span>
+            <div class="bottom-nav-dot"></div>
         </button>
-    `).join('') + `
-        <button class="bottom-nav-item bottom-nav-cart" id="bottom-nav-cart-btn"
-            onclick="document.getElementById('carrinho-btn')?.click() || document.getElementById('fab-carrinho')?.click()">
+        <button class="bottom-nav-item" id="bnav-carrinho"
+            onclick="document.getElementById('carrinho-btn')?.click()">
             <div class="bottom-nav-icon" style="position:relative">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                     <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6"/>
                 </svg>
-                <span class="bottom-nav-badge" id="bottom-nav-badge">0</span>
+                <span class="bottom-nav-badge" id="bottom-nav-badge"
+                    style="display:none">0</span>
             </div>
             <span class="bottom-nav-label">Carrinho</span>
+            <div class="bottom-nav-dot" style="opacity:0"></div>
         </button>
     `;
 }
