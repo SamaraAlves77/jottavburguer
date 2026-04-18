@@ -1,173 +1,154 @@
-/* ════════════════════════════════════════
-   NAVBAR — versão PRO (refinada)
-════════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   NAVBAR — Design System v2.0
+═══════════════════════════════════════ */
 
-:root {
-    --nav-height: 58px;
-}
-
-/* NAVBAR BASE */
+/* ── TOP NAV ── */
 .navbar {
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: var(--nav-height);
-    
-    /* 🔥 profundidade premium */
-    background: linear-gradient(180deg, #1b1b1b, #141414);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    height: var(--nav-height, 58px);
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(var(--border) / .6);
     z-index: 9000;
 }
 
-/* CONTAINER */
 .navbar-content-wrapper {
     display: flex;
     align-items: center;
     height: 100%;
-    max-width: 1100px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 16px;
-    gap: 14px;
+    gap: 12px;
 }
 
-/* LOGO */
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    text-decoration: none;
+}
 .logo img {
-    height: 36px;
-    width: 36px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     object-fit: cover;
+    background: hsl(var(--primary) / .15);
+    border: 1px solid hsl(var(--primary) / .3);
+}
+.logo-nome {
+    font-size: 14px;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    display: none;
 }
 
-/* PILLS (CENTRALIZADAS) */
+/* Pills de categoria (desktop) */
 .navbar-pills {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     overflow-x: auto;
     scrollbar-width: none;
-    padding: 0 6px;
+    padding: 0 8px;
 }
 .navbar-pills::-webkit-scrollbar { display: none; }
 
-.navbar-pills .cat-pill {
-    padding: 6px 14px;
+.cat-pill {
+    display: inline-block;
+    padding: 5px 14px;
     border-radius: 20px;
-    border: 1px solid rgba(255,255,255,.08);
-    background: rgba(255,255,255,.02);
-    color: rgba(255,255,255,.6);
-    font-size: 0.78em;
-    font-weight: 600;
+    border: 1px solid hsl(var(--border));
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
-    transition: .2s ease;
+    transition: .18s ease;
     white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.cat-pill:hover {
+    border-color: hsl(var(--primary) / .4);
+    color: hsl(var(--foreground));
+    background: hsl(var(--primary) / .08);
+}
+.cat-pill.ativo {
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-weight: 600;
 }
 
-/* HOVER */
-.navbar-pills .cat-pill:hover {
-    border-color: rgba(255,255,255,.2);
-    color: #fff;
-}
-
-/* ATIVO 🔥 */
-.navbar-pills .cat-pill.ativo {
-    background: rgba(69,161,53,.18);
-    border-color: rgba(69,161,53,.4);
-    color: #6fcf5a;
-
-    /* glow leve */
-    box-shadow: 0 0 8px rgba(69,161,53,.25);
-}
-
-/* ÁREA DIREITA */
+/* Ações */
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
-/* BOTÃO CARRINHO (DESTACADO) */
 .carrinho-btn {
-    width: 42px;
-    height: 42px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
+    width: 38px; height: 38px;
+    background: hsl(var(--primary) / .12);
+    border: 1px solid hsl(var(--primary) / .35);
     border-radius: 50%;
+    color: hsl(var(--primary));
     cursor: pointer;
     position: relative;
-
-    /* 🔥 destaque real */
-    background: rgba(69,161,53,.12);
-    border: 1px solid rgba(69,161,53,.35);
-    color: #6fcf5a;
-
-    transition: .2s ease;
-    font-size: 16px;
+    transition: .18s ease;
+    font-size: 15px;
 }
-
-/* HOVER */
 .carrinho-btn:hover {
-    background: rgba(69,161,53,.2);
+    background: hsl(var(--primary) / .2);
     transform: scale(1.05);
 }
 
-/* BADGE */
 #contador-carrinho {
     position: absolute;
-    top: -5px; right: -5px;
-
-    background: #45a135;
-    color: #fff;
-
-    font-size: 10px;
+    top: -4px; right: -4px;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-size: 9px;
     font-weight: 800;
-
-    min-width: 18px;
-    height: 18px;
-
-    border-radius: 50%;
+    min-width: 18px; height: 18px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border: 2px solid #141414;
+    padding: 0 3px;
+    border: 2px solid hsl(var(--background));
 }
 
-/* MOBILE AJUSTES */
-@media (max-width: 480px) {
-    .navbar-content-wrapper {
-        padding: 0 12px;
-        gap: 10px;
-    }
+.hamburger-menu-btn { display: none; }
+.nav-links { display: none; }
 
-    .navbar-pills .cat-pill {
-        padding: 5px 10px;
-        font-size: 0.72em;
-    }
-
-    .carrinho-btn {
-        width: 38px;
-        height: 38px;
-    }
+/* ── RESPONSIVO ── */
+@media (max-width: 374px) {
+    .navbar-content-wrapper { padding: 0 10px; }
 }
 
-/* DESKTOP */
-@media (min-width: 769px) {
-    :root { --nav-height: 62px; }
+@media (max-width: 767px) {
+    .navbar-pills { display: none; }
+    .logo-nome { display: block; }
+}
 
-    .navbar-pills .cat-pill {
-        padding: 7px 16px;
-        font-size: 0.82em;
+@media (min-width: 768px) {
+    .navbar {
+        height: var(--nav-height-desktop, 62px);
     }
-
-    .carrinho-btn {
-        width: 44px;
-        height: 44px;
-    }
+    .logo img { width: 40px; height: 40px; }
+    .carrinho-btn { width: 44px; height: 44px; }
+    .logo-nome { display: block; }
+    /* Sidebar está presente — pills ocultas */
+    .navbar-pills { display: none; }
 }
