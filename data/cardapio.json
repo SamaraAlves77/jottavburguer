@@ -71,7 +71,8 @@
                 "imagem": "calabresa_prime.jpeg",
                 "destaque": false,
                 "badge": "",
-                "ordem": 6
+                "ordem": 6,
+                "ativo": false
             },
             {
                 "id": 8,
@@ -81,7 +82,8 @@
                 "imagem": "calabresa_basico.jpeg",
                 "destaque": false,
                 "badge": "",
-                "ordem": 7
+                "ordem": 7,
+                "ativo": false
             }
         ]
     },
