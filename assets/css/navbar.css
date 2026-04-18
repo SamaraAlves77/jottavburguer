@@ -1,0 +1,171 @@
+/* ═══════════════════════════════════════
+   NAVBAR — Design System v2.0
+═══════════════════════════════════════ */
+
+/* ── TOP NAV ── */
+.navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--nav-height, 58px);
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(var(--border) / .6);
+    z-index: 9000;
+}
+
+.navbar-content-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 16px;
+    gap: 12px;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+.logo img {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: hsl(var(--primary) / .15);
+    border: 1px solid hsl(var(--primary) / .3);
+}
+.logo-nome {
+    font-size: 14px;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    display: none;
+}
+
+/* Pills de categoria (desktop) */
+.navbar-pills {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 8px;
+}
+.navbar-pills::-webkit-scrollbar { display: none; }
+
+.cat-pill {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid hsl(var(--border));
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: .18s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.cat-pill:hover {
+    border-color: hsl(var(--primary) / .4);
+    color: hsl(var(--foreground));
+    background: hsl(var(--primary) / .08);
+}
+.cat-pill.ativo {
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-weight: 600;
+}
+
+/* Ações */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.carrinho-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; height: 38px;
+    background: hsl(var(--primary) / .12);
+    border: 1px solid hsl(var(--primary) / .35);
+    border-radius: 50%;
+    color: hsl(var(--primary));
+    cursor: pointer;
+    position: relative;
+    transition: .18s ease;
+    font-size: 15px;
+}
+.carrinho-btn:hover {
+    background: hsl(var(--primary) / .2);
+    transform: scale(1.05);
+}
+
+#contador-carrinho {
+    position: absolute;
+    top: -4px; right: -4px;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-size: 9px;
+    font-weight: 800;
+    min-width: 18px; height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 2px solid hsl(var(--background));
+}
+
+.hamburger-menu-btn { display: none; }
+.nav-links { display: none; }
+
+/* ── RESPONSIVO ── */
+@media (max-width: 374px) {
+    .navbar-content-wrapper { padding: 0 10px; }
+}
+
+@media (max-width: 767px) {
+    .navbar-pills { display: none; }
+    .logo-nome { display: block; }
+}
+
+@media (min-width: 768px) {
+    .navbar {
+        height: var(--nav-height-desktop, 62px);
+    }
+    .logo img { width: 40px; height: 40px; }
+    .carrinho-btn { width: 44px; height: 44px; }
+    .logo-nome { display: block; }
+    /* Sidebar está presente — pills ocultas */
+    .navbar-pills { display: none; }
+}
+
+/* Botão Início (ghost) */
+.inicio-btn {
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: color .18s, background .18s;
+    display: none; /* oculto no mobile */
+}
+.inicio-btn:hover { color: hsl(var(--foreground)); background: hsl(var(--secondary)); }
+
+@media (min-width: 768px) {
+    .inicio-btn { display: inline-block; }
+}
