@@ -152,3 +152,20 @@
     /* Sidebar está presente — pills ocultas */
     .navbar-pills { display: none; }
 }
+
+/* Botão Início (ghost) */
+.inicio-btn {
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: color .18s, background .18s;
+    display: none; /* oculto no mobile */
+}
+.inicio-btn:hover { color: hsl(var(--foreground)); background: hsl(var(--secondary)); }
+
+@media (min-width: 768px) {
+    .inicio-btn { display: inline-block; }
+}
