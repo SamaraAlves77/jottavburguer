@@ -915,19 +915,34 @@ function renderizarBottomNav() {
     const nav = document.getElementById('bottom-nav');
     if (!nav) return;
 
-    nav.innerHTML = `
-        <button class="bottom-nav-item ativo" id="bnav-inicio"
-            onclick="window.location.href='index.html'">
-            <div class="bottom-nav-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                    <polyline points="9,22 9,12 15,12 15,22"/>
-                </svg>
-            </div>
-            <span class="bottom-nav-label">Início</span>
+    // Filtra apenas categorias visíveis (sem adicionais-extras)
+    const cats = (cardapioData || []).filter(s => s.id !== 'adicionais-extras');
+
+    const icones = {
+        'hamburgueres-artesanais': '🍔',
+        'combos-e-familia':        '🎯',
+        'acompanhamentos':         '🍟',
+        'bebidas':                 '🥤',
+    };
+
+    const labels = {
+        'hamburgueres-artesanais': 'Burgers',
+        'combos-e-familia':        'Combos',
+        'acompanhamentos':         'Acomp.',
+        'bebidas':                 'Bebidas',
+    };
+
+    const catButtons = cats.map((s, i) => `
+        <button class="bottom-nav-item ${i === 0 ? 'ativo' : ''}"
+            data-secao="${s.id}"
+            onclick="irParaSecao('${s.id}')">
+            <div class="bottom-nav-icon">${icones[s.id] || '🍽️'}</div>
+            <span class="bottom-nav-label">${labels[s.id] || s.nome}</span>
             <div class="bottom-nav-dot"></div>
         </button>
+    `).join('');
+
+    nav.innerHTML = catButtons + `
         <button class="bottom-nav-item" id="bnav-carrinho"
             onclick="document.getElementById('carrinho-btn')?.click()">
             <div class="bottom-nav-icon" style="position:relative">
@@ -936,8 +951,7 @@ function renderizarBottomNav() {
                     <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                     <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6"/>
                 </svg>
-                <span class="bottom-nav-badge" id="bottom-nav-badge"
-                    style="display:none">0</span>
+                <span class="bottom-nav-badge" id="bottom-nav-badge" style="display:none">0</span>
             </div>
             <span class="bottom-nav-label">Carrinho</span>
             <div class="bottom-nav-dot" style="opacity:0"></div>
