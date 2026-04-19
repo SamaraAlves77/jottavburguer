@@ -72,7 +72,7 @@
                 "destaque": false,
                 "badge": "",
                 "ordem": 6,
-                "ativo": false
+                "ativo": true
             },
             {
                 "id": 8,
@@ -83,7 +83,7 @@
                 "destaque": false,
                 "badge": "",
                 "ordem": 7,
-                "ativo": false
+                "ativo": true
             }
         ]
     },
