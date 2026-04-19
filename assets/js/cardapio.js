@@ -249,7 +249,7 @@ function renderizarCardapio() {
         container.appendChild(bannerPromo);
     }
 
-    // ── CARROSSEL GLOBAL DE DESTAQUES (topo único) ──────────────
+    // ── CARROSSEL GLOBAL DE DESTAQUES ──────────────────────────
     const todosDestaques = cardapioData.flatMap(secao =>
         secao.itens
             .filter(i => i.ativo !== false && i.destaque === true)
@@ -281,7 +281,7 @@ function renderizarCardapio() {
                                     <span class="destaque-preco">R$ ${preco}</span>
                                     <button class="card-btn btn-adicionar destaque-btn"
                                         data-item-id="${item.id}" data-categoria-id="${item.secaoId}">
-                                        Adicionar 🛒
+                                        Adicionar
                                     </button>
                                 </div>
                             </div>
@@ -303,74 +303,195 @@ function renderizarCardapio() {
     // ── BANNER DE PROMOÇÃO DO DIA ───────────────────────────────
     renderizarBannerPromocao();
 
-    // ── BANNERS COMBO + BATATA ──────────────────────────────────
-    renderizarBannersEspeciais();
+    // ── CARDS DE CATEGORIA (home) ───────────────────────────────
+    const icones = {
+        'hamburgueres-artesanais': '🍔',
+        'combos-e-familia':        '🎯',
+        'acompanhamentos':         '🍟',
+        'bebidas':                 '🥤',
+    };
 
-    // ── GRADE COMPLETA — TODOS OS ITENS POR SEÇÃO ───────────────
-    cardapioData.forEach(secao => {
-        if (secao.id === 'adicionais-extras') return;
+    const catsVisiveis = cardapioData.filter(s =>
+        s.id !== 'adicionais-extras' && s.itens.some(i => i.ativo !== false)
+    );
 
-        const itensAtivos = secao.itens.filter(i => i.ativo !== false);
-        if (itensAtivos.length === 0) return;
-
-        const section = document.createElement('section');
-        section.id = secao.id;
-        section.classList.add('menu-section');
-
-        section.innerHTML = `
-            <div class="secao-sep">
-                <div class="secao-sep-linha"></div>
-                <span class="secao-sep-label">${secao.nome}</span>
-                <span class="secao-sep-count">${itensAtivos.length}</span>
-                <div class="secao-sep-linha"></div>
+    const homeGrid = document.createElement('div');
+    homeGrid.className = 'home-cats-grid';
+    homeGrid.innerHTML = catsVisiveis.map(s => {
+        const icone = icones[s.id] || '🍽️';
+        const qtd   = s.itens.filter(i => i.ativo !== false).length;
+        const foto  = s.itens.find(i => i.ativo !== false && i.imagem)?.imagem || null;
+        const fotoSrc = foto ? `imagens/${foto}` : 'assets/img/hamburguer.png';
+        return `
+        <div class="home-cat-card" onclick="abrirCategoria('${s.id}')">
+            <div class="home-cat-img-wrap">
+                <img src="${fotoSrc}" alt="${s.nome}" loading="lazy"
+                     onerror="this.src='assets/img/hamburguer.png'">
+                <div class="home-cat-overlay"></div>
             </div>
-            <div class="${['acompanhamentos','bebidas'].includes(secao.id) ? 'cardapio-lista' : 'cardapio-grid'}">
-                ${itensAtivos.map(item => {
-                    const infoPromo = calcularPrecoComPromocao(item, secao.id);
-                    const precoOriginal = (item.preco || 0).toFixed(2).replace('.', ',');
-                    const precoFinal = infoPromo.preco.toFixed(2).replace('.', ',');
-                    const emPromo = infoPromo.emPromocao;
-                    const badgeGrade = item.destaque && item.badge ? item.badge : '';
-                    const isLista = ['acompanhamentos','bebidas'].includes(secao.id);
-                    const precoHtml = emPromo
-                        ? `<div class="preco-promo-wrap">
-                               <span class="card-preco-original">R$ ${precoOriginal}</span>
-                               <span class="card-preco preco-promocao">R$ ${precoFinal}</span>
-                           </div>`
-                        : `<span class="card-preco">R$ ${precoOriginal}</span>`;
-                    return `
-                    <div class="item-card ${isLista ? 'item-card-lista' : ''} ${emPromo ? 'em-promocao' : ''} ${badgeGrade ? 'destaque-grade' : ''}"
-                        data-item-id="${item.id}" data-categoria-id="${secao.id}">
-                        <div class="card-img-wrapper" data-badge="${badgeGrade}">
-                            ${gerarImagemCard(item)}
-                            ${emPromo ? `<div class="promo-tag">-${infoPromo.desconto}%</div>` : ''}
-                        </div>
-                        <div class="card-body">
-                            <h3 class="card-nome">${item.nome}</h3>
-                            <p class="card-desc">${item.descricao || ''}</p>
-                            <div class="card-footer">
-                                ${precoHtml}
-                                <button class="card-btn btn-adicionar"
-                                    data-item-id="${item.id}" data-categoria-id="${secao.id}"
-                                    data-preco-final="${infoPromo.preco}">
-                                    Adicionar
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('')}
-            </div>`;
+            <div class="home-cat-info">
+                <span class="home-cat-icone">${icone}</span>
+                <span class="home-cat-nome">${s.nome}</span>
+                <span class="home-cat-qtd">${qtd} itens</span>
+            </div>
+        </div>`;
+    }).join('');
+    container.appendChild(homeGrid);
 
-        container.appendChild(section);
-    });
-
-    document.querySelectorAll('.btn-adicionar').forEach(btn => {
+    // Listeners do carrossel destaque
+    container.querySelectorAll('.btn-adicionar').forEach(btn => {
         btn.addEventListener('click', handleAdicionarAoCarrinho);
     });
 
-    renderizarCategoriasPills();
     renderizarBottomNav();
     renderizarSidebar();
+}
+
+// ── ABRE CATEGORIA — lista vertical de itens ────────────────
+function abrirCategoria(catId) {
+    const secao = cardapioData.find(s => s.id === catId);
+    if (!secao) return;
+
+    const container = document.getElementById('main-content-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const icones = {
+        'hamburgueres-artesanais': '🍔',
+        'combos-e-familia':        '🎯',
+        'acompanhamentos':         '🍟',
+        'bebidas':                 '🥤',
+    };
+
+    const catsVisiveis = cardapioData.filter(s =>
+        s.id !== 'adicionais-extras' && s.itens.some(i => i.ativo !== false)
+    );
+
+    // ── HEADER: voltar + tabs de categoria
+    const header = document.createElement('div');
+    header.className = 'cat-header';
+    header.innerHTML = `
+        <button class="cat-voltar" onclick="renderizarCardapio()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Início
+        </button>
+        <div class="cat-tabs">
+            ${catsVisiveis.map(s => `
+                <button class="cat-tab ${s.id === catId ? 'ativo' : ''}"
+                        onclick="abrirCategoria('${s.id}')">
+                    ${icones[s.id] || '🍽️'}
+                </button>
+            `).join('')}
+        </div>
+    `;
+    container.appendChild(header);
+
+    // ── TÍTULO DA SEÇÃO
+    const titulo = document.createElement('div');
+    titulo.className = 'cat-titulo-wrap';
+    titulo.innerHTML = `
+        <span class="cat-titulo-icone">${icones[catId] || '🍽️'}</span>
+        <h2 class="cat-titulo">${secao.nome}</h2>
+        <span class="cat-titulo-qtd">${secao.itens.filter(i=>i.ativo!==false).length} itens</span>
+    `;
+    container.appendChild(titulo);
+
+    // ── BANNER ESPECIAL (combo ou batata)
+    if (catId === 'hamburgueres-artesanais' || catId === 'combos-e-familia') {
+        const descCombo = window.siteConfig?.combo_desconto || window.siteConfig?.combo?.desconto || 10;
+        const b = document.createElement('div');
+        b.className = 'banner-cat combo-banner';
+        b.onclick = () => abrirComboModal();
+        b.innerHTML = `
+            <div class="combo-banner-left">
+                <div class="combo-ico">🎯</div>
+                <div>
+                    <div class="combo-banner-title">Combine e ganhe ${descCombo}% OFF</div>
+                    <div class="combo-banner-sub">Escolha itens de categorias diferentes</div>
+                </div>
+            </div>
+            <button class="combo-banner-cta">Montar</button>
+        `;
+        container.appendChild(b);
+    } else if (catId === 'acompanhamentos') {
+        const b = document.createElement('div');
+        b.className = 'banner-cat batata-banner';
+        b.onclick = () => abrirBatataModal();
+        b.innerHTML = `
+            <div class="combo-banner-left">
+                <div class="batata-ico">🍟</div>
+                <div>
+                    <div class="combo-banner-title">Monte sua Batata</div>
+                    <div class="combo-banner-sub">Escolha adicionais e molhos do seu jeito</div>
+                </div>
+            </div>
+            <button class="batata-banner-cta">Personalizar</button>
+        `;
+        container.appendChild(b);
+    }
+
+    // ── LISTA VERTICAL DE ITENS
+    const lista = document.createElement('div');
+    lista.className = 'cat-lista';
+
+    const itensAtivos = secao.itens.filter(i => i.ativo !== false);
+
+    itensAtivos.forEach(item => {
+        const infoPromo   = calcularPrecoComPromocao(item, catId);
+        const precoOriginal = (item.preco || 0).toFixed(2).replace('.', ',');
+        const precoFinal    = infoPromo.preco.toFixed(2).replace('.', ',');
+        const emPromo       = infoPromo.emPromocao;
+        const fotoSrc       = item.imagem ? `imagens/${item.imagem}` : 'assets/img/hamburguer.png';
+        const badgeHtml     = (item.destaque && item.badge)
+            ? `<span class="item-lista-badge">${item.badge}</span>` : '';
+        const precoHtml     = emPromo
+            ? `<div class="preco-promo-wrap">
+                   <span class="card-preco-original">R$ ${precoOriginal}</span>
+                   <span class="card-preco preco-promocao">R$ ${precoFinal}</span>
+               </div>`
+            : `<span class="card-preco">R$ ${precoOriginal}</span>`;
+
+        const card = document.createElement('div');
+        card.className = `item-lista-card${emPromo ? ' em-promocao' : ''}`;
+        card.innerHTML = `
+            <div class="item-lista-img-wrap">
+                <img src="${fotoSrc}" alt="${item.nome}" loading="lazy"
+                     onerror="this.src='assets/img/hamburguer.png'">
+                ${badgeHtml}
+                ${emPromo ? `<div class="promo-tag">-${infoPromo.desconto}%</div>` : ''}
+            </div>
+            <div class="item-lista-body">
+                <h3 class="item-lista-nome">${item.nome}</h3>
+                <p class="item-lista-desc">${item.descricao || ''}</p>
+                <div class="item-lista-footer">
+                    ${precoHtml}
+                    <button class="card-btn btn-adicionar"
+                        data-item-id="${item.id}"
+                        data-categoria-id="${catId}"
+                        data-preco-final="${infoPromo.preco}">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        `;
+        lista.appendChild(card);
+    });
+
+    container.appendChild(lista);
+
+    // Listeners dos botões adicionar
+    lista.querySelectorAll('.btn-adicionar').forEach(btn => {
+        btn.addEventListener('click', handleAdicionarAoCarrinho);
+    });
+
+    // Atualiza bottom nav ativo
+    document.querySelectorAll('.bottom-nav-item[data-cat]').forEach(btn => {
+        btn.classList.toggle('ativo', btn.getAttribute('data-cat') === catId);
+    });
 }
 
 // ── BANNERS ESPECIAIS (Combo + Batata) ──────────────────────
@@ -915,16 +1036,12 @@ function renderizarBottomNav() {
     const nav = document.getElementById('bottom-nav');
     if (!nav) return;
 
-    // Filtra apenas categorias visíveis (sem adicionais-extras)
-    const cats = (cardapioData || []).filter(s => s.id !== 'adicionais-extras');
-
     const icones = {
         'hamburgueres-artesanais': '🍔',
         'combos-e-familia':        '🎯',
         'acompanhamentos':         '🍟',
         'bebidas':                 '🥤',
     };
-
     const labels = {
         'hamburgueres-artesanais': 'Burgers',
         'combos-e-familia':        'Combos',
@@ -932,22 +1049,24 @@ function renderizarBottomNav() {
         'bebidas':                 'Bebidas',
     };
 
-    const catButtons = cats.map((s, i) => `
-        <button class="bottom-nav-item ${i === 0 ? 'ativo' : ''}"
-            data-secao="${s.id}"
-            onclick="irParaSecao('${s.id}')">
+    const cats = cardapioData.filter(s =>
+        s.id !== 'adicionais-extras' && s.itens.some(i => i.ativo !== false)
+    );
+
+    nav.innerHTML = cats.map(s => `
+        <button class="bottom-nav-item" data-cat="${s.id}"
+                onclick="abrirCategoria('${s.id}')">
             <div class="bottom-nav-icon">${icones[s.id] || '🍽️'}</div>
             <span class="bottom-nav-label">${labels[s.id] || s.nome}</span>
             <div class="bottom-nav-dot"></div>
         </button>
-    `).join('');
-
-    nav.innerHTML = catButtons + `
+    `).join('') + `
         <button class="bottom-nav-item" id="bnav-carrinho"
-            onclick="document.getElementById('carrinho-btn')?.click()">
+                onclick="document.getElementById('carrinho-btn')?.click()">
             <div class="bottom-nav-icon" style="position:relative">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                     <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6"/>
                 </svg>
