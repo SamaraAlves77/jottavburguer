@@ -1,45 +1,39 @@
-<!-- modal.html — JottaV Burguer v3.1 -->
+<!-- modal.html — JottaV Burguer v3.2 (bug fix) -->
 
 <!-- ====== MODAL CARRINHO ====== -->
-<div id="carrinho-modal" class="modal">
+<div id="carrinho-modal" class="modal" style="display:none">
     <div class="modal-content modal-carrinho-content">
 
-        <!-- Header -->
         <div class="modal-header">
             <h3 class="modal-titulo">🛒 Seu Carrinho</h3>
             <div class="modal-header-acoes">
-                <button class="btn-limpar-carrinho" id="btn-limpar-carrinho" title="Limpar carrinho">
+                <button class="btn-limpar-carrinho" id="btn-limpar-carrinho">
                     <i class="fas fa-trash"></i> Limpar
                 </button>
-                <button class="modal-fechar fechar-modal" title="Fechar">
+                <button class="modal-fechar fechar-modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Estado vazio -->
         <div class="carrinho-vazio-state" id="carrinho-vazio-msg" style="display:none">
-            <span class="carrinho-vazio-emoji">🛒</span>
+            <span style="font-size:36px">🛒</span>
             <p>Seu carrinho está vazio</p>
         </div>
 
-        <!-- Lista de itens -->
         <div class="carrinho-itens" id="carrinho-itens"></div>
 
-        <!-- Total -->
         <div class="carrinho-total-container" id="carrinho-total-container">
             <span class="total-label">Total</span>
             <span class="total-valor">R$ <span id="carrinho-total">0,00</span></span>
         </div>
 
-        <!-- Aviso taxa -->
         <div class="aviso-taxa-entrega">
             <i class="fas fa-motorcycle"></i>
-            <span>A <strong>taxa de entrega</strong> não está inclusa. Consulte pelo WhatsApp.</span>
+            <span>A <strong>taxa de entrega</strong> não está inclusa no total acima. Consulte o valor com nosso atendimento pelo WhatsApp.</span>
         </div>
 
-        <!-- Formulário -->
-        <div class="carrinho-finalizar" id="carrinho-finalizar">
+        <div class="carrinho-finalizar">
             <h4 class="form-titulo">Dados para o Pedido <span class="form-opcional">(Opcional)</span></h4>
 
             <select id="forma-pagamento">
@@ -50,43 +44,48 @@
             <input type="text" id="bairro-cliente" placeholder="Bairro">
             <input type="text" id="endereco-cliente" placeholder="Endereço (Rua, Número, Referência)">
 
-            <h4 class="form-titulo" style="margin-top:4px">Observações</h4>
-            <textarea id="observacoes-pedido"
-                      placeholder="Ex: Sem cebola, Troco para R$ 50,00"
-                      rows="2"></textarea>
+            <div class="opcoes-pedido">
+                <h4 class="form-titulo">Observações</h4>
+                <textarea id="observacoes-pedido"
+                    placeholder="Observações (Ex: Sem cebola, Troco para R$ 50,00)"
+                    rows="2"></textarea>
+            </div>
 
-            <button type="button" id="btn-anexar-localizacao" class="btn-localizacao">
-                <i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)
-            </button>
-            <p id="localizacao-status" class="localizacao-status"></p>
+            <div class="campo-localizacao">
+                <button type="button" id="btn-anexar-localizacao" class="btn-localizacao">
+                    <i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)
+                </button>
+                <p id="localizacao-status" class="localizacao-status"></p>
+            </div>
 
             <button id="btn-finalizar-pedido" class="btn-finalizar">
                 <i class="fab fa-whatsapp"></i> Finalizar Pedido (WhatsApp)
             </button>
         </div>
-
     </div>
 </div>
 
 <!-- ====== MODAL ADICIONAIS ====== -->
-<div id="customizacao-modal" class="modal">
+<div id="customizacao-modal" class="modal" style="display:none">
     <div class="modal-content modal-adicionais-content">
 
-        <!-- Header -->
         <div class="modal-header">
             <div>
                 <h3 class="modal-titulo">Adicionais</h3>
                 <p class="modal-subtitulo" id="item-customizacao-nome"></p>
             </div>
-            <button class="modal-fechar fechar-customizacao" title="Fechar">
+            <button class="modal-fechar fechar-customizacao">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <!-- Lista de adicionais -->
-        <div class="adicionais-lista" id="adicionais-opcoes-lista"></div>
+        <div class="adicionais-opcoes">
+            <h4 style="padding:0 18px;font-size:12px;color:hsl(var(--muted-foreground));font-weight:600;text-transform:uppercase;letter-spacing:.5px">
+                Adicionais:
+            </h4>
+            <div id="adicionais-opcoes-lista"></div>
+        </div>
 
-        <!-- Resumo -->
         <div class="adicionais-resumo">
             <div class="resumo-linha">
                 <span>Preço base</span>
@@ -102,10 +101,8 @@
             </div>
         </div>
 
-        <!-- Botão confirmar -->
         <button id="btn-adicionar-customizado" class="btn-confirmar-adicional">
             <i class="fas fa-plus"></i> Adicionar ao Carrinho
         </button>
-
     </div>
 </div>
