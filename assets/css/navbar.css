@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════
-   NAVBAR — Design System v2.0
+   NAVBAR — JottaV Burguer v3.3
+   Esquerda: logo + nome | Direita: home + carrinho
 ═══════════════════════════════════════ */
 
-/* ── TOP NAV ── */
 .navbar {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -10,13 +10,14 @@
     background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid hsl(var(--border) / .6);
+    border-bottom: 1px solid hsl(var(--border) / .5);
     z-index: 9000;
 }
 
 .navbar-content-wrapper {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: 100%;
     max-width: 1280px;
     margin: 0 auto;
@@ -24,148 +25,121 @@
     gap: 12px;
 }
 
-/* Logo */
-.logo {
+/* ── ESQUERDA: logo + nome ── */
+.navbar-logo-link {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-shrink: 0;
     text-decoration: none;
+    flex-shrink: 0;
 }
-.logo img {
-    width: 36px; height: 36px;
+
+.navbar-logo-img {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    background: hsl(var(--primary) / .15);
-    border: 1px solid hsl(var(--primary) / .3);
+    border: 1.5px solid hsl(var(--primary) / .35);
+    background: hsl(var(--primary) / .1);
+    flex-shrink: 0;
 }
-.logo-nome {
+
+.navbar-brand-name {
     font-size: 14px;
     font-weight: 700;
     color: hsl(var(--foreground));
-    display: none;
-}
-
-/* Pills de categoria (desktop) */
-.navbar-pills {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding: 0 8px;
-}
-.navbar-pills::-webkit-scrollbar { display: none; }
-
-.cat-pill {
-    display: inline-block;
-    padding: 5px 14px;
-    border-radius: 20px;
-    border: 1px solid hsl(var(--border));
-    background: transparent;
-    color: hsl(var(--muted-foreground));
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: .18s ease;
     white-space: nowrap;
-    text-decoration: none;
-    flex-shrink: 0;
-}
-.cat-pill:hover {
-    border-color: hsl(var(--primary) / .4);
-    color: hsl(var(--foreground));
-    background: hsl(var(--primary) / .08);
-}
-.cat-pill.ativo {
-    background: hsl(var(--primary));
-    border-color: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-    font-weight: 600;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Ações */
-.header-actions {
+/* ── DIREITA: home + carrinho ── */
+.navbar-actions {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
 }
 
-.carrinho-btn {
+.navbar-home-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: hsl(var(--muted-foreground));
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: color .18s, background .18s;
+}
+
+.navbar-home-btn:hover {
+    color: hsl(var(--foreground));
+    background: hsl(var(--secondary));
+}
+
+.navbar-home-btn span {
+    display: none; /* oculto mobile, aparece no desktop */
+}
+
+@media (min-width: 480px) {
+    .navbar-home-btn span { display: inline; }
+}
+
+.navbar-cart-btn {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px; height: 38px;
-    background: hsl(var(--primary) / .12);
-    border: 1px solid hsl(var(--primary) / .35);
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
+    border: 1.5px solid hsl(var(--primary) / .35);
+    background: hsl(var(--primary) / .1);
     color: hsl(var(--primary));
     cursor: pointer;
-    position: relative;
-    transition: .18s ease;
-    font-size: 15px;
+    transition: background .18s, transform .18s;
 }
-.carrinho-btn:hover {
+
+.navbar-cart-btn:hover {
     background: hsl(var(--primary) / .2);
     transform: scale(1.05);
 }
 
-#contador-carrinho {
+.navbar-cart-badge {
     position: absolute;
-    top: -4px; right: -4px;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 3px;
+    border-radius: 9px;
     background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
+    color: white;
     font-size: 9px;
     font-weight: 800;
-    min-width: 18px; height: 18px;
-    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 3px;
     border: 2px solid hsl(var(--background));
+    font-family: 'Inter', sans-serif;
 }
 
-.hamburger-menu-btn { display: none; }
-.nav-links { display: none; }
-
-/* ── RESPONSIVO ── */
-@media (max-width: 374px) {
-    .navbar-content-wrapper { padding: 0 10px; }
-}
-
-@media (max-width: 767px) {
-    .navbar-pills { display: none; }
-    .logo-nome { display: block; }
-}
-
+/* ── DESKTOP ── */
 @media (min-width: 768px) {
     .navbar {
         height: var(--nav-height-desktop, 62px);
     }
-    .logo img { width: 40px; height: 40px; }
-    .carrinho-btn { width: 44px; height: 44px; }
-    .logo-nome { display: block; }
-    /* Sidebar está presente — pills ocultas */
-    .navbar-pills { display: none; }
-}
-
-/* Botão Início (ghost) */
-.inicio-btn {
-    font-size: 14px;
-    font-weight: 500;
-    color: hsl(var(--muted-foreground));
-    text-decoration: none;
-    padding: 6px 10px;
-    border-radius: 8px;
-    transition: color .18s, background .18s;
-    display: none; /* oculto no mobile */
-}
-.inicio-btn:hover { color: hsl(var(--foreground)); background: hsl(var(--secondary)); }
-
-@media (min-width: 768px) {
-    .inicio-btn { display: inline-block; }
+    .navbar-logo-img {
+        width: 40px;
+        height: 40px;
+    }
+    .navbar-brand-name {
+        font-size: 15px;
+    }
+    .navbar-cart-btn {
+        width: 44px;
+        height: 44px;
+    }
 }
