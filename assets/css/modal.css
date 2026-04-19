@@ -1,21 +1,20 @@
 /* ==========================================
-   MODAL.CSS — JottaV Burguer v3.1
+   MODAL.CSS — JottaV Burguer v3.2
+   BUG FIX: display:none corrigido no mobile
    ========================================== */
 
-/* ==========================================
-   BASE MODAL
-   ========================================== */
-
+/* BASE — nunca exibe por padrão */
 .modal {
     display: none;
     position: fixed;
     z-index: 10000;
     inset: 0;
-    background: hsl(0 0% 0% / .75);
+    background: hsl(0 0% 0% / .78);
     overflow-y: auto;
-    padding: 16px;
+    padding: 20px 16px;
 }
 
+/* Exibe apenas quando ativo */
 .modal.ativo { display: block; }
 
 .modal-content {
@@ -26,19 +25,22 @@
     max-width: 480px;
     margin: 0 auto;
     overflow: hidden;
-    position: relative;
-    animation: modalSlideUp .3s ease;
+    animation: modalFadeUp .28s ease;
 }
 
-@keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(24px); }
+@keyframes modalFadeUp {
+    from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Mobile: bottom sheet */
+/* Mobile: bottom sheet SEM mudar display */
 @media (max-width: 600px) {
     .modal {
         padding: 0;
+        /* NÃO colocar display:flex aqui — quebra o display:none */
+        align-items: flex-end;
+    }
+    .modal.ativo {
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
@@ -51,21 +53,17 @@
         width: 100%;
         max-width: 100%;
     }
-    @keyframes modalSlideUp {
-        from { opacity: 0; transform: translateY(100%); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
 }
 
 /* ==========================================
-   HEADER DOS MODAIS
+   HEADER
    ========================================== */
 
 .modal-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 18px 18px 0;
+    padding: 16px 18px 0;
     gap: 12px;
 }
 
@@ -74,7 +72,6 @@
     font-weight: 700;
     color: hsl(var(--foreground));
     margin: 0;
-    line-height: 1.3;
 }
 
 .modal-subtitulo {
@@ -91,7 +88,6 @@
     flex-shrink: 0;
 }
 
-/* Botão X fechar */
 .modal-fechar {
     display: flex;
     align-items: center;
@@ -137,15 +133,11 @@
 }
 
 /* ==========================================
-   MODAL CARRINHO — CONTEÚDO
+   CARRINHO
    ========================================== */
 
-.modal-carrinho-content {
-    display: flex;
-    flex-direction: column;
-}
+.modal-carrinho-content { display: flex; flex-direction: column; }
 
-/* Estado vazio */
 .carrinho-vazio-state {
     display: flex;
     flex-direction: column;
@@ -154,12 +146,9 @@
     padding: 40px 20px;
     gap: 8px;
     color: hsl(var(--muted-foreground));
+    font-size: 14px;
 }
 
-.carrinho-vazio-emoji { font-size: 40px; }
-.carrinho-vazio-state p { font-size: 14px; margin: 0; }
-
-/* Lista de itens */
 .carrinho-itens {
     padding: 12px 18px;
     display: flex;
@@ -196,23 +185,15 @@
     overflow: hidden; text-overflow: ellipsis;
 }
 
-.item-adicionais {
-    display: flex; flex-direction: column; gap: 1px; margin-top: 3px;
-}
-
-.item-adicionais span { font-size: 11px; color: hsl(var(--muted-foreground)); }
+.item-adicionais { margin-top: 3px; }
+.item-adicionais span { font-size: 11px; color: hsl(var(--muted-foreground)); display: block; }
 
 .item-preco {
     font-size: 12px; font-weight: 700;
     color: hsl(var(--price)); margin-top: 3px; display: block;
 }
 
-.item-controles {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-}
+.item-controles { flex-shrink: 0; }
 
 .remover-item {
     display: flex; align-items: center; justify-content: center;
@@ -228,10 +209,8 @@
 .remover-item:hover {
     background: hsl(var(--destructive) / .1);
     color: hsl(var(--destructive));
-    border-color: hsl(var(--destructive) / .4);
 }
 
-/* Total */
 .carrinho-total-container {
     display: flex;
     justify-content: space-between;
@@ -242,10 +221,8 @@
 }
 
 .total-label { font-size: 14px; color: hsl(var(--muted-foreground)); }
-
 .total-valor { font-size: 18px; font-weight: 700; color: hsl(var(--price)); }
 
-/* Aviso taxa */
 .aviso-taxa-entrega {
     display: flex;
     align-items: flex-start;
@@ -255,16 +232,12 @@
     border-radius: 10px;
     padding: 10px 14px;
     margin: 10px 18px 0;
-    color: hsl(35 95% 40%);
+    color: hsl(35 70% 45%);
     font-size: 12px;
     line-height: 1.4;
 }
 
-.aviso-taxa-entrega i {
-    color: hsl(var(--accent));
-    font-size: 14px; flex-shrink: 0; margin-top: 1px;
-}
-
+.aviso-taxa-entrega i { color: hsl(var(--accent)); font-size: 14px; flex-shrink: 0; }
 .aviso-taxa-entrega strong { color: hsl(var(--accent)); }
 
 /* Formulário */
@@ -275,11 +248,7 @@
     gap: 8px;
 }
 
-.form-titulo {
-    font-size: 13px; font-weight: 600;
-    color: hsl(var(--foreground)); margin: 0;
-}
-
+.form-titulo { font-size: 13px; font-weight: 600; color: hsl(var(--foreground)); margin: 0; }
 .form-opcional { font-weight: 400; color: hsl(var(--muted-foreground)); font-size: 11px; }
 
 .carrinho-finalizar input,
@@ -302,9 +271,7 @@
 
 .carrinho-finalizar input:focus,
 .carrinho-finalizar select:focus,
-.carrinho-finalizar textarea:focus {
-    border-color: hsl(var(--primary) / .5);
-}
+.carrinho-finalizar textarea:focus { border-color: hsl(var(--primary) / .5); }
 
 .carrinho-finalizar textarea { resize: none; line-height: 1.5; }
 
@@ -326,12 +293,11 @@
     font-size: 12px; font-weight: 500;
     cursor: pointer; width: 100%;
     font-family: 'Inter', sans-serif;
-    transition: border-color .15s, color .15s;
     text-align: left;
+    transition: border-color .15s, color .15s;
 }
 
 .btn-localizacao:hover { border-color: hsl(var(--primary) / .5); color: hsl(var(--foreground)); }
-
 .localizacao-status { font-size: 12px; color: hsl(var(--muted-foreground)); margin: 0; min-height: 16px; }
 
 .btn-finalizar {
@@ -348,22 +314,16 @@
 .btn-finalizar:active { transform: scale(0.98); }
 
 /* ==========================================
-   MODAL ADICIONAIS — CONTEÚDO
+   ADICIONAIS
    ========================================== */
 
-.modal-adicionais-content {
-    display: flex;
-    flex-direction: column;
-}
+.modal-adicionais-content { display: flex; flex-direction: column; }
 
-.adicionais-lista {
-    padding: 12px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 40vh;
-    overflow-y: auto;
-}
+.adicionais-opcoes { padding: 12px 0; }
+
+.adicionais-opcoes h4 { padding: 0 18px 8px; }
+
+#adicionais-opcoes-lista { padding: 0 18px; display: flex; flex-direction: column; gap: 6px; max-height: 40vh; overflow-y: auto; }
 
 .adicional-option {
     display: flex;
@@ -392,17 +352,12 @@
 .adicional-option label {
     flex: 1; display: flex;
     justify-content: space-between;
-    align-items: center; cursor: pointer;
-    gap: 8px;
+    align-items: center; cursor: pointer; gap: 8px;
 }
 
-.adicional-nome { font-size: 13px; color: hsl(var(--foreground)); font-weight: 500; }
-
-.adicional-preco { font-size: 12px; font-weight: 700; color: hsl(var(--primary)); white-space: nowrap; }
-
-/* Resumo adicionais */
+/* Resumo */
 .adicionais-resumo {
-    margin: 0 18px 0;
+    margin: 12px 18px 0;
     padding: 12px 14px;
     background: hsl(var(--secondary) / .5);
     border: 1px solid hsl(var(--border) / .5);
@@ -425,7 +380,6 @@
 
 .resumo-total span:last-child { color: hsl(var(--price)); }
 
-/* Botão confirmar adicionais */
 .btn-confirmar-adicional {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     background: hsl(var(--primary)); color: white;
