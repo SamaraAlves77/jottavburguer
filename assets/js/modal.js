@@ -1,16 +1,17 @@
-// modal_carrinho.js - Lógica de UI do Carrinho, Checkout e Geolocalização
+// modal.js — JottaV Burguer v3.1
+// Carrinho, Checkout, Geolocalização
 
-// =======================================================
-// VARIÁVEIS DE ESTADO E REFERÊNCIAS DO DOM (Globais)
-// =======================================================
-let carrinhoModal, fecharModalBtn, carrinhoBtn, contadorCarrinho, fabCarrinho, fabContadorCarrinho, carrinhoItensContainer, carrinhoTotalSpan, notificacao, btnFinalizar, customizacaoModal, fecharCustomizacaoBtn, btnAdicionarCustomizado, listaAdicionaisContainer;
-let btnAnexarLocalizacao;
-let localizacaoStatus;
+let carrinhoModal, fecharModalBtn, carrinhoBtn, contadorCarrinho,
+    fabCarrinho, fabContadorCarrinho, carrinhoItensContainer,
+    carrinhoTotalSpan, notificacao, btnFinalizar,
+    customizacaoModal, fecharCustomizacaoBtn, btnAdicionarCustomizado,
+    listaAdicionaisContainer, btnAnexarLocalizacao, localizacaoStatus;
+
 let coordenadasEnviadas = '';
 
-// =======================================================
-// FUNÇÕES DE UTILIDADE E UI
-// =======================================================
+// ==========================================
+// UTILITÁRIOS
+// ==========================================
 
 function mostrarModal(modalElement, mostrar) {
     if (!modalElement) return;
@@ -19,126 +20,142 @@ function mostrarModal(modalElement, mostrar) {
 }
 
 function formatarMoeda(valor) {
-    const num = parseFloat(valor) || 0;
-    return num.toFixed(2).replace('.', ',');
+    return parseFloat(valor || 0).toFixed(2).replace('.', ',');
 }
 
-function showNotification(message) {
-    if (!notificacao) return;
-    notificacao.textContent = message;
-    notificacao.classList.add('show');
-    setTimeout(() => {
-        notificacao.classList.remove('show');
-    }, 2000);
+function showNotification(msg) {
+    const el = document.getElementById('notificacao');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
 }
 
 function updateContadorCarrinho() {
-    const totalItens = (carrinho || []).reduce((acc, item) => acc + (item.quantidade || 0), 0);
-    if (contadorCarrinho) contadorCarrinho.textContent = totalItens;
-    if (fabContadorCarrinho) fabContadorCarrinho.textContent = totalItens;
+    const total = (window.carrinho || []).reduce((s, i) => s + (i.quantidade || 0), 0);
+    if (contadorCarrinho)       contadorCarrinho.textContent = total;
+    if (fabContadorCarrinho)    fabContadorCarrinho.textContent = total;
     const bottomBadge = document.getElementById('bottom-nav-badge');
     if (bottomBadge) {
-        bottomBadge.textContent = totalItens;
-        bottomBadge.style.display = totalItens > 0 ? 'flex' : 'none';
+        bottomBadge.textContent = total;
+        bottomBadge.style.display = total > 0 ? 'flex' : 'none';
     }
 }
+
+// ==========================================
+// RENDERIZAR CARRINHO
+// ==========================================
 
 function renderizarCarrinho() {
     if (!carrinhoItensContainer || !carrinhoTotalSpan) return;
 
     carrinhoItensContainer.innerHTML = '';
-    let totalCarrinho = 0;
+    const vazioMsg = document.getElementById('carrinho-vazio-msg');
+    const finalizarEl = document.getElementById('carrinho-finalizar');
+    const totalContainer = document.getElementById('carrinho-total-container');
+    const btnLimpar = document.getElementById('btn-limpar-carrinho');
 
-    if (carrinho.length === 0) {
-        carrinhoItensContainer.innerHTML = '<p class="carrinho-vazio">Seu carrinho está vazio.</p>';
-        carrinhoTotalSpan.textContent = formatarMoeda(0);
-        if (btnFinalizar) btnFinalizar.disabled = true;
+    if (!window.carrinho || window.carrinho.length === 0) {
+        if (vazioMsg)       vazioMsg.style.display = 'flex';
+        if (finalizarEl)    finalizarEl.style.display = 'none';
+        if (totalContainer) totalContainer.style.display = 'none';
+        if (btnLimpar)      btnLimpar.style.display = 'none';
+        carrinhoTotalSpan.textContent = '0,00';
         return;
     }
 
-    if (btnFinalizar) btnFinalizar.disabled = false;
+    if (vazioMsg)       vazioMsg.style.display = 'none';
+    if (finalizarEl)    finalizarEl.style.display = 'flex';
+    if (totalContainer) totalContainer.style.display = 'flex';
+    if (btnLimpar)      btnLimpar.style.display = 'flex';
 
-    carrinho.forEach((item, index) => {
-        // CORREÇÃO: usa nullish coalescing para evitar falsy 0
-        const precoUnitario = item.precoTotal ?? item.preco ?? 0;
-        const precoTotalItem = precoUnitario * item.quantidade;
-        totalCarrinho += precoTotalItem;
+    let total = 0;
 
-        const itemDiv = document.createElement('div');
-        itemDiv.classList.add('carrinho-item');
-        itemDiv.setAttribute('data-index', index);
+    window.carrinho.forEach((item, index) => {
+        const precoUnit  = item.precoTotal ?? item.preco ?? 0;
+        const precoTotal = precoUnit * item.quantidade;
+        total += precoTotal;
+
+        const imgSrc = item.imagem ? `imagens/${item.imagem}` : 'assets/img/hamburguer.png';
 
         let adicionaisHTML = '';
         if (item.adicionais && item.adicionais.length > 0) {
-            const adicionaisStr = item.adicionais.map(add =>
-                `<span>+ ${add.nome} (R$ ${formatarMoeda(add.preco)})</span>`
-            ).join('');
-            adicionaisHTML = `<div class="item-adicionais">${adicionaisStr}</div>`;
+            adicionaisHTML = `<div class="item-adicionais">
+                ${item.adicionais.map(a =>
+                    `<span>+ ${a.nome} (R$ ${formatarMoeda(a.preco)})</span>`
+                ).join('')}
+            </div>`;
         }
 
-        itemDiv.innerHTML = `
+        const div = document.createElement('div');
+        div.className = 'carrinho-item';
+        div.innerHTML = `
+            <img src="${imgSrc}" alt="${item.nome}" class="carrinho-item-img"
+                 onerror="this.src='assets/img/hamburguer.png'">
             <div class="item-info">
                 <span class="item-nome">${item.nome} (x${item.quantidade})</span>
-                <span class="item-preco">R$ ${formatarMoeda(precoTotalItem)}</span>
                 ${adicionaisHTML}
+                <span class="item-preco">R$ ${formatarMoeda(precoTotal)}</span>
             </div>
             <div class="item-controles">
-                <button class="remover-item" onclick="removerItem(${index})"><i class="fas fa-trash"></i></button>
+                <button class="remover-item" onclick="removerItem(${index})" title="Remover">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
         `;
-        carrinhoItensContainer.appendChild(itemDiv);
+        carrinhoItensContainer.appendChild(div);
     });
 
-    carrinhoTotalSpan.textContent = formatarMoeda(totalCarrinho);
+    carrinhoTotalSpan.textContent = formatarMoeda(total);
 }
 
 function removerItem(index) {
-    if (!carrinho || index < 0 || index >= carrinho.length) return;
-    carrinho.splice(index, 1);
-    try { localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho)); } catch(e) {}
+    if (!window.carrinho || index < 0 || index >= window.carrinho.length) return;
+    window.carrinho.splice(index, 1);
+    try { localStorage.setItem('carrinhoJottaV', JSON.stringify(window.carrinho)); } catch(e) {}
     renderizarCarrinho();
     updateContadorCarrinho();
-    showNotification('Item removido do carrinho!');
+    showNotification('Item removido!');
 }
 
-// =======================================================
-// LÓGICA DE GEOLOCALIZAÇÃO
-// =======================================================
+function limparCarrinho() {
+    window.carrinho = [];
+    try { localStorage.removeItem('carrinhoJottaV'); } catch(e) {}
+    renderizarCarrinho();
+    updateContadorCarrinho();
+}
+
+// ==========================================
+// GEOLOCALIZAÇÃO
+// ==========================================
 
 function solicitarLocalizacao() {
     if (!localizacaoStatus || !btnAnexarLocalizacao) return;
-
     coordenadasEnviadas = '';
-    localizacaoStatus.textContent = 'Buscando sua localização...';
+    localizacaoStatus.textContent = 'Buscando localização...';
+    localizacaoStatus.style.color = hslVar('muted-foreground');
     btnAnexarLocalizacao.disabled = true;
 
     if (!navigator.geolocation) {
-        localizacaoStatus.textContent = 'Geolocalização não é suportada pelo seu navegador.';
+        localizacaoStatus.textContent = 'Geolocalização não suportada neste navegador.';
         btnAnexarLocalizacao.disabled = false;
         return;
     }
 
     navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            // Salva as coordenadas REAIS do cliente
-            coordenadasEnviadas = `${lat},${lon}`;
-            localizacaoStatus.textContent = '✅ Localização anexada com sucesso!';
-            localizacaoStatus.style.color = '#45a135';
+        (pos) => {
+            coordenadasEnviadas = `${pos.coords.latitude},${pos.coords.longitude}`;
+            localizacaoStatus.textContent = '✅ Localização anexada!';
+            localizacaoStatus.style.color = 'hsl(142 70% 45%)';
             btnAnexarLocalizacao.disabled = false;
-            btnAnexarLocalizacao.innerHTML = '<i class="fas fa-check-circle"></i> Localização Anexada!';
+            btnAnexarLocalizacao.innerHTML = '<i class="fas fa-check-circle"></i> Localização Anexada';
         },
-        (error) => {
+        (err) => {
             coordenadasEnviadas = '';
-            let mensagemErro = 'Erro ao obter localização.';
-            if (error.code === error.PERMISSION_DENIED) {
-                mensagemErro = 'Permissão negada. Habilite a localização no seu navegador.';
-            } else if (error.code === error.TIMEOUT) {
-                mensagemErro = 'Tempo esgotado. Tente novamente.';
-            }
-            localizacaoStatus.textContent = mensagemErro;
-            localizacaoStatus.style.color = '#e53935';
+            localizacaoStatus.textContent = err.code === 1
+                ? 'Permissão negada. Habilite a localização.'
+                : 'Erro ao obter localização. Tente novamente.';
+            localizacaoStatus.style.color = 'hsl(0 72% 50%)';
             btnAnexarLocalizacao.disabled = false;
             btnAnexarLocalizacao.innerHTML = '<i class="fas fa-map-marker-alt"></i> Tentar Novamente';
         },
@@ -146,171 +163,128 @@ function solicitarLocalizacao() {
     );
 }
 
-// =======================================================
-// LÓGICA DE CHECKOUT (WhatsApp)
-// =======================================================
+function hslVar(name) {
+    return `hsl(${getComputedStyle(document.documentElement).getPropertyValue('--' + name).trim()})`;
+}
+
+// ==========================================
+// CHECKOUT / WHATSAPP
+// ==========================================
 
 function finalizarPedido() {
-    if (!carrinho || carrinho.length === 0) {
+    if (!window.carrinho || window.carrinho.length === 0) {
         alert('Seu carrinho está vazio!');
         return;
     }
 
-    const nomeInput = document.getElementById('nome-cliente');
-    const bairroInput = document.getElementById('bairro-cliente');
-    const enderecoInput = document.getElementById('endereco-cliente');
-    const pagamentoSelect = document.getElementById('forma-pagamento');
-    const observacoesInput = document.getElementById('observacoes-pedido');
+    const nome       = document.getElementById('nome-cliente')?.value.trim() || '';
+    const bairro     = document.getElementById('bairro-cliente')?.value.trim() || '';
+    const endereco   = document.getElementById('endereco-cliente')?.value.trim() || '';
+    const pagamento  = document.getElementById('forma-pagamento')?.value || '';
+    const obs        = document.getElementById('observacoes-pedido')?.value.trim() || '';
 
-    const nome = nomeInput ? nomeInput.value.trim() : '';
-    const bairro = bairroInput ? bairroInput.value.trim() : '';
-    const endereco = enderecoInput ? enderecoInput.value.trim() : '';
-    const pagamento = pagamentoSelect ? pagamentoSelect.value : '';
-    const observacoes = observacoesInput ? observacoesInput.value.trim() : '';
+    const wa  = window.siteConfig?.whatsapp_msg || {};
+    const SEP = wa.separador       || '━━━━━━━━━━━━━━━━━━━━━━';
+    const HDR = wa.header          || '🍔 *PEDIDO - JottaV BURGUER* 🍔';
 
-    // Usa config.json se disponível
-    const wa = (window.siteConfig && window.siteConfig.whatsapp) ? window.siteConfig.whatsapp : {};
-    const SEP  = wa.separador       || '━━━━━━━━━━━━━━━━━━━━━━';
-    const HDR  = wa.header          || '🍔 *PEDIDO - JottaV BURGUER* 🍔';
-    const LBL_DADOS = wa.label_dados || '*📋 DADOS DO CLIENTE:*';
-    const LBL_ITENS = wa.label_itens || '*🛒 ITENS DO PEDIDO:*';
-    const LBL_TOTAL = wa.label_total || '💵 *TOTAL DO PEDIDO:*';
-    const LBL_PAG   = wa.label_pagamento || '💳 *PAGAMENTO:*';
-    const LBL_OBS   = wa.label_observacoes || '📝 *OBSERVAÇÕES:*';
-    const LBL_TAXA  = wa.label_taxa  || '🛵 *TAXA DE ENTREGA:* A confirmar';
-    const LBL_TAXA_SUB = wa.label_taxa_sub || '_(Por favor, informe se há taxa de entrega para o endereço acima)_';
-    const LBL_LOC   = wa.label_localizacao || '📌 *LOCALIZAÇÃO DO CLIENTE:*';
-    const CIDADE    = wa.cidade      || '';
-    const NUMERO    = wa.numero      || '';
-
-    // Cabeçalho
-    let mensagem = `${HDR}\n`;
-    mensagem += `${SEP}\n`;
-    mensagem += `${LBL_DADOS}\n`;
-    mensagem += `👤 *Nome:* ${nome || 'Não informado'}\n`;
-    mensagem += `📍 *Bairro:* ${bairro || 'Não informado'}\n`;
-    mensagem += `🏠 *Endereço:* ${endereco || 'Não informado'}\n`;
-    mensagem += `${SEP}\n`;
-
-    // Itens do pedido
-    mensagem += `${LBL_ITENS}\n\n`;
+    let msg = `${HDR}\n${SEP}\n`;
+    msg += `*📋 DADOS DO CLIENTE:*\n`;
+    msg += `👤 *Nome:* ${nome || 'Não informado'}\n`;
+    msg += `📍 *Bairro:* ${bairro || 'Não informado'}\n`;
+    msg += `🏠 *Endereço:* ${endereco || 'Não informado'}\n`;
+    msg += `${SEP}\n*🛒 ITENS DO PEDIDO:*\n\n`;
 
     let totalPedido = 0;
 
-    carrinho.forEach((item, index) => {
-        // CORREÇÃO: usa nullish coalescing para preço correto
-        const precoBase = item.preco ?? 0;
-        const precoComAdicionais = item.precoTotal ?? precoBase;
-        const totalItem = precoComAdicionais * item.quantidade;
+    window.carrinho.forEach((item, i) => {
+        const precoBase     = item.preco ?? 0;
+        const precoComAdd   = item.precoTotal ?? precoBase;
+        const totalItem     = precoComAdd * item.quantidade;
         totalPedido += totalItem;
 
-        // Item com adicionais: mostra base + adicionais + subtotal
         if (item.adicionais && item.adicionais.length > 0) {
-            mensagem += `*${index + 1}. ${item.nome}* (x${item.quantidade})\n`;
-            mensagem += `   Preço base: R$ ${formatarMoeda(precoBase)}\n`;
-            item.adicionais.forEach(add => {
-                mensagem += `   ➕ ${add.nome}: R$ ${formatarMoeda(add.preco)}\n`;
-            });
-            mensagem += `   💰 Subtotal: *R$ ${formatarMoeda(totalItem)}*\n\n`;
+            msg += `*${i + 1}. ${item.nome}* (x${item.quantidade})\n`;
+            msg += `   Base: R$ ${formatarMoeda(precoBase)}\n`;
+            item.adicionais.forEach(a => { msg += `   ➕ ${a.nome}: R$ ${formatarMoeda(a.preco)}\n`; });
+            msg += `   💰 Subtotal: *R$ ${formatarMoeda(totalItem)}*\n\n`;
         } else {
-            // Item simples: mostra direto
-            mensagem += `*${index + 1}. ${item.nome}* (x${item.quantidade}) — R$ ${formatarMoeda(totalItem)}\n\n`;
+            msg += `*${i + 1}. ${item.nome}* (x${item.quantidade}) — R$ ${formatarMoeda(totalItem)}\n\n`;
         }
     });
 
-    mensagem += `${SEP}\n`;
-    mensagem += `${LBL_TOTAL} R$ ${formatarMoeda(totalPedido)}\n`;
-    mensagem += `${LBL_PAG} ${pagamento ? pagamento.replace('_', ' ').toUpperCase() : 'Não escolhido'}\n`;
+    msg += `${SEP}\n`;
+    msg += `💵 *TOTAL:* R$ ${formatarMoeda(totalPedido)}\n`;
+    msg += `💳 *PAGAMENTO:* ${pagamento ? pagamento.replace(/_/g, ' ').toUpperCase() : 'Não informado'}\n`;
+    if (obs) msg += `📝 *OBS:* ${obs}\n`;
+    msg += `${SEP}\n🛵 *TAXA DE ENTREGA:* A confirmar\n${SEP}\n`;
 
-    if (observacoes) {
-        mensagem += `${LBL_OBS} ${observacoes}\n`;
-    }
-
-    // Taxa de entrega
-    mensagem += `${SEP}\n`;
-    mensagem += `${LBL_TAXA}\n`;
-    mensagem += `${LBL_TAXA_SUB}\n`;
-
-    // Localização: GPS (se anexado) OU endereço digitado como fallback
-    mensagem += `${SEP}\n`;
-    mensagem += `${LBL_LOC}\n`;
-
+    // Localização
+    msg += `📌 *LOCALIZAÇÃO:*\n`;
     if (coordenadasEnviadas) {
-        const urlMaps = `https://www.google.com/maps?q=${coordenadasEnviadas}`;
-        const urlWaze = `https://waze.com/ul?ll=${coordenadasEnviadas}&navigate=yes`;
-        mensagem += `🗺️ Google Maps: ${urlMaps}\n`;
-        mensagem += `🚗 Waze: ${urlWaze}\n`;
+        msg += `🗺️ Google Maps: https://www.google.com/maps?q=${coordenadasEnviadas}\n`;
+        msg += `🚗 Waze: https://waze.com/ul?ll=${coordenadasEnviadas}&navigate=yes\n`;
+    } else if (endereco || bairro) {
+        const cidade  = window.siteConfig?.negocio?.cidade || '';
+        const estado  = window.siteConfig?.negocio?.estado || '';
+        const local   = [endereco, bairro, cidade, estado].filter(Boolean).join(', ');
+        const q       = encodeURIComponent(local);
+        msg += `🗺️ Google Maps: https://www.google.com/maps/search/?q=${q}\n`;
+        msg += `🚗 Waze: https://waze.com/ul?q=${q}\n`;
+        msg += `_(Gerado pelo endereço informado)_\n`;
     } else {
-        const enderecoTexto = [endereco, bairro].filter(Boolean).join(', ');
-        if (enderecoTexto) {
-            const cidade = window.siteConfig?.negocio?.cidade || 'sua cidade';
-            const estado = window.siteConfig?.negocio?.estado || '';
-            const localidade = estado ? `${cidade}, ${estado}` : cidade;
-            const query = encodeURIComponent(enderecoTexto + ', ' + localidade);
-            const urlMaps = `https://www.google.com/maps/search/?q=${query}`;
-            const urlWaze = `https://waze.com/ul?q=${query}`;
-            mensagem += `🗺️ Google Maps: ${urlMaps}\n`;
-            mensagem += `🚗 Waze: ${urlWaze}\n`;
-            mensagem += `_(Gerado pelo endereço informado)_\n`;
-        } else {
-            mensagem += `_(Localização não informada)_\n`;
-        }
+        msg += `_(Localização não informada)_\n`;
     }
 
-    // Número do WhatsApp do config (sem hardcode)
-    const numero = window.siteConfig?.negocio?.whatsapp
-        || window.siteConfig?.whatsapp?.numero
-        || '';
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, '_blank');
+    const numero = window.siteConfig?.negocio?.whatsapp || '';
+    window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
 
-    // Limpa o carrinho (memória + localStorage)
-    carrinho = [];
-    try { localStorage.removeItem('carrinhoJottaV'); } catch(e) {}
-    renderizarCarrinho();
-    updateContadorCarrinho();
+    // Limpa carrinho
+    limparCarrinho();
     mostrarModal(carrinhoModal, false);
 
-    // Reseta o botão de localização
+    // Reset localização
     coordenadasEnviadas = '';
     if (btnAnexarLocalizacao) {
         btnAnexarLocalizacao.innerHTML = '<i class="fas fa-map-marker-alt"></i> Anexar Localização (Opcional)';
         btnAnexarLocalizacao.disabled = false;
     }
-    if (localizacaoStatus) {
-        localizacaoStatus.textContent = '';
-        localizacaoStatus.style.color = '';
-    }
+    if (localizacaoStatus) { localizacaoStatus.textContent = ''; }
 }
 
-// =======================================================
+// ==========================================
 // INICIALIZAÇÃO
-// =======================================================
+// ==========================================
 
 function init() {
-    // Garantir que carrinho existe antes de usar
-    if (typeof carrinho === 'undefined') window.carrinho = [];
+    if (typeof window.carrinho === 'undefined') window.carrinho = [];
 
-    carrinhoModal = document.getElementById('carrinho-modal');
-    fecharModalBtn = carrinhoModal ? carrinhoModal.querySelector('.fechar-modal') : null;
-    carrinhoItensContainer = document.getElementById('carrinho-itens');
-    carrinhoTotalSpan = document.getElementById('carrinho-total');
-    btnFinalizar = document.getElementById('btn-finalizar-pedido');
-    btnAnexarLocalizacao = document.getElementById('btn-anexar-localizacao');
-    localizacaoStatus = document.getElementById('localizacao-status');
+    carrinhoModal           = document.getElementById('carrinho-modal');
+    fecharModalBtn          = carrinhoModal?.querySelector('.fechar-modal');
+    carrinhoItensContainer  = document.getElementById('carrinho-itens');
+    carrinhoTotalSpan       = document.getElementById('carrinho-total');
+    btnFinalizar            = document.getElementById('btn-finalizar-pedido');
+    btnAnexarLocalizacao    = document.getElementById('btn-anexar-localizacao');
+    localizacaoStatus       = document.getElementById('localizacao-status');
+    customizacaoModal       = document.getElementById('customizacao-modal');
+    fecharCustomizacaoBtn   = customizacaoModal?.querySelector('.fechar-customizacao');
+    btnAdicionarCustomizado = document.getElementById('btn-adicionar-customizado');
 
     renderizarCarrinho();
     updateContadorCarrinho();
 
-    if (fecharModalBtn) {
-        fecharModalBtn.addEventListener('click', () => mostrarModal(carrinhoModal, false));
-    }
-    if (btnFinalizar) {
-        btnFinalizar.addEventListener('click', finalizarPedido);
-    }
-    if (btnAnexarLocalizacao) {
-        btnAnexarLocalizacao.addEventListener('click', solicitarLocalizacao);
-    }
+    fecharModalBtn?.addEventListener('click', () => mostrarModal(carrinhoModal, false));
+    fecharCustomizacaoBtn?.addEventListener('click', () => mostrarModal(customizacaoModal, false));
+    btnFinalizar?.addEventListener('click', finalizarPedido);
+    btnAnexarLocalizacao?.addEventListener('click', solicitarLocalizacao);
+
+    document.getElementById('btn-limpar-carrinho')?.addEventListener('click', limparCarrinho);
+
+    // Fechar modal clicando fora
+    [carrinhoModal, customizacaoModal].forEach(modal => {
+        modal?.addEventListener('click', (e) => {
+            if (e.target === modal) mostrarModal(modal, false);
+        });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', init);
