@@ -1,263 +1,112 @@
-// index.js - Ponto de Entrada, Carregamento de Componentes e Setup
+/* =========================
+   APP.JS — VERSÃO LIMPA E CORRIGIDA
+   ========================= */
 
-// =======================================================
-// FUNÇÕES DE CARREGAMENTO DINÂMICO DE HTML (Fetch)
-// =======================================================
+// Estado global do carrinho
+window.carrinho = window.carrinho || [];
 
-async function loadHTML(url, elementId) {
-    const element = document.getElementById(elementId);
-    if (!element) {
-        // Se o elemento não existe (ex: modal_carrinho.html no index.html), ignora.
-        if (url === 'components/navbar.html' || url === 'components/modal.html') return true; 
-        console.error(`Contêiner de destino '${elementId}' não encontrado.`);
-        return false;
-    }
-    
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.warn(`Aviso: Arquivo ${url} não encontrado, mas a execução continua.`);
-            return false;
-        }
-        element.innerHTML = await response.text();
-        return true;
-    } catch (e) {
-        console.error(`Erro ao carregar ${url}:`, e);
-        return false;
-    }
+/* =========================
+   ATUALIZAR CONTADOR
+   ========================= */
+function atualizarContadorCarrinho() {
+    const contador = document.getElementById('contador-carrinho');
+    if (!contador) return;
+
+    contador.textContent = window.carrinho.length;
 }
 
-// =======================================================
-// FUNÇÕES DE UTILIDADE E SETUP
-// =======================================================
-
-function rebindElements() {
-    // Esta função encontra e atribui todas as variáveis DOM globais de todos os arquivos.
-    
-    // modal_carrinho.js DOM
-    carrinhoModal = document.getElementById('carrinho-modal');
-    fecharModalBtn = document.querySelector('.fechar-modal');
-    carrinhoBtn = document.getElementById('carrinho-btn');
-    contadorCarrinho = document.getElementById('contador-carrinho');
-    fabCarrinho = document.getElementById('fab-carrinho');
-    fabContadorCarrinho = document.getElementById('fab-contador-carrinho');
-    carrinhoItensContainer = document.getElementById('carrinho-itens');
-    carrinhoTotalSpan = document.getElementById('carrinho-total');
-    notificacao = document.getElementById('notificacao');
-    
-    // Elementos do Checkout
-    btnFinalizar = document.getElementById('btn-finalizar-pedido');
-    btnAnexarLocalizacao = document.getElementById('btn-anexar-localizacao');
-    localizacaoStatus = document.getElementById('localizacao-status');
-
-    // Elementos do Modal de Customização
-    customizacaoModal = document.getElementById('customizacao-modal');
-    fecharCustomizacaoBtn = document.querySelector('.fechar-customizacao');
-    btnAdicionarCustomizado = document.getElementById('btn-adicionar-customizado');
-    listaAdicionaisContainer = document.getElementById('adicionais-opcoes-lista');
-
-    // Navbar:
-    navLinks = document.querySelector('.nav-links');
-    hamburgerBtn = document.getElementById('hamburger-menu-btn');
-    
-    // Admin (cardapio.js):
-    // rebindAdminElements(); // Chamado em checkAdminAccess se for o caso.
-}
-
-
-// NOVO: EFEITO DE SCROLL DA NAVBAR (Sticky Shadow)
-function handleNavbarScroll() {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-        if (window.scrollY > 50) { // Adiciona a classe após rolar 50px
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
+/* =========================
+   ABRIR MODAL CARRINHO
+   ========================= */
+function abrirCarrinho() {
+    const modal = document.getElementById('carrinho-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        renderizarCarrinho();
     }
 }
 
-// NOVO: LÓGICA DE ANIMAÇÃO DO FAB (Feedback Visual)
-function pulseFab() {
-    if (fabCarrinho) {
-        fabCarrinho.classList.remove('pulsing'); 
-        // Força o reflow para reiniciar a animação CSS
-        void fabCarrinho.offsetWidth; 
-        fabCarrinho.classList.add('pulsing');
-        setTimeout(() => {
-            fabCarrinho.classList.remove('pulsing');
-        }, 1000); 
+/* =========================
+   FECHAR MODAL
+   ========================= */
+function fecharCarrinho() {
+    const modal = document.getElementById('carrinho-modal');
+    if (modal) {
+        modal.style.display = 'none';
     }
 }
 
+/* =========================
+   RENDERIZAR CARRINHO
+   ========================= */
+function renderizarCarrinho() {
+    const container = document.getElementById('carrinho-itens');
+    const totalEl = document.getElementById('carrinho-total');
 
-function setupEventListeners() {
-    // Listeners do Modal de Carrinho (modal_carrinho.js)
-    if (fecharModalBtn) fecharModalBtn.addEventListener('click', () => mostrarModal(carrinhoModal, false));
-    if (carrinhoBtn) carrinhoBtn.addEventListener('click', () => {
-        // Função que renderiza o carrinho, definida em modal_carrinho.js
-        if (typeof renderizarCarrinho === 'function') renderizarCarrinho(); 
-        mostrarModal(carrinhoModal, true);
+    if (!container || !totalEl) return;
+
+    container.innerHTML = '';
+
+    let total = 0;
+
+    window.carrinho.forEach(item => {
+        total += item.preco * item.quantidade;
+
+        const div = document.createElement('div');
+        div.className = 'carrinho-item';
+
+        div.innerHTML = `
+            <span>${item.nome}</span>
+            <span>R$ ${item.preco.toFixed(2)}</span>
+        `;
+
+        container.appendChild(div);
     });
-    if (fabCarrinho) fabCarrinho.addEventListener('click', () => {
-        if (typeof renderizarCarrinho === 'function') renderizarCarrinho(); 
-        mostrarModal(carrinhoModal, true);
-    });
-    
-    // Listeners do Modal de Customização (cardapio.js)
-    if (fecharCustomizacaoBtn) fecharCustomizacaoBtn.addEventListener('click', () => mostrarModal(customizacaoModal, false));
-    if (btnAdicionarCustomizado) btnAdicionarCustomizado.addEventListener('click', function(e) {
-        if (typeof adicionarItemCustomizadoAoCarrinho === 'function') {
-            adicionarItemCustomizadoAoCarrinho(e);
-        }
-    });    
-    
-    // Listeners do Checkout (modal_carrinho.js)
-    if (btnFinalizar) btnFinalizar.addEventListener('click', finalizarPedido);
-    if (btnAnexarLocalizacao) btnAnexarLocalizacao.addEventListener('click', solicitarLocalizacao);
-    
-    // Listener de Scroll para o efeito "Sticky Shadow" na Navbar
-    window.addEventListener('scroll', handleNavbarScroll);
-    
-    // Listeners da Navbar (navbar.js)
-    if (typeof setupNavbarEventListeners === 'function') {
-        setupNavbarEventListeners();
+
+    totalEl.textContent = total.toFixed(2);
+}
+
+/* =========================
+   ABRIR CATEGORIA
+   ========================= */
+function abrirCategoria(categoriaId) {
+    if (typeof window.renderizarCategoria === 'function') {
+        window.renderizarCategoria(categoriaId);
     }
 }
 
+/* =========================
+   BOTTOM NAV
+   ========================= */
+function renderizarBottomNav() {
+    const nav = document.getElementById('bottom-nav');
+    if (!nav) return;
 
-// =======================================================
-// FUNÇÃO DE INICIALIZAÇÃO PRINCIPAL
-// =======================================================
+    nav.innerHTML = `
+        <button onclick="abrirCategoria('hamburgueres')">🍔<br>Hamb</button>
+        <button onclick="abrirCategoria('combos')">🎯<br>Combo</button>
+        <button onclick="abrirCategoria('acompanhamentos')">🍟<br>Acomp</button>
+        <button onclick="abrirCategoria('bebidas')">🥤<br>Beb</button>
+    `;
+}
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // Carrega config.json primeiro
-    try {
-        const cfgResp = await fetch('data/config.json');
-        if (cfgResp.ok) window.siteConfig = await cfgResp.json();
-    } catch(e) { window.siteConfig = null; }
+/* =========================
+   EVENTOS INICIAIS
+   ========================= */
+document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. Carrega os componentes HTML
-    const navbarOK = await loadHTML('components/navbar.html', 'navbar-container');
-    const modalOK = await loadHTML('components/modal.html', 'modal-container');
-    
-    if (navbarOK && modalOK) {
-        
-        // 2. Re-liga os elementos injetados às variáveis JS
-        rebindElements();
+    atualizarContadorCarrinho();
+    renderizarBottomNav();
 
-        // 3. Injeta dados do negócio nos elementos dinâmicos
-        aplicarConfigNegocio();
-
-        // 4. Popula formas de pagamento do config
-        popularFormasPagamento();
-        
-        // 4. Carrega os dados do Cardápio (cardapio.js)
-        if (typeof carregarCardapio === 'function') {
-            await carregarCardapio(); 
-        }
-        
-        // 4. Configura os Listeners
-        setupEventListeners();
-        
-        // Garante que o contador inicial seja 0
-        updateContadorCarrinho();
-
-        // Scroll suave + highlight ativo no nav
-        setupNavScroll();
-        
-    } else {
-        console.error("Não foi possível carregar componentes essenciais.");
+    const btnCarrinho = document.getElementById('carrinho-btn');
+    if (btnCarrinho) {
+        btnCarrinho.addEventListener('click', abrirCarrinho);
     }
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('fechar-modal')) {
+            fecharCarrinho();
+        }
+    });
+
 });
-// SCROLL SUAVE + HIGHLIGHT ATIVO NO NAV
-function setupNavScroll() {
-    // Scroll suave ao clicar nas âncoras do nav
-    document.querySelectorAll('.nav-ancora').forEach(link => {
-        link.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href').replace('#', '');
-            const target = document.getElementById(targetId);
-            if (!target) return;
-
-            e.preventDefault();
-
-            // Fechar menu mobile se estiver aberto
-            const navLinks = document.querySelector('.nav-links');
-            if (navLinks?.classList.contains('active')) {
-                navLinks.classList.remove('active');
-            }
-
-            const offset = 120;
-            const top = target.getBoundingClientRect().top + window.scrollY - offset;
-
-            window.scrollTo({ top, behavior: 'smooth' });
-
-            // Atualiza destaque ativo
-            document.querySelectorAll('.nav-ancora').forEach(a => a.classList.remove('nav-ativo'));
-            this.classList.add('nav-ativo');
-        });
-    });
-
-    // Scroll spy — destaca o link ativo conforme rola a página
-    const secoes = ['hamburgueres-artesanais', 'combos-e-familia', 'acompanhamentos', 'bebidas']
-        .map(id => document.getElementById(id))
-        .filter(Boolean);
-
-    if (secoes.length === 0) return;
-
-    window.addEventListener('scroll', () => {
-        let atual = secoes[0]?.id;
-        secoes.forEach(sec => {
-            if (sec.getBoundingClientRect().top <= 140) atual = sec.id;
-        });
-
-        document.querySelectorAll('.nav-ancora').forEach(a => {
-            const href = a.getAttribute('href').replace('#', '');
-            a.classList.toggle('nav-ativo', href === atual);
-        });
-    }, { passive: true });
-}
-
-// Fim do index.js
-
-function aplicarConfigNegocio() {
-    const cfg = window.siteConfig;
-    if (!cfg) return;
-
-    const negocio = cfg.negocio || {};
-
-    // Título da página
-    if (negocio.nome) document.title = negocio.nome + ' — Cardápio';
-
-    // Logo e alt da navbar
-    const navLogo = document.getElementById('navbar-logo');
-    if (navLogo) {
-        if (negocio.logo) navLogo.src = negocio.logo;
-        if (negocio.nome) navLogo.alt = negocio.nome;
-    }
-
-    // Rodapé dinâmico
-    const footer = document.getElementById('footer-cardapio');
-    if (footer && negocio.nome) {
-        const ano = new Date().getFullYear();
-        footer.innerHTML = `<p>&copy; ${ano} ${negocio.nome}. Todos os direitos reservados.</p>`;
-    }
-}
-
-function popularFormasPagamento() {
-    const select = document.getElementById('forma-pagamento');
-    if (!select) return;
-    const opcoes = window.siteConfig?.pagamento || [
-        { valor: 'pix',            label: 'PIX',                                  ativo: true },
-        { valor: 'cartao_debito',  label: 'Cartão de Débito',                     ativo: true },
-        { valor: 'cartao_credito', label: 'Cartão de Crédito',                    ativo: true },
-        { valor: 'dinheiro',       label: 'Dinheiro (Avisar se precisar de troco)', ativo: true }
-    ];
-    select.innerHTML = '<option value="" disabled selected>Escolha a Forma de Pagamento</option>';
-    opcoes.filter(o => o.ativo !== false).forEach(op => {
-        const opt = document.createElement('option');
-        opt.value = op.valor;
-        opt.textContent = op.label;
-        select.appendChild(opt);
-    });
-}
