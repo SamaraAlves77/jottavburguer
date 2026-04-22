@@ -3,100 +3,90 @@
 // =======================================================
 let cardapioData = [];
 let carrinho = [];
-let adicionaisGlobais = [];
-let itemEmCustomizacao = null;
-
-const CATEGORIAS_CUSTOMIZAVEIS = ['hamburgueres-artesanais', 'acompanhamentos'];
-
-// 🔥 NOVO: controle de categoria ativa (modo app)
 let categoriaAtiva = null;
 
 // =======================================================
-// CARREGAMENTO
+// INIT
 // =======================================================
 async function carregarCardapio() {
-    try {
-        const response = await fetch('data/cardapio.json', { cache: 'no-store' });
-        cardapioData = await response.json();
-    } catch (e) {
-        console.error("Erro ao carregar cardápio:", e);
-        cardapioData = [];
-    }
+    const response = await fetch('data/cardapio.json');
+    cardapioData = await response.json();
 
-    carregarCarrinhoLocal();
-
-    // Define primeira categoria como padrão
     if (!categoriaAtiva && cardapioData.length > 0) {
         categoriaAtiva = cardapioData[0].id;
     }
 
+    carregarCarrinhoLocal();
     renderizarCardapio();
 }
 
 // =======================================================
-// RENDERIZAÇÃO PRINCIPAL (MODO APP)
+// RENDER PRINCIPAL (GRID)
 // =======================================================
 function renderizarCardapio() {
     const container = document.getElementById('main-content-container');
-    if (!container) return;
-
     container.innerHTML = '';
 
-    // 🔥 FILTRA APENAS UMA CATEGORIA
-    const secoes = cardapioData.filter(s => s.id === categoriaAtiva);
+    const secao = cardapioData.find(s => s.id === categoriaAtiva);
+    if (!secao) return;
 
-    secoes.forEach(secao => {
-        const section = document.createElement('section');
-        section.classList.add('menu-section');
+    const section = document.createElement('section');
+    section.classList.add('menu-section');
 
-        section.innerHTML = `
-            <h2 class="section-title">${secao.nome}</h2>
+    section.innerHTML = `
+        <h2 class="section-title">${secao.nome}</h2>
 
-            <div class="cardapio-lista">
-                ${secao.itens.map(item => {
-                    const preco = (item.preco || 0).toFixed(2).replace('.', ',');
+        <div class="cardapio-grid">
+            ${secao.itens.map(item => criarCardHTML(item, secao.id)).join('')}
+        </div>
+    `;
 
-                    return `
-                        <div class="item-row">
-                            <img src="${item.imagem ? 'imagens/'+item.imagem : 'assets/img/hamburguer.png'}">
+    container.appendChild(section);
 
-                            <div class="item-info">
-                                <h3>${item.nome}</h3>
-                                <p>${item.descricao || ''}</p>
-                                <span class="preco">R$ ${preco}</span>
-                            </div>
-
-                            <button class="btn-add"
-                                data-id="${item.id}"
-                                data-cat="${secao.id}">
-                                +
-                            </button>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-        `;
-
-        container.appendChild(section);
-    });
-
-    bindBotoes();
+    bindEventosCards();
     renderizarCategoriasPills();
 }
 
 // =======================================================
-// EVENTOS BOTÕES
+// TEMPLATE DO CARD (USA SEU CSS)
 // =======================================================
-function bindBotoes() {
-    document.querySelectorAll('.btn-add').forEach(btn => {
+function criarCardHTML(item, categoriaId) {
+    const preco = (item.preco || 0).toFixed(2).replace('.', ',');
+
+    return `
+        <div class="item-card" data-id="${item.id}" data-cat="${categoriaId}">
+            
+            <div class="card-img-wrapper">
+                <img src="${item.imagem ? 'imagens/' + item.imagem : 'assets/img/hamburguer.png'}">
+            </div>
+
+            <div class="card-body">
+                <div class="card-nome">${item.nome}</div>
+                <div class="card-desc">${item.descricao || ''}</div>
+            </div>
+
+            <div class="card-footer">
+                <span class="card-preco">R$ ${preco}</span>
+                <button class="card-btn">Adicionar</button>
+            </div>
+        </div>
+    `;
+}
+
+// =======================================================
+// EVENTOS
+// =======================================================
+function bindEventosCards() {
+    document.querySelectorAll('.card-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const id = parseInt(btn.getAttribute('data-id'));
-            const cat = btn.getAttribute('data-cat');
+            const card = e.target.closest('.item-card');
+            const id = parseInt(card.dataset.id);
+            const cat = card.dataset.cat;
 
             const secao = cardapioData.find(s => s.id === cat);
             const item = secao.itens.find(i => i.id === id);
 
-            handleAdicionarAoCarrinho(item, cat);
+            adicionarAoCarrinho(item);
         });
     });
 }
@@ -104,37 +94,32 @@ function bindBotoes() {
 // =======================================================
 // CARRINHO
 // =======================================================
-function handleAdicionarAoCarrinho(item, categoriaId) {
-    if (!item) return;
-
-    if (CATEGORIAS_CUSTOMIZAVEIS.includes(categoriaId)) {
-        itemEmCustomizacao = item;
-        alert("Abrir customização (implementar depois)");
-    } else {
-        adicionarItemSimplesAoCarrinho(item, categoriaId);
-    }
-}
-
-function adicionarItemSimplesAoCarrinho(item, categoriaId) {
+function adicionarAoCarrinho(item) {
     const existente = carrinho.find(i => i.id === item.id);
 
     if (existente) {
         existente.quantidade++;
     } else {
-        carrinho.push({
-            ...item,
-            quantidade: 1
-        });
+        carrinho.push({ ...item, quantidade: 1 });
     }
 
     salvarCarrinhoLocal();
-    atualizarCarrinhoUI();
 
-    console.log("Carrinho:", carrinho);
+    if (typeof updateContadorCarrinho === 'function') {
+        updateContadorCarrinho();
+    }
+
+    if (typeof showNotification === 'function') {
+        showNotification('Item adicionado!');
+    }
+
+    if (typeof pulseFab === 'function') {
+        pulseFab();
+    }
 }
 
 // =======================================================
-// CATEGORIAS (PILLS)
+// CATEGORIAS
 // =======================================================
 function renderizarCategoriasPills() {
     const container = document.getElementById('navbar-pills-container');
@@ -169,18 +154,3 @@ function carregarCarrinhoLocal() {
     const data = localStorage.getItem('carrinhoJottaV');
     if (data) carrinho = JSON.parse(data);
 }
-
-// =======================================================
-// UI CARRINHO (SIMPLES)
-// =======================================================
-function atualizarCarrinhoUI() {
-    const total = carrinho.reduce((s, i) => s + i.quantidade, 0);
-
-    const el = document.getElementById('cart-count');
-    if (el) el.innerText = total;
-}
-
-// =======================================================
-// INIT
-// =======================================================
-document.addEventListener('DOMContentLoaded', carregarCardapio);
