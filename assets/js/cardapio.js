@@ -26,7 +26,7 @@ async function carregarCardapio() {
 }
 
 // =======================================================
-// RENDER PRINCIPAL (GRID)
+// RENDER PRINCIPAL
 // =======================================================
 function renderizarCardapio() {
     const container = document.getElementById('main-content-container');
@@ -34,7 +34,7 @@ function renderizarCardapio() {
 
     container.innerHTML = '';
 
-    const secao = cardapioData.find(s => String(s.id) === String(categoriaAtiva));
+    const secao = cardapioData.find(s => s.id === categoriaAtiva);
     if (!secao) return;
 
     const section = document.createElement('section');
@@ -42,7 +42,6 @@ function renderizarCardapio() {
 
     section.innerHTML = `
         <h2 class="section-title">${secao.nome}</h2>
-
         <div class="cardapio-grid">
             ${secao.itens.map(item => criarCardHTML(item, secao.id)).join('')}
         </div>
@@ -55,7 +54,7 @@ function renderizarCardapio() {
 }
 
 // =======================================================
-// TEMPLATE DO CARD
+// CARD
 // =======================================================
 function criarCardHTML(item, categoriaId) {
     const preco = (item.preco || 0).toFixed(2).replace('.', ',');
@@ -85,21 +84,21 @@ function criarCardHTML(item, categoriaId) {
 // =======================================================
 function bindEventosCards() {
     document.querySelectorAll('.card-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.onclick = (e) => {
             const card = e.target.closest('.item-card');
             if (!card) return;
 
-            const id = Number(card.dataset.id);
+            const id = parseInt(card.dataset.id);
             const cat = card.dataset.cat;
 
-            const secao = cardapioData.find(s => String(s.id) === String(cat));
+            const secao = cardapioData.find(s => s.id === cat);
             if (!secao) return;
 
-            const item = secao.itens.find(i => Number(i.id) === id);
+            const item = secao.itens.find(i => i.id === id);
             if (!item) return;
 
             adicionarAoCarrinho(item);
-        });
+        };
     });
 }
 
@@ -117,17 +116,9 @@ function adicionarAoCarrinho(item) {
 
     salvarCarrinhoLocal();
 
-    if (typeof updateContadorCarrinho === 'function') {
-        updateContadorCarrinho();
-    }
-
-    if (typeof showNotification === 'function') {
-        showNotification('Item adicionado!');
-    }
-
-    if (typeof pulseFab === 'function') {
-        pulseFab();
-    }
+    updateContadorCarrinho?.();
+    showNotification?.('Item adicionado!');
+    pulseFab?.();
 }
 
 // =======================================================
@@ -142,10 +133,7 @@ function renderizarCategoriasPills() {
     cardapioData.forEach(sec => {
         const pill = document.createElement('div');
         pill.className = 'cat-pill';
-
-        if (String(sec.id) === String(categoriaAtiva)) {
-            pill.classList.add('ativo');
-        }
+        if (sec.id === categoriaAtiva) pill.classList.add('ativo');
 
         pill.innerText = sec.nome;
 
@@ -162,19 +150,10 @@ function renderizarCategoriasPills() {
 // STORAGE
 // =======================================================
 function salvarCarrinhoLocal() {
-    try {
-        localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho));
-    } catch (e) {
-        console.warn('Erro ao salvar carrinho:', e);
-    }
+    localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho));
 }
 
 function carregarCarrinhoLocal() {
-    try {
-        const data = localStorage.getItem('carrinhoJottaV');
-        if (data) carrinho = JSON.parse(data);
-    } catch (e) {
-        console.warn('Erro ao carregar carrinho:', e);
-        carrinho = [];
-    }
+    const data = localStorage.getItem('carrinhoJottaV');
+    if (data) carrinho = JSON.parse(data);
 }
