@@ -1,67 +1,44 @@
 // navbar.js
-// Controle da navegação por categorias (pills no topo)
+// Controle das categorias (pills)
 
-document.addEventListener('DOMContentLoaded', () => {
-    inicializarNavbar();
-});
+// NÃO precisa mais de DOMContentLoaded aqui
+// app.js já controla ciclo de vida
 
 function inicializarNavbar() {
-    const container = document.getElementById('categorias-pills');
+    const container = document.getElementById('navbar-pills-container');
     if (!container) return;
 
-    // Evita duplicação caso renderize novamente
+    // Evita duplicação
     if (container.dataset.inicializado === 'true') return;
     container.dataset.inicializado = 'true';
 
-    // Scroll suave ao clicar nas categorias
-    container.addEventListener('click', function (e) {
-        const target = e.target.closest('.cat-pill');
-        if (!target) return;
+    container.addEventListener('click', (e) => {
+        const pill = e.target.closest('.cat-pill');
+        if (!pill) return;
 
-        e.preventDefault();
+        const categoriaId = pill.dataset.id;
+        if (!categoriaId) return;
 
-        const sectionId = target.getAttribute('href').replace('#', '');
-        const section = document.getElementById(sectionId);
-
-        if (section) {
-            const offset = 80; // altura da navbar
-            const top = section.offsetTop - offset;
-
-            window.scrollTo({
-                top: top,
-                behavior: 'smooth'
-            });
+        // Atualiza categoria global
+        if (typeof categoriaAtiva !== 'undefined') {
+            categoriaAtiva = categoriaId;
         }
-    });
 
-    ativarScrollSpy();
+        // Re-renderiza cardápio
+        if (typeof renderizarCardapio === 'function') {
+            renderizarCardapio();
+        }
+
+        atualizarPillAtiva(categoriaId);
+    });
 }
 
 // =======================================================
-// SCROLL SPY — destaca categoria ativa
+// ATUALIZA VISUAL DA PILL ATIVA
 // =======================================================
 
-function ativarScrollSpy() {
-    const offset = 100;
-
-    window.addEventListener('scroll', () => {
-        const sections = document.querySelectorAll('.menu-section');
-        const pills = document.querySelectorAll('.cat-pill');
-
-        let current = '';
-
-        sections.forEach(section => {
-            const top = section.offsetTop - offset;
-            if (window.scrollY >= top) {
-                current = section.getAttribute('id');
-            }
-        });
-
-        pills.forEach(pill => {
-            pill.classList.remove('ativo');
-            if (pill.getAttribute('href') === '#' + current) {
-                pill.classList.add('ativo');
-            }
-        });
+function atualizarPillAtiva(idAtivo) {
+    document.querySelectorAll('.cat-pill').forEach(pill => {
+        pill.classList.toggle('ativo', pill.dataset.id === idAtivo);
     });
 }
