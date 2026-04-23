@@ -9,15 +9,20 @@ let categoriaAtiva = null;
 // INIT
 // =======================================================
 async function carregarCardapio() {
-    const response = await fetch('data/cardapio.json');
-    cardapioData = await response.json();
+    try {
+        const response = await fetch('data/cardapio.json');
+        cardapioData = await response.json();
 
-    if (!categoriaAtiva && cardapioData.length > 0) {
-        categoriaAtiva = cardapioData[0].id;
+        if (!categoriaAtiva && cardapioData.length > 0) {
+            categoriaAtiva = cardapioData[0].id;
+        }
+
+        carregarCarrinhoLocal();
+        renderizarCardapio();
+
+    } catch (e) {
+        console.error('Erro ao carregar cardápio:', e);
     }
-
-    carregarCarrinhoLocal();
-    renderizarCardapio();
 }
 
 // =======================================================
@@ -25,9 +30,11 @@ async function carregarCardapio() {
 // =======================================================
 function renderizarCardapio() {
     const container = document.getElementById('main-content-container');
+    if (!container) return;
+
     container.innerHTML = '';
 
-    const secao = cardapioData.find(s => s.id === categoriaAtiva);
+    const secao = cardapioData.find(s => String(s.id) === String(categoriaAtiva));
     if (!secao) return;
 
     const section = document.createElement('section');
@@ -48,7 +55,7 @@ function renderizarCardapio() {
 }
 
 // =======================================================
-// TEMPLATE DO CARD (USA SEU CSS)
+// TEMPLATE DO CARD
 // =======================================================
 function criarCardHTML(item, categoriaId) {
     const preco = (item.preco || 0).toFixed(2).replace('.', ',');
@@ -80,11 +87,16 @@ function bindEventosCards() {
     document.querySelectorAll('.card-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const card = e.target.closest('.item-card');
-            const id = parseInt(card.dataset.id);
+            if (!card) return;
+
+            const id = Number(card.dataset.id);
             const cat = card.dataset.cat;
 
-            const secao = cardapioData.find(s => s.id === cat);
-            const item = secao.itens.find(i => i.id === id);
+            const secao = cardapioData.find(s => String(s.id) === String(cat));
+            if (!secao) return;
+
+            const item = secao.itens.find(i => Number(i.id) === id);
+            if (!item) return;
 
             adicionarAoCarrinho(item);
         });
@@ -130,7 +142,10 @@ function renderizarCategoriasPills() {
     cardapioData.forEach(sec => {
         const pill = document.createElement('div');
         pill.className = 'cat-pill';
-        if (sec.id === categoriaAtiva) pill.classList.add('ativo');
+
+        if (String(sec.id) === String(categoriaAtiva)) {
+            pill.classList.add('ativo');
+        }
 
         pill.innerText = sec.nome;
 
@@ -147,10 +162,19 @@ function renderizarCategoriasPills() {
 // STORAGE
 // =======================================================
 function salvarCarrinhoLocal() {
-    localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho));
+    try {
+        localStorage.setItem('carrinhoJottaV', JSON.stringify(carrinho));
+    } catch (e) {
+        console.warn('Erro ao salvar carrinho:', e);
+    }
 }
 
 function carregarCarrinhoLocal() {
-    const data = localStorage.getItem('carrinhoJottaV');
-    if (data) carrinho = JSON.parse(data);
+    try {
+        const data = localStorage.getItem('carrinhoJottaV');
+        if (data) carrinho = JSON.parse(data);
+    } catch (e) {
+        console.warn('Erro ao carregar carrinho:', e);
+        carrinho = [];
+    }
 }
