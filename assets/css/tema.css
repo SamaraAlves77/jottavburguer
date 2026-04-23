@@ -1,28 +1,80 @@
 /* =====================================================
-   tema.css — Design System do Cardápio
+   tema.css — Design System GLOBAL (Base limpa)
    ===================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary-color:   #45a135;
-    --accent-color:    #FF6B35;
-    --bg-landing:      #F5EFE0;
-    --landing-left:    #950606;
-    --bg-page:         #1C1C1C;
-    --bg-card:         #262626;
-    --bg-navbar:       #111111;
-    --text-nav:        #FFFFFF;
-    --text-card-title: #FFFFFF;
-    --text-card-desc:  #A0A0A0;
-    --text-price:      #5DBF4A;
+    /* 🎯 CORES PRINCIPAIS (alinhadas com cardapio.css) */
+    --green:         #45a135;
+    --green-hover:   #3a8c2c;
+    --orange:        #FF6B35;
+
+    /* 🎯 FUNDOS BASE (não sobrescrever camadas do cardápio) */
+    --bg-base:       #161616;
+
+    /* 🎯 TEXTO GLOBAL */
+    --text-primary:  #f0f0f0;
+    --text-secondary:#a0a0a0;
+    --text-muted:    #606060;
+
+    /* 🎯 TIPOGRAFIA */
     --font-main: 'Plus Jakarta Sans', 'Roboto', sans-serif;
 }
 
-/* CORREÇÃO: aplicar fonte APENAS nos elementos de texto — nunca em i/span de ícone */
-body, h1, h2, h3, h4, h5, h6,
-p, a, button, input, select, textarea,
-label, div, section, header, footer, nav,
-span:not([class*="fa"]):not([class*="fa-"]) {
+/* ─────────────────────────────────────────
+   RESET DE FONTE (CORRIGIDO E OTIMIZADO)
+───────────────────────────────────────── */
+
+/* Aplica fonte global sem quebrar ícones */
+body {
     font-family: var(--font-main);
+}
+
+/* Herdar fonte corretamente */
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+/* Evita conflito com ícones */
+i, .fa, [class*="fa-"] {
+    font-family: "Font Awesome 6 Free" !important;
+}
+
+/* ─────────────────────────────────────────
+   BASE GLOBAL
+───────────────────────────────────────── */
+
+body {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+}
+
+/* Links padrão */
+a {
+    color: var(--green);
+    text-decoration: none;
+}
+
+/* Seleção de texto */
+::selection {
+    background: var(--green);
+    color: #fff;
+}
+
+/* Scrollbar (leve e elegante) */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.15);
+    border-radius: 3px;
 }
