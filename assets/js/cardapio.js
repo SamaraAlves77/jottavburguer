@@ -3,58 +3,47 @@
 // =======================================================
 let cardapioData = [];
 let carrinho = [];
-let categoriaAtiva = null;
 
 // =======================================================
 // INIT
 // =======================================================
 async function carregarCardapio() {
-    try {
-        const response = await fetch('data/cardapio.json');
-        cardapioData = await response.json();
+    const response = await fetch('data/cardapio.json');
+    cardapioData = await response.json();
 
-        if (!categoriaAtiva && cardapioData.length > 0) {
-            categoriaAtiva = cardapioData[0].id;
-        }
-
-        carregarCarrinhoLocal();
-        renderizarCardapio();
-
-    } catch (e) {
-        console.error('Erro ao carregar cardápio:', e);
-    }
+    carregarCarrinhoLocal();
+    renderizarTudo();
 }
 
 // =======================================================
-// RENDER PRINCIPAL
+// RENDER GERAL (ESTILO APP)
 // =======================================================
-function renderizarCardapio() {
+function renderizarTudo() {
     const container = document.getElementById('main-content-container');
-    if (!container) return;
-
     container.innerHTML = '';
 
-    const secao = cardapioData.find(s => s.id === categoriaAtiva);
-    if (!secao) return;
+    cardapioData.forEach(secao => {
+        const section = document.createElement('section');
+        section.classList.add('menu-section');
+        section.id = secao.id;
 
-    const section = document.createElement('section');
-    section.classList.add('menu-section');
+        section.innerHTML = `
+            <h2 class="section-title">${secao.nome}</h2>
 
-    section.innerHTML = `
-        <h2 class="section-title">${secao.nome}</h2>
-        <div class="cardapio-grid">
-            ${secao.itens.map(item => criarCardHTML(item, secao.id)).join('')}
-        </div>
-    `;
+            <div class="scroll-horizontal">
+                ${secao.itens.map(item => criarCardHTML(item, secao.id)).join('')}
+            </div>
+        `;
 
-    container.appendChild(section);
+        container.appendChild(section);
+    });
 
+    renderizarCategorias();
     bindEventosCards();
-    renderizarCategoriasPills();
 }
 
 // =======================================================
-// CARD
+// TEMPLATE CARD
 // =======================================================
 function criarCardHTML(item, categoriaId) {
     const preco = (item.preco || 0).toFixed(2).replace('.', ',');
@@ -73,7 +62,7 @@ function criarCardHTML(item, categoriaId) {
 
             <div class="card-footer">
                 <span class="card-preco">R$ ${preco}</span>
-                <button class="card-btn">Adicionar</button>
+                <button class="card-btn">+</button>
             </div>
         </div>
     `;
@@ -84,21 +73,16 @@ function criarCardHTML(item, categoriaId) {
 // =======================================================
 function bindEventosCards() {
     document.querySelectorAll('.card-btn').forEach(btn => {
-        btn.onclick = (e) => {
+        btn.addEventListener('click', (e) => {
             const card = e.target.closest('.item-card');
-            if (!card) return;
-
             const id = parseInt(card.dataset.id);
             const cat = card.dataset.cat;
 
             const secao = cardapioData.find(s => s.id === cat);
-            if (!secao) return;
-
             const item = secao.itens.find(i => i.id === id);
-            if (!item) return;
 
             adicionarAoCarrinho(item);
-        };
+        });
     });
 }
 
@@ -116,15 +100,23 @@ function adicionarAoCarrinho(item) {
 
     salvarCarrinhoLocal();
 
-    updateContadorCarrinho?.();
-    showNotification?.('Item adicionado!');
-    pulseFab?.();
+    if (typeof updateContadorCarrinho === 'function') {
+        updateContadorCarrinho();
+    }
+
+    if (typeof showNotification === 'function') {
+        showNotification('Item adicionado!');
+    }
+
+    if (typeof pulseFab === 'function') {
+        pulseFab();
+    }
 }
 
 // =======================================================
-// CATEGORIAS
+// CATEGORIAS (COM SCROLL)
 // =======================================================
-function renderizarCategoriasPills() {
+function renderizarCategorias() {
     const container = document.getElementById('navbar-pills-container');
     if (!container) return;
 
@@ -133,13 +125,12 @@ function renderizarCategoriasPills() {
     cardapioData.forEach(sec => {
         const pill = document.createElement('div');
         pill.className = 'cat-pill';
-        if (sec.id === categoriaAtiva) pill.classList.add('ativo');
-
         pill.innerText = sec.nome;
 
         pill.onclick = () => {
-            categoriaAtiva = sec.id;
-            renderizarCardapio();
+            document.getElementById(sec.id).scrollIntoView({
+                behavior: 'smooth'
+            });
         };
 
         container.appendChild(pill);
