@@ -826,3 +826,124 @@ footer {
     #main-content-container { padding: 24px 0 100px; }
     .cardapio-grid { gap: 18px; }
 }
+
+/* ═══════════════════════════════════════════════════
+   PATCH MOBILE-APP — Adicionar no final de cardapio.css
+   Resolve: pills navbar + botões + layout mobile
+═══════════════════════════════════════════════════ */
+
+/* ── 1. NAVBAR PILLS — Caber sem scroll horizontal ── */
+/* Força wrap e tamanho compacto nos pills da navbar */
+.navbar-pills,
+.categorias-pills,
+[class*="pills"] {
+    display: flex !important;
+    flex-wrap: wrap !important;           /* ← quebra linha se necessário */
+    overflow: visible !important;          /* ← remove scroll horizontal */
+    gap: 5px !important;
+    padding: 6px 10px !important;
+    justify-content: flex-start;
+}
+
+/* Cada pill menor e mais compacto */
+.navbar-pill,
+.categoria-pill,
+.pill,
+[class*="pill"]:not(.categorias-sticky *) {
+    font-size: 0.72em !important;
+    padding: 5px 11px !important;
+    border-radius: 20px !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+    flex: 0 0 auto;
+}
+
+/* ── 2. DESTAQUE — Botão e preço sempre visíveis ── */
+@media (max-width: 480px) {
+    .destaque-body {
+        padding: 10px 10px 10px 6px;
+        gap: 3px;
+    }
+
+    .destaque-nome {
+        font-size: 0.88em;
+    }
+
+    .destaque-desc {
+        -webkit-line-clamp: 1;
+        font-size: 0.68em;
+    }
+
+    .destaque-footer {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+    }
+
+    .destaque-preco {
+        font-size: 0.92em;
+    }
+
+    .destaque-btn {
+        font-size: 0.68em !important;
+        padding: 5px 9px !important;
+        min-height: 30px;
+        min-width: 70px;
+        flex-shrink: 0;
+    }
+}
+
+/* ── 3. CARDS — Footer sempre organizado em mobile ── */
+@media (max-width: 480px) {
+    .card-footer {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 5px !important;
+        padding: 7px 9px !important;
+    }
+
+    .card-btn {
+        width: 100% !important;
+        text-align: center !important;
+        min-height: 38px !important;
+        font-size: 0.78em;
+        padding: 8px 10px !important;
+    }
+
+    .card-preco {
+        font-size: 0.88em;
+        text-align: left;
+    }
+
+    /* Nome do card sem cortar demais */
+    .card-nome {
+        -webkit-line-clamp: 2;
+        font-size: 0.80em;
+    }
+}
+
+/* ── 4. GRID — 2 colunas limpas em qualquer mobile ── */
+@media (max-width: 480px) {
+    .cardapio-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    /* Telas muito pequenas → 1 coluna */
+    @media (max-width: 340px) {
+        .cardapio-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+}
+
+/* ── 5. SAFE AREA — iPhone com notch/Dynamic Island ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .carrinho-fab {
+        bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+    body {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
