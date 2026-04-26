@@ -1,0 +1,97 @@
+{
+  "negocio": {
+    "nome": "JottaV Burguer",
+    "slogan": "O verdadeiro sabor do hambúrguer artesanal!",
+    "logo": "imagens/jottav_burguer.png",
+    "whatsapp": "5586994253258",
+    "instagram": "https://www.instagram.com/jottavburguer/",
+    "cidade": "Parnaíba",
+    "estado": "PI"
+  },
+  "github": {
+    "owner": "SamaraAlves77",
+    "repo": "jottavburguer"
+  },
+  "admin": {
+    "senha_hash": "aa76dcb7a8c364f43564c71bd5b4188d2daf2e1a6d00a8b037f47bb36e2ceab1"
+  },
+  "landing": {
+    "cor_esquerda": "#950606",
+    "cor_direita": "#ffffff",
+    "cor_fundo": "#F5EFE0",
+    "botoes": [
+      {
+        "tipo": "instagram",
+        "texto": "Instagram",
+        "icone": "assets/img/instagram.svg",
+        "link": "https://www.instagram.com/jottavburguer/",
+        "ativo": true
+      },
+      {
+        "tipo": "whatsapp",
+        "texto": "WhatsApp",
+        "icone": "assets/img/whatsapp.svg",
+        "link": "https://wa.me/5586994253258",
+        "ativo": true
+      },
+      {
+        "tipo": "cardapio",
+        "texto": "Cardápio",
+        "icone": "",
+        "link": "cardapio.html",
+        "ativo": true
+      }
+    ]
+  },
+  "pagamento": [
+    {
+      "valor": "pix",
+      "label": "PIX",
+      "ativo": true
+    },
+    {
+      "valor": "cartao_debito",
+      "label": "Cartão de Débito",
+      "ativo": true
+    },
+    {
+      "valor": "cartao_credito",
+      "label": "Cartão de Crédito",
+      "ativo": true
+    },
+    {
+      "valor": "dinheiro",
+      "label": "Dinheiro (Avisar se precisar de troco)",
+      "ativo": true
+    }
+  ],
+  "whatsapp_msg": {
+    "header": "🍔 *PEDIDO - JottaV BURGUER* 🍔",
+    "separador": "━━━━━━━━━━━━━━━━━━━━━━",
+    "label_dados": "*📋 DADOS DO CLIENTE:*",
+    "label_itens": "*🛒 ITENS DO PEDIDO:*",
+    "label_total": "💵 *TOTAL DO PEDIDO:*",
+    "label_pagamento": "💳 *PAGAMENTO:*",
+    "label_observacoes": "📝 *OBSERVAÇÕES:*",
+    "label_taxa": "🛵 *TAXA DE ENTREGA:* A confirmar",
+    "label_taxa_sub": "_(Por favor, informe se há taxa de entrega para o endereço acima)_",
+    "label_localizacao": "📌 *LOCALIZAÇÃO DO CLIENTE:*"
+  },
+  "promocao": {
+    "ativa": false,
+    "titulo": "🔥 Promoção do Dia",
+    "desconto": 20,
+    "categorias": [],
+    "validade": {
+      "tipo": "manual",
+      "horario_inicio": "11:00",
+      "horario_fim": "14:00",
+      "data_inicio": "",
+      "data_fim": ""
+    }
+  },
+  "combo": {
+    "desconto": 10
+  },
+  "combo_desconto": 10
+}
