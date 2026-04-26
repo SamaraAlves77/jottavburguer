@@ -1,17 +1,16 @@
 /* ════════════════════════════════════════
-   NAVBAR — App-style: topo limpo + tab bar rodapé
+   NAVBAR — Minimalista com pills integradas
 ════════════════════════════════════════ */
+
 :root {
-    --nav-height:     56px;
-    --tab-height:     60px;
+    --nav-height: 56px; /* mobile */
 }
 
-/* ── BASE NAVBAR ── */
 .navbar {
     position: fixed;
     top: 0; left: 0; right: 0;
     height: var(--nav-height);
-    background: rgba(22,22,22,.96);
+    background: rgba(22,22,22,.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(255,255,255,.06);
@@ -22,19 +21,17 @@
 .navbar-content-wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     height: 100%;
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 14px;
-    gap: 10px;
+    gap: 12px;
 }
 
-/* ── LOGO + NOME DA LOJA ── */
+/* Logo */
 .logo {
     display: flex;
     align-items: center;
-    gap: 9px;
     flex-shrink: 0;
     text-decoration: none;
 }
@@ -43,205 +40,110 @@
     width: 34px;
     border-radius: 50%;
     object-fit: cover;
-    flex-shrink: 0;
-}
-.logo-nome {
-    color: #f0f0f0;
-    font-size: 0.93em;
-    font-weight: 700;
-    letter-spacing: -.2px;
-    white-space: nowrap;
 }
 
-/* ── PILLS — OCULTAS (migradas para o tab bar) ── */
+/* Pills integradas na navbar — estilo WhatsApp */
 .navbar-pills {
-    display: none !important;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 8px;
+}
+.navbar-pills::-webkit-scrollbar { display: none; }
+
+.navbar-pills .cat-pill {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.1);
+    background: transparent;
+    color: rgba(255,255,255,.5);
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .18s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+    letter-spacing: .2px;
+}
+.navbar-pills .cat-pill:hover {
+    border-color: rgba(255,255,255,.25);
+    color: rgba(255,255,255,.8);
+}
+.navbar-pills .cat-pill.ativo {
+    background: #45a135;
+    border-color: #45a135;
+    color: #fff;
 }
 
-/* ── CARRINHO NAVBAR — verde, destaque visual ── */
+/* Ações (carrinho) */
 .header-actions {
     display: flex;
     align-items: center;
+    gap: 8px;
     flex-shrink: 0;
 }
+
 .carrinho-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 38px; height: 38px;
-    background: #45a135;
-    border: none;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
     border-radius: 50%;
-    color: #fff;
+    color: rgba(255,255,255,.8);
     cursor: pointer;
     position: relative;
-    transition: background .18s ease, transform .1s;
-    font-size: 16px;
-    box-shadow: 0 2px 10px rgba(69,161,53,.35);
+    transition: .18s ease;
+    font-size: 15px;
 }
-.carrinho-btn:hover  { background: #3a8c2c; }
-.carrinho-btn:active { transform: scale(.93); }
+.carrinho-btn:hover { background: rgba(255,255,255,.12); }
 
 #contador-carrinho {
     position: absolute;
     top: -4px; right: -4px;
-    background: #e53935;
+    background: #45a135;
     color: #fff;
     font-size: 9px;
     font-weight: 800;
-    min-width: 17px; height: 17px;
-    border-radius: 9px;
-    display: none;              /* visível só quando n > 0 */
-    align-items: center;
-    justify-content: center;
-    padding: 0 4px;
-    border: 1.5px solid #161616;
-    line-height: 1;
-}
-
-/* ── FAB FLUTUANTE — removido (substituído pelo tab bar) ── */
-.carrinho-fab {
-    display: none !important;
-}
-
-/* ── PADDING BODY — espaço para o tab bar ── */
-body {
-    padding-bottom: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px));
-}
-
-/* Notificação sobe acima do tab bar */
-.notificacao {
-    bottom: calc(var(--tab-height) + 12px + env(safe-area-inset-bottom, 0px)) !important;
-}
-
-/* ══════════════════════════════════════
-   TAB BAR — Rodapé estilo app nativo
-══════════════════════════════════════ */
-#app-tab-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px));
-    background: rgba(22,22,22,.97);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255,255,255,.08);
-    z-index: 8900;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-.tab-bar-inner {
-    display: flex;
-    align-items: stretch;
-    justify-content: space-around;
-    height: var(--tab-height);
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 0 4px;
-}
-
-/* ── ABA (item) ── */
-.tab-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 6px 2px 4px;
-    position: relative;
-    transition: opacity .15s ease;
-    min-width: 0;
-    -webkit-tap-highlight-color: transparent;
-}
-.tab-item:active { opacity: .7; }
-
-/* Ícone */
-.tab-icone {
-    font-size: 20px;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: 26px; height: 26px;
-}
-
-/* Label */
-.tab-label {
-    font-size: 9.5px;
-    font-weight: 600;
-    color: #606060;
-    letter-spacing: .1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    transition: color .18s ease;
-    line-height: 1;
-}
-
-/* Estado ATIVO */
-.tab-item.ativo .tab-label { color: #45a135; }
-
-/* Indicador da aba ativa */
-.tab-indicator {
-    position: absolute;
-    top: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px; height: 2.5px;
-    background: #45a135;
-    border-radius: 0 0 3px 3px;
-}
-
-/* ── BADGE CONTADOR NO TAB (carrinho) ── */
-.tab-badge {
-    position: absolute;
-    top: -5px; right: -7px;
-    background: #e53935;
-    color: #fff;
-    font-size: 8.5px;
-    font-weight: 800;
-    min-width: 15px; height: 15px;
+    min-width: 16px; height: 16px;
     border-radius: 8px;
-    display: none;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     padding: 0 3px;
     border: 1.5px solid #161616;
-    line-height: 1;
 }
 
-/* ── SVG DO CARRINHO herda cor da aba ── */
-.tab-item .tab-icone svg {
-    stroke: #606060;
-    transition: stroke .18s ease;
-}
-.tab-item.ativo .tab-icone svg { stroke: #45a135; }
-
-/* ── OUTROS ELEMENTOS ── */
+/* Hamburger — oculto por padrão */
 .hamburger-menu-btn { display: none; }
+
+/* Desktop: nav-links (se existirem) ocultos — pills fazem a navegação */
 .nav-links { display: none; }
 
-/* ══════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════ */
+/* ── RESPONSIVE ── */
+
+/* Mobile muito pequeno — pills menores */
 @media (max-width: 374px) {
-    .navbar-content-wrapper { padding: 0 10px; }
+    .navbar-content-wrapper { padding: 0 10px; gap: 8px; }
+    .navbar-pills .cat-pill { padding: 4px 9px; font-size: 0.7em; }
     .logo img { height: 30px; width: 30px; }
-    .logo-nome { font-size: 0.82em; }
-    .tab-icone { font-size: 18px; }
-    .tab-label { font-size: 8.5px; }
 }
 
+/* Mobile médio */
+@media (max-width: 480px) {
+    .navbar-pills { padding: 0 4px; gap: 3px; }
+    .navbar-pills .cat-pill { padding: 4px 10px; font-size: 0.74em; }
+}
+
+/* Tablet e acima */
 @media (min-width: 769px) {
     :root { --nav-height: 60px; }
     .logo img { height: 38px; width: 38px; }
-    .logo-nome { font-size: 1em; }
-    .carrinho-btn { width: 42px; height: 42px; }
-    .tab-label { font-size: 10.5px; }
-    .tab-icone { font-size: 22px; }
+    .navbar-pills .cat-pill { padding: 6px 16px; font-size: 0.82em; }
+    .carrinho-btn { width: 40px; height: 40px; }
 }
