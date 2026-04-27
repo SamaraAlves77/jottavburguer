@@ -1,0 +1,448 @@
+/* ═══════════════════════════════════════════════════════════
+   JOTTAV BURGUER — modal_carrinho.css  (v3 — QA corrigido)
+   Funciona com o JS existente: mostrarModal usa display:block
+   HTML intocado — apenas CSS
+═══════════════════════════════════════════════════════════ */
+
+:root {
+    --primary-color:     #45a135;
+    --secondary-color:   #1e1e1e;
+    --background-color:  #161616;
+    --text-color:        #f0f0f0;
+    --text-muted:        #a0a0a0;
+    --option-background: #252525;
+    --option-hover:      #2d2d2d;
+    --red-alert:         #e53935;
+    --border-soft:       rgba(255,255,255,.07);
+    --border-green:      rgba(69,161,53,.3);
+    --radius-md:         12px;
+    --radius-lg:         16px;
+    --radius-xl:         22px;
+    --transition:        .18s ease;
+}
+
+/* ══════════════════════════════════════
+   OVERLAY — JS usa display:block para abrir
+   Conteúdo posicionado por absolute no rodapé
+══════════════════════════════════════ */
+.modal {
+    display: none;              /* JS altera para 'block' */
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    background: rgba(0,0,0,.78);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    overflow-y: auto;
+}
+
+/* ── Conteúdo posicionado no rodapé (mobile) ── */
+.modal-content {
+    position: relative;
+    background: var(--secondary-color);
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;          /* centraliza horizontal */
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border: 1px solid var(--border-soft);
+    border-bottom: none;
+    padding: 0 0 28px;
+    box-shadow: 0 -4px 32px rgba(0,0,0,.5);
+    animation: slideUp .28s cubic-bezier(.32,0,.2,1);
+    /* Cola no fundo da tela */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+/* Handle visual */
+.modal-content::before {
+    content: "";
+    display: block;
+    width: 38px;
+    height: 4px;
+    background: rgba(255,255,255,.12);
+    border-radius: 2px;
+    margin: 12px auto 0;
+}
+
+/* ══════════════════════════════════════
+   BOTÃO FECHAR — sempre visível
+══════════════════════════════════════ */
+.fechar-modal,
+.fechar-customizacao,
+.fechar-admin-modal {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.10);
+    border-radius: 50%;
+    color: #c0c0c0;
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition);
+    z-index: 20;
+    float: none;
+    user-select: none;
+}
+.fechar-modal:hover,
+.fechar-customizacao:hover,
+.fechar-admin-modal:hover {
+    background: rgba(255,255,255,.20);
+    color: #fff;
+}
+
+/* ══════════════════════════════════════
+   TÍTULO
+══════════════════════════════════════ */
+.modal h3 {
+    color: var(--text-color);
+    font-size: 1em;
+    font-weight: 700;
+    padding: 16px 56px 14px 20px; /* direita: espaço para o X */
+    margin: 0;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+/* ══════════════════════════════════════
+   LISTA DE ITENS
+══════════════════════════════════════ */
+.carrinho-itens {
+    margin: 0;
+    padding: 8px 16px;
+    max-height: 34vh;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--border-soft);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.1) transparent;
+}
+.carrinho-itens::-webkit-scrollbar { width: 4px; }
+.carrinho-itens::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.1);
+    border-radius: 2px;
+}
+
+.carrinho-vazio {
+    color: var(--text-muted);
+    font-size: 0.88em;
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* Item gerado pelo JS */
+.carrinho-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 0.87em;
+}
+.carrinho-item:last-child { border-bottom: none; }
+
+.item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.item-nome  { color: var(--text-color); font-weight: 600; }
+.item-preco { color: var(--primary-color); font-weight: 700; font-size: 0.95em; }
+.item-adicionais {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.item-adicionais span {
+    color: var(--text-muted);
+    font-size: 0.82em;
+}
+
+.item-controles { flex-shrink: 0; }
+
+.remover-item {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    transition: color var(--transition), background var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.remover-item:hover {
+    color: var(--red-alert);
+    background: rgba(229,57,53,.1);
+}
+
+/* ══════════════════════════════════════
+   TOTAL
+══════════════════════════════════════ */
+.carrinho-total-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--primary-color);
+    padding: 13px 20px;
+    margin: 0;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+/* ══════════════════════════════════════
+   AVISO TAXA DE ENTREGA
+══════════════════════════════════════ */
+.aviso-taxa-entrega {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(255,165,0,.07);
+    border: 1px solid rgba(255,165,0,.2);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    margin: 10px 16px;
+    color: #e0aa55;
+    font-size: 0.81em;
+    line-height: 1.45;
+}
+.aviso-taxa-entrega i        { color: #ffA500; font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+.aviso-taxa-entrega strong   { color: #ffA500; }
+
+/* ══════════════════════════════════════
+   FORMULÁRIO CHECKOUT
+══════════════════════════════════════ */
+.carrinho-finalizar { padding: 0 16px; }
+
+.carrinho-finalizar h4 {
+    color: var(--text-muted);
+    font-size: 0.70em;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin: 14px 0 8px;
+}
+
+.carrinho-finalizar input,
+.carrinho-finalizar select,
+.carrinho-finalizar textarea {
+    width: 100%;
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: var(--radius-md);
+    background: var(--option-background);
+    color: var(--text-color);
+    font-size: 0.88em;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color var(--transition);
+    font-family: inherit;
+}
+.carrinho-finalizar input::placeholder,
+.carrinho-finalizar textarea::placeholder { color: #555; }
+.carrinho-finalizar input:focus,
+.carrinho-finalizar select:focus,
+.carrinho-finalizar textarea:focus { border-color: var(--primary-color); }
+
+.carrinho-finalizar select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2345a135'%3e%3cpath d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.carrinho-finalizar textarea { resize: none; line-height: 1.5; }
+
+.campo-localizacao { margin-bottom: 4px; }
+
+.btn-secundario {
+    background: var(--option-background);
+    color: var(--text-muted);
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: var(--radius-md);
+    width: 100%;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: border-color var(--transition), color var(--transition);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+}
+.btn-secundario:hover { border-color: var(--primary-color); color: var(--text-color); }
+.btn-secundario i { color: var(--primary-color); flex-shrink: 0; }
+
+#localizacao-status {
+    font-size: 0.78em;
+    margin-top: 5px;
+    color: var(--text-muted);
+}
+
+/* ── BOTÃO FINALIZAR ── */
+#btn-finalizar-pedido {
+    background: #25d366;
+    color: #fff;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-md);
+    width: 100%;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--transition), transform .1s;
+    margin-top: 14px;
+    font-family: inherit;
+}
+#btn-finalizar-pedido:hover  { background: #1da851; }
+#btn-finalizar-pedido:active { transform: scale(.98); }
+#btn-finalizar-pedido:disabled {
+    background: #2a2a2a;
+    color: #555;
+    cursor: not-allowed;
+}
+
+/* ══════════════════════════════════════
+   MODAL DE CUSTOMIZAÇÃO
+══════════════════════════════════════ */
+#customizacao-modal .adicionais-opcoes {
+    margin: 0;
+    max-height: 40vh;
+    overflow-y: auto;
+    padding: 10px 16px;
+    border: none;
+    border-bottom: 1px solid var(--border-soft);
+    scrollbar-width: thin;
+}
+
+#customizacao-modal h4 {
+    color: var(--text-muted);
+    font-size: 0.70em;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    padding-left: 0;
+}
+
+#customizacao-modal .adicional-option {
+    background: var(--option-background);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    padding: 10px 14px;
+    border: 1px solid var(--border-soft);
+    transition: border-color var(--transition), background var(--transition);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+#customizacao-modal .adicional-option:hover {
+    background: var(--option-hover);
+    border-color: var(--border-green);
+}
+
+#customizacao-modal label {
+    flex-grow: 1;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    font-size: 0.88em;
+    line-height: 1.3;
+    gap: 8px;
+}
+
+#customizacao-modal input[type="checkbox"] {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.customizacao-resumo {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+.customizacao-resumo p { margin-bottom: 4px; }
+.customizacao-resumo .customizacao-total {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--text-color);
+    border-top: 1px solid var(--border-soft);
+    padding-top: 10px;
+    margin-top: 8px;
+}
+
+#btn-adicionar-customizado {
+    display: block;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 13px 16px;
+    border: none;
+    border-radius: var(--radius-md);
+    width: calc(100% - 32px);
+    margin: 12px 16px 0;
+    font-size: 0.92em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--transition), transform .1s;
+    font-family: inherit;
+}
+#btn-adicionar-customizado:hover  { background: #3a8c2c; }
+#btn-adicionar-customizado:active { transform: scale(.98); }
+
+/* ══════════════════════════════════════
+   ANIMAÇÃO
+══════════════════════════════════════ */
+@keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ══════════════════════════════════════
+   DESKTOP ≥ 769px — modal centralizado
+══════════════════════════════════════ */
+@media (min-width: 769px) {
+    .modal-content {
+        position: relative; /* volta ao fluxo normal no desktop */
+        bottom: auto;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-soft);
+        max-height: 88vh;
+        margin: 40px auto;
+    }
+    .modal-content::before { display: none; }
+    .modal { overflow-y: auto; }
+}
+
+/* Mobile pequeno */
+@media (max-width: 374px) {
+    .modal-content { max-height: 95vh; }
+    .carrinho-itens { max-height: 28vh; }
+}
