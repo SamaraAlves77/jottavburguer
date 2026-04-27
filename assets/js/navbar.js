@@ -1,9 +1,10 @@
 // ════════════════════════════════════════════════════════════
-//  JOTTAV BURGUER — navbar.js  (v3 — QA aprovado)
-//  Stubs de compatibilidade + Tab Bar robusto
+//  JOTTAV BURGUER — navbar.js  (v4)
+//  Mobile  (<769px) : tab bar no rodapé + navbar limpa
+//  Desktop (≥769px) : comportamento original (pills no navbar)
 // ════════════════════════════════════════════════════════════
 
-// Stubs legados — não remover (app.js pode chamar)
+// Stubs legados — não remover
 function toggleHamburgerMenu() {}
 function fecharMenuOnClick()   {}
 function setupNavbarEventListeners() {}
@@ -11,11 +12,17 @@ function setupNavbarEventListeners() {}
 (function () {
     'use strict';
 
+    var MOBILE_BP = 769; // breakpoint em px
+
+    function isMobile() {
+        return window.innerWidth < MOBILE_BP;
+    }
+
     // ── Ícones por palavra-chave ──────────────────────────────
     var ICONES = [
         { p: ['burger','hambur','smash','artesanal','classic','jotta'], i: '🍔' },
         { p: ['combo'],                                                  i: '🎯' },
-        { p: ['acompan','batata','porcao','porcão','fritas'],            i: '🍟' },
+        { p: ['acompan','batata','porcao','porção','fritas'],            i: '🍟' },
         { p: ['bebida','drink','suco','refri','agua','lata'],            i: '🥤' },
         { p: ['sobremesa','doce','milk','sorvete'],                      i: '🍰' },
         { p: ['molho','adicional','extra'],                              i: '🧂' },
@@ -32,14 +39,14 @@ function setupNavbarEventListeners() {}
         return '🍽️';
     }
 
-    // ── Abrevia texto para tab bar ────────────────────────────
+    // ── Abreviações para o tab bar ────────────────────────────
     var ABREV = {
         'hambúrgueres artesanais': 'Burgers',
         'hambúrgueres':            'Burgers',
         'hamburgueres artesanais': 'Burgers',
         'hamburgueres':            'Burgers',
         'acompanhamentos':         'Acompan.',
-        'sobremesas':              'Sobremesas',
+        'sobremesas':              'Sobremesa',
         'bebidas':                 'Bebidas',
         'combos':                  'Combos',
     };
@@ -51,15 +58,12 @@ function setupNavbarEventListeners() {}
     }
 
     // ════════════════════════════════════════════════════════
-    //  NOME DA LOJA — injeta ao lado do logo
-    //  Tenta até o .logo existir no DOM
+    //  NOME DA LOJA — só no mobile
     // ════════════════════════════════════════════════════════
     function injetarNomeLoja() {
+        if (!isMobile()) return;
         var logo = document.querySelector('.logo');
-        if (!logo) {
-            setTimeout(injetarNomeLoja, 100);
-            return;
-        }
+        if (!logo) { setTimeout(injetarNomeLoja, 100); return; }
         if (logo.querySelector('.logo-nome')) return;
         var span = document.createElement('span');
         span.className = 'logo-nome';
@@ -68,9 +72,10 @@ function setupNavbarEventListeners() {}
     }
 
     // ════════════════════════════════════════════════════════
-    //  TAB BAR — cria estrutura no <body>
+    //  TAB BAR — cria estrutura (só no mobile)
     // ════════════════════════════════════════════════════════
     function criarTabBar() {
+        if (!isMobile()) return;
         if (document.getElementById('app-tab-bar')) return;
         var nav = document.createElement('nav');
         nav.id = 'app-tab-bar';
@@ -80,7 +85,6 @@ function setupNavbarEventListeners() {}
         document.body.appendChild(nav);
     }
 
-    // ── Botão de categoria ────────────────────────────────────
     function criarAbaCategoria(nome, ativo) {
         var btn = document.createElement('button');
         btn.className = 'tab-item' + (ativo ? ' ativo' : '');
@@ -94,6 +98,7 @@ function setupNavbarEventListeners() {}
             (ativo ? '<div class="tab-indicator"></div>' : '');
 
         btn.addEventListener('click', function () {
+            // Aciona o pill correspondente no DOM
             var pills = document.querySelectorAll(
                 '.navbar-pills .cat-pill, .categorias-pills .cat-pill, ' +
                 '#categorias-pills .cat-pill, .cat-pill'
@@ -110,7 +115,6 @@ function setupNavbarEventListeners() {}
         return btn;
     }
 
-    // ── Botão do carrinho ─────────────────────────────────────
     function criarAbaCarrinho() {
         var btn = document.createElement('button');
         btn.className = 'tab-item';
@@ -141,7 +145,6 @@ function setupNavbarEventListeners() {}
         return btn;
     }
 
-    // ── Popula abas ───────────────────────────────────────────
     function popularAbas(dados) {
         var container = document.getElementById('tab-bar-itens');
         if (!container || dados.length === 0) return;
@@ -150,13 +153,14 @@ function setupNavbarEventListeners() {}
         container.innerHTML = '';
 
         dados.forEach(function (item, idx) {
-            container.appendChild(criarAbaCategoria(item.nome, item.ativo || idx === 0));
+            container.appendChild(
+                criarAbaCategoria(item.nome, item.ativo || idx === 0)
+            );
         });
 
         container.appendChild(carrinhoBtn || criarAbaCarrinho());
     }
 
-    // ── Ativa aba e desativa demais ───────────────────────────
     function setAbaAtiva(alvo) {
         document.querySelectorAll('#app-tab-bar .tab-item').forEach(function (tab) {
             var ativo = tab === alvo;
@@ -173,10 +177,10 @@ function setupNavbarEventListeners() {}
         });
     }
 
-    // ── Observa mudança de .ativo nos pills ──────────────────
     function observarAtivos(pills) {
         pills.forEach(function (pill) {
             new MutationObserver(function () {
+                if (!isMobile()) return;
                 if (pill.classList.contains('ativo')) {
                     var nome = pill.textContent.trim();
                     var aba = document.querySelector(
@@ -188,11 +192,9 @@ function setupNavbarEventListeners() {}
         });
     }
 
-    // ════════════════════════════════════════════════════════
-    //  BUSCA DE PILLS — retry robusto até 5 segundos
-    // ════════════════════════════════════════════════════════
-    var _tentativas    = 0;
-    var _populado      = false;
+    // ── Coleta pills — retry até 5s ───────────────────────────
+    var _tentativas = 0;
+    var _populado   = false;
 
     function coletarPills() {
         var seletores = [
@@ -209,7 +211,7 @@ function setupNavbarEventListeners() {}
     }
 
     function tentarPopularAbas() {
-        if (_populado) return;
+        if (_populado || !isMobile()) return;
 
         var pills = coletarPills();
 
@@ -227,27 +229,30 @@ function setupNavbarEventListeners() {}
         }
 
         _tentativas++;
-        if (_tentativas < 25) { // 25 × 200ms = 5 segundos
+        if (_tentativas < 25) {
             setTimeout(tentarPopularAbas, 200);
         }
     }
 
     // ════════════════════════════════════════════════════════
-    //  CONTADOR CARRINHO — sincroniza navbar + tab bar
-    //  Chamada pelo app.js: window.atualizarContadorCarrinho(n)
+    //  CONTADOR — sincroniza navbar + tab bar (mobile)
+    //             e FAB (desktop)
     // ════════════════════════════════════════════════════════
     window.atualizarContadorCarrinho = function (n) {
         var num = Math.max(0, parseInt(n, 10) || 0);
 
+        // Navbar topo (ambos)
         var cNavbar = document.getElementById('contador-carrinho');
         if (cNavbar) {
             cNavbar.textContent = num;
             cNavbar.style.display = num > 0 ? 'flex' : 'none';
         }
 
+        // FAB (desktop)
         var cFab = document.getElementById('fab-contador-carrinho');
         if (cFab) cFab.textContent = num;
 
+        // Tab bar (mobile)
         var cTab = document.getElementById('tab-contador-carrinho');
         if (cTab) {
             cTab.textContent = num;
@@ -256,12 +261,29 @@ function setupNavbarEventListeners() {}
     };
 
     // ════════════════════════════════════════════════════════
+    //  RESIZE — remove tab bar se usuário expandir para desktop
+    // ════════════════════════════════════════════════════════
+    window.addEventListener('resize', function () {
+        var tabBar = document.getElementById('app-tab-bar');
+        if (!tabBar) return;
+
+        if (!isMobile()) {
+            // Desktop: esconde tab bar e restaura body padding
+            tabBar.style.display = 'none';
+        } else {
+            tabBar.style.display = 'flex';
+        }
+    });
+
+    // ════════════════════════════════════════════════════════
     //  INIT
     // ════════════════════════════════════════════════════════
     function init() {
-        criarTabBar();
-        injetarNomeLoja();
-        tentarPopularAbas();
+        if (isMobile()) {
+            criarTabBar();
+            injetarNomeLoja();
+            tentarPopularAbas();
+        }
     }
 
     if (document.readyState === 'loading') {
