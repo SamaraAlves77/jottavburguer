@@ -1,35 +1,25 @@
 /* ════════════════════════════════════════════════════════════
-   JOTTAV BURGUER — NAVBAR + TAB BAR
-   App-style: navbar limpa no topo + tab bar fixo no rodapé
+   JOTTAV BURGUER — navbar.css  (v3 — QA aprovado)
+   Navbar limpa no topo + Tab Bar fixo no rodapé
 ════════════════════════════════════════════════════════════ */
 
 :root {
-    --nav-height:  56px;
-    --tab-height:  60px;
-    --green:       #45a135;
-    --green-hover: #3a8c2c;
-    --bg-base:     #161616;
-    --bg-nav:      rgba(22,22,22,.97);
-    --border-soft: rgba(255,255,255,.06);
-    --border-mid:  rgba(255,255,255,.10);
-    --text-primary: #f0f0f0;
-    --text-muted:   #606060;
-    --danger:       #e53935;
-    --transition:   .18s ease;
+    --nav-height: 56px;
+    --tab-height: 60px;
 }
 
 /* ══════════════════════════════════════
-   ① NAVBAR — topo limpo
-   Apenas: logo + nome da loja + carrinho
+   ① NAVBAR — topo
+   Logo  |  Nome da loja  |  Carrinho
 ══════════════════════════════════════ */
 .navbar {
     position: fixed;
     top: 0; left: 0; right: 0;
     height: var(--nav-height);
-    background: var(--bg-nav);
+    background: rgba(22,22,22,.97);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border-soft);
+    border-bottom: 1px solid rgba(255,255,255,.06);
     z-index: 9000;
 }
 
@@ -43,34 +33,37 @@
     padding: 0 14px;
 }
 
-/* ── Logo + nome ── */
+/* Logo + nome da loja */
 .logo {
     display: flex;
     align-items: center;
     gap: 9px;
     text-decoration: none;
     flex-shrink: 0;
+    min-width: 0;
 }
 .logo img {
     height: 34px;
-    width:  34px;
+    width: 34px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
 }
-/* Nome injetado pelo navbar.js */
+/* Nome injetado via navbar.js */
 .logo-nome {
-    color: var(--text-primary);
+    color: #f0f0f0;
     font-size: 0.93em;
     font-weight: 700;
     letter-spacing: -.2px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* ── Pills: OCULTAS — navegação está no tab bar ── */
+/* Pills de categoria — OCULTAS (tab bar assume) */
 .navbar-pills { display: none !important; }
 
-/* ── Carrinho do topo ── */
+/* Carrinho no topo */
 .header-actions {
     display: flex;
     align-items: center;
@@ -81,55 +74,57 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px; height: 38px;
-    background: var(--green);
+    width: 38px;
+    height: 38px;
+    background: #45a135;
     border: none;
     border-radius: 50%;
     color: #fff;
     font-size: 16px;
     cursor: pointer;
     box-shadow: 0 2px 10px rgba(69,161,53,.35);
-    transition: background var(--transition), transform .1s;
+    transition: background .18s ease, transform .1s;
     -webkit-tap-highlight-color: transparent;
 }
-.carrinho-btn:hover  { background: var(--green-hover); }
+.carrinho-btn:hover  { background: #3a8c2c; }
 .carrinho-btn:active { transform: scale(.93); }
 
 #contador-carrinho {
     position: absolute;
     top: -4px; right: -4px;
-    background: var(--danger);
+    background: #e53935;
     color: #fff;
     font-size: 9px;
     font-weight: 800;
-    min-width: 17px; height: 17px;
+    min-width: 17px;
+    height: 17px;
     border-radius: 9px;
-    display: none;              /* visível só quando n > 0 via JS */
+    display: none;           /* visível via JS quando n > 0 */
     align-items: center;
     justify-content: center;
     padding: 0 4px;
-    border: 1.5px solid var(--bg-base);
+    border: 1.5px solid #161616;
     line-height: 1;
 }
 
-/* ── FAB flutuante: removido — tab bar assume ── */
+/* FAB flutuante — removido */
 .carrinho-fab { display: none !important; }
 
-/* ── Elementos legados ocultos ── */
+/* Legado */
 .hamburger-menu-btn { display: none; }
 .nav-links          { display: none; }
 
 /* ══════════════════════════════════════
-   ② TAB BAR — rodapé fixo, estilo app
+   ② TAB BAR — rodapé fixo
 ══════════════════════════════════════ */
 #app-tab-bar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
     height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px));
-    background: var(--bg-nav);
+    background: rgba(22,22,22,.97);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border-mid);
+    border-top: 1px solid rgba(255,255,255,.1);
     z-index: 8900;
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -144,7 +139,7 @@
     padding: 0 2px;
 }
 
-/* ── Cada aba ── */
+/* Aba */
 .tab-item {
     flex: 1;
     display: flex;
@@ -171,79 +166,79 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 26px; height: 26px;
+    width: 26px;
+    height: 26px;
     flex-shrink: 0;
 }
 
 /* SVG do carrinho */
 .tab-icone svg {
-    stroke: var(--text-muted);
-    transition: stroke var(--transition);
+    stroke: #606060;
+    transition: stroke .18s;
 }
-.tab-item.ativo .tab-icone svg { stroke: var(--green); }
+.tab-item.ativo .tab-icone svg { stroke: #45a135; }
 
 /* Label */
 .tab-label {
     font-size: 9.5px;
     font-weight: 600;
-    color: var(--text-muted);
+    color: #606060;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    transition: color var(--transition);
+    transition: color .18s;
     line-height: 1;
 }
-.tab-item.ativo .tab-label { color: var(--green); }
+.tab-item.ativo .tab-label { color: #45a135; }
 
-/* Indicador ativo (traço no topo da aba) */
+/* Indicador ativo */
 .tab-indicator {
     position: absolute;
     top: 0; left: 50%;
     transform: translateX(-50%);
-    width: 22px; height: 2.5px;
-    background: var(--green);
+    width: 22px;
+    height: 2.5px;
+    background: #45a135;
     border-radius: 0 0 3px 3px;
 }
 
-/* Badge contador do carrinho na tab bar */
+/* Badge contador carrinho */
 .tab-badge {
     position: absolute;
     top: -5px; right: -6px;
-    background: var(--danger);
+    background: #e53935;
     color: #fff;
     font-size: 8.5px;
     font-weight: 800;
-    min-width: 15px; height: 15px;
+    min-width: 15px;
+    height: 15px;
     border-radius: 8px;
-    display: none;              /* visível só quando n > 0 via JS */
+    display: none;           /* visível via JS quando n > 0 */
     align-items: center;
     justify-content: center;
     padding: 0 3px;
-    border: 1.5px solid var(--bg-base);
+    border: 1.5px solid #161616;
     line-height: 1;
 }
 
 /* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
-
-/* Telas muito pequenas */
 @media (max-width: 374px) {
     .navbar-content-wrapper { padding: 0 10px; }
     .logo img    { height: 30px; width: 30px; }
-    .logo-nome   { font-size: 0.80em; }
+    .logo-nome   { font-size: 0.78em; }
     .carrinho-btn { width: 34px; height: 34px; font-size: 14px; }
     .tab-icone   { font-size: 17px; }
     .tab-label   { font-size: 8px; }
 }
 
-/* Tablet / desktop */
 @media (min-width: 769px) {
     :root { --nav-height: 60px; }
-    .logo img     { height: 38px; width: 38px; }
-    .logo-nome    { font-size: 1em; }
+    .logo img    { height: 38px; width: 38px; }
+    .logo-nome   { font-size: 1em; }
     .carrinho-btn { width: 42px; height: 42px; font-size: 17px; }
-    .tab-label    { font-size: 11px; }
-    .tab-icone    { font-size: 22px; }
+    .tab-label   { font-size: 11px; }
+    .tab-icone   { font-size: 22px; }
 }
