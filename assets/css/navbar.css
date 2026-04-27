@@ -1,7 +1,8 @@
 /* ════════════════════════════════════════════════════════════
-   JOTTAV BURGUER — navbar.css  (v4)
+   JOTTAV BURGUER — navbar.css  (v5 — QA corrigido)
    Mobile  (<769px) : navbar limpa + tab bar no rodapé
-   Desktop (≥769px) : navbar com pills + sem tab bar (original)
+   Desktop (≥769px) : navbar com pills (original)
+   Contador: visibilidade controlada pelo JS (não pelo CSS)
 ════════════════════════════════════════════════════════════ */
 
 :root {
@@ -10,13 +11,14 @@
 }
 
 /* ══════════════════════════════════════
-   NAVBAR — base (compartilhada)
+   NAVBAR — base
+   Layout: logo+nome ESQUERDA | carrinho DIREITA
 ══════════════════════════════════════ */
 .navbar {
     position: fixed;
     top: 0; left: 0; right: 0;
     height: var(--nav-height);
-    background: rgba(22,22,22,.96);
+    background: rgba(22,22,22,.97);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(255,255,255,.06);
@@ -26,29 +28,31 @@
 .navbar-content-wrapper {
     display: flex;
     align-items: center;
+    justify-content: space-between;  /* logo ESQUERDA — carrinho DIREITA */
     height: 100%;
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 14px;
-    gap: 12px;
+    gap: 10px;
 }
 
-/* Logo */
+/* ── Logo (sempre à esquerda) ── */
 .logo {
     display: flex;
     align-items: center;
     gap: 9px;
-    flex-shrink: 0;
     text-decoration: none;
+    flex-shrink: 0;
 }
 .logo img {
     height: 34px;
     width: 34px;
     border-radius: 50%;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
-/* Nome da loja — injetado pelo JS apenas no mobile */
+/* Nome da loja — injetado pelo JS no mobile */
 .logo-nome {
     color: #f0f0f0;
     font-size: 0.93em;
@@ -57,28 +61,70 @@
     white-space: nowrap;
 }
 
-/* Ações (carrinho) */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-/* Botão carrinho */
-.carrinho-btn {
+/* ── Pills — centro (desktop) ── */
+.navbar-pills {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px; height: 38px;
-    border-radius: 50%;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 8px;
+}
+.navbar-pills::-webkit-scrollbar { display: none; }
+
+.navbar-pills .cat-pill {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.1);
+    background: transparent;
+    color: rgba(255,255,255,.5);
+    font-size: 0.8em;
+    font-weight: 600;
     cursor: pointer;
-    position: relative;
-    transition: background .18s ease, transform .1s;
-    font-size: 15px;
-    -webkit-tap-highlight-color: transparent;
+    transition: .18s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+    letter-spacing: .2px;
+}
+.navbar-pills .cat-pill:hover {
+    border-color: rgba(255,255,255,.25);
+    color: rgba(255,255,255,.8);
+}
+.navbar-pills .cat-pill.ativo {
+    background: #45a135;
+    border-color: #45a135;
+    color: #fff;
 }
 
+/* ── Carrinho (sempre à direita) ── */
+.header-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.carrinho-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background .18s ease, transform .1s;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+}
+.carrinho-btn:active { transform: scale(.93); }
+
+/* Contador — visibilidade via JS (updateContadorCarrinho)
+   CSS não define display:none — JS controla isso */
 #contador-carrinho {
     position: absolute;
     top: -4px; right: -4px;
@@ -87,12 +133,13 @@
     font-weight: 800;
     min-width: 17px; height: 17px;
     border-radius: 9px;
-    display: none;
+    display: flex;          /* sempre visível — JS esconde quando 0 */
     align-items: center;
     justify-content: center;
     padding: 0 4px;
     border: 1.5px solid #161616;
     line-height: 1;
+    background: #e53935;
 }
 
 /* Legado */
@@ -101,38 +148,41 @@
 
 /* ══════════════════════════════════════
    MOBILE  < 769px
-   Navbar limpa · Tab bar no rodapé
+   Navbar: logo+nome ESQUERDA | 🛒verde DIREITA
+   Tab bar: fixo no rodapé
 ══════════════════════════════════════ */
 @media (max-width: 768px) {
 
-    /* Body: espaço para tab bar no rodapé */
     body {
         padding-bottom: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px));
     }
 
-    /* Notificação sobe acima do tab bar */
     .notificacao {
         bottom: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px) + 12px) !important;
     }
 
-    /* FAB removido no mobile */
+    /* FAB oculto — tab bar assume */
     .carrinho-fab { display: none !important; }
 
-    /* Pills ocultas no mobile (tab bar assume) */
+    /* Pills ocultas — tab bar assume */
     .navbar-pills { display: none !important; }
 
-    /* Carrinho do topo — verde, destaque */
+    /* Carrinho: verde e destacado no mobile */
     .carrinho-btn {
         background: #45a135;
         color: #fff;
-        border: none;
         box-shadow: 0 2px 10px rgba(69,161,53,.35);
+        width: 36px;
+        height: 36px;
     }
-    .carrinho-btn:hover  { background: #3a8c2c; }
-    .carrinho-btn:active { transform: scale(.93); }
+    .carrinho-btn:hover { background: #3a8c2c; }
 
-    #contador-carrinho {
-        background: #e53935;
+    /* Telas muito pequenas */
+    @media (max-width: 374px) {
+        .navbar-content-wrapper { padding: 0 10px; }
+        .logo img    { height: 30px; width: 30px; }
+        .logo-nome   { font-size: 0.78em; }
+        .carrinho-btn { width: 32px; height: 32px; font-size: 14px; }
     }
 
     /* ── TAB BAR ── */
@@ -146,7 +196,7 @@
         border-top: 1px solid rgba(255,255,255,.10);
         z-index: 8900;
         padding-bottom: env(safe-area-inset-bottom, 0px);
-        display: flex;        /* visível no mobile */
+        display: flex;
     }
 
     .tab-bar-inner {
@@ -217,6 +267,7 @@
         border-radius: 0 0 3px 3px;
     }
 
+    /* Badge contador tab bar */
     .tab-badge {
         position: absolute;
         top: -5px; right: -6px;
@@ -226,41 +277,30 @@
         font-weight: 800;
         min-width: 15px; height: 15px;
         border-radius: 8px;
-        display: none;
+        display: flex;      /* visibilidade via JS */
         align-items: center;
         justify-content: center;
         padding: 0 3px;
         border: 1.5px solid #161616;
         line-height: 1;
     }
-
-    /* Telas muito pequenas */
-    @media (max-width: 374px) {
-        .navbar-content-wrapper { padding: 0 10px; }
-        .logo img  { height: 30px; width: 30px; }
-        .logo-nome { font-size: 0.78em; }
-        .carrinho-btn { width: 34px; height: 34px; font-size: 14px; }
-        .tab-icone { font-size: 17px; }
-        .tab-label { font-size: 8px; }
-    }
 }
 
 /* ══════════════════════════════════════
-   DESKTOP  ≥ 769px
-   Layout original — pills no navbar
-   Tab bar oculto
+   DESKTOP ≥ 769px — layout original
+   Pills no navbar · Sem tab bar
 ══════════════════════════════════════ */
 @media (min-width: 769px) {
 
     :root { --nav-height: 60px; }
 
-    /* Tab bar completamente oculto no desktop */
+    /* Tab bar oculto */
     #app-tab-bar { display: none !important; }
 
-    /* Nome da loja oculto (desktop tem pills) */
+    /* Nome da loja: oculto (pills identificam as seções) */
     .logo-nome { display: none; }
 
-    /* FAB pode aparecer normalmente no desktop */
+    /* FAB visível no desktop */
     .carrinho-fab {
         position: fixed;
         bottom: 20px; right: 16px;
@@ -291,46 +331,7 @@
         border: 1.5px solid #161616;
     }
 
-    /* Pills originais no navbar — visíveis no desktop */
-    .navbar-pills {
-        flex: 1;
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        overflow-x: auto;
-        scrollbar-width: none;
-        padding: 0 8px;
-    }
-    .navbar-pills::-webkit-scrollbar { display: none; }
-
-    .navbar-pills .cat-pill {
-        display: inline-block;
-        padding: 5px 14px;
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,.1);
-        background: transparent;
-        color: rgba(255,255,255,.5);
-        font-size: 0.8em;
-        font-weight: 600;
-        cursor: pointer;
-        transition: .18s ease;
-        white-space: nowrap;
-        text-decoration: none;
-        flex-shrink: 0;
-        letter-spacing: .2px;
-    }
-    .navbar-pills .cat-pill:hover {
-        border-color: rgba(255,255,255,.25);
-        color: rgba(255,255,255,.8);
-    }
-    .navbar-pills .cat-pill.ativo {
-        background: #45a135;
-        border-color: #45a135;
-        color: #fff;
-    }
-
-    /* Carrinho desktop — estilo original (círculo escuro) */
+    /* Carrinho desktop: estilo sutil */
     .carrinho-btn {
         background: rgba(255,255,255,.06);
         border: 1px solid rgba(255,255,255,.1);
@@ -343,3 +344,7 @@
 
     .logo img { height: 38px; width: 38px; }
 }
+
+/* ══════════════════════════════════════
+   RESIZE: oculta/mostra tab bar
+══════════════════════════════════════ */
