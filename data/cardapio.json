@@ -59,7 +59,7 @@
                 "descricao": "Pão, 2 carnes de 120g, requeijão, molho da casa, 2 fatias de bacon.",
                 "preco": 37.99,
                 "imagem": "duplo_brutao.jpeg",
-                "destaque": false,
+                "destaque": true,
                 "badge": "",
                 "ordem": 5
             },
@@ -273,7 +273,7 @@
                 "descricao": "Refrigerante lata 350ml de Guaraná Antarctica.",
                 "preco": 6,
                 "imagem": "guaranalata.png",
-                "destaque": true,
+                "destaque": false,
                 "badge": "",
                 "ordem": 1
             },
