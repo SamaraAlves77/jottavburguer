@@ -28,10 +28,11 @@
                 "nome": "Jotta Básico",
                 "descricao": "Pão, carne 80g prensada na chapa com cebola, queijo muçarela e molho da casa.",
                 "preco": 14.99,
-                "imagem": "smash_original.jpeg",
+                "imagem": "20251109_211556.jpg",
                 "destaque": false,
                 "badge": "",
-                "ordem": 2
+                "ordem": 2,
+                "ativo": true
             },
             {
                 "id": 4,
