@@ -296,7 +296,7 @@
                 "destaque": false,
                 "badge": "",
                 "ordem": 3,
-                "ativo": false
+                "ativo": true
             }
         ]
     },
